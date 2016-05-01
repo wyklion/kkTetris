@@ -1,0 +1,54 @@
+html,body {
+    padding: 50px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    -moz-user-select:none;
+}
+
+a {
+    color: #00B7FF;
+    margin-left: 20px;
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: underline;
+}
+
+.topDiv {
+    position:absolute;
+    top:0;
+    width: 100%;
+    height: 100px;
+    text-align:center;
+    vertical-align:middle;
+    background-color: #ffffff;
+}
+.wholeDiv{
+    position:absolute;
+    top:100px;
+    left:50%;
+    margin-left:-480px;
+    width: 960px;
+    height: 640px;
+    touch-action: none;
+    border: 1px solid black;
+}
+canvas {
+}
+.gameDiv {
+}
+.mainDiv {
+}
+.bottomDiv {
+    position:absolute;
+    top:800px;
+    width: 100%;
+    height: 150px;
+    background-color: #ffffff;
+    text-align:center;
+    vertical-align:middle;
+}

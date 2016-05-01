@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tetris</title>
+    <link rel='stylesheet' href='/css/style.css' />
+</head>
+<body>
+    <div class="topDiv">
+        <div id="welcome" />
+    </div>
+    <div id="wholeDiv"  class="wholeDiv">
+        <canvas width='960' height='640'></canvas>
+        <div id="mainDiv" class="mainDiv"></div>
+    </div>
+    <div class="bottomDiv">
+    </div>
+    <!--&lt;!&ndash;<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>&ndash;&gt;-->
+    <script src='lib/socket.io.js'></script>
+    <script src='src/GameSocket.js'></script>
+    <script src='src/tetris.js'></script>
+    <script src='src/Render.js'></script>
+    <script src='src/KeyManager.js'></script>
+    <script src='src/game.js'></script>
+    <script src='src/ui.js'></script>
+    <script src='main.js'></script>
+</body>
+</html>
