@@ -70,6 +70,7 @@ RoomManager.prototype = {
             var idx = room.playUsers.indexOf(userId);
             if (idx > -1) {
                 room.playUsers.splice(idx, 1);
+                room.ready = {};
                 if (room.playUsers.length === 0) {
                     delete this.rooms[roomId];
                     return {err:null, delRoom: true};
@@ -86,6 +87,7 @@ RoomManager.prototype = {
             var idx = this.rooms[i].playUsers.indexOf(userId);
             if(idx > -1){
                 this.rooms[i].playUsers.splice(idx, 1);
+                this.rooms[i].ready = {};
                 if(this.rooms[i].playUsers.length === 0){
                     delete this.rooms[i];
                 }

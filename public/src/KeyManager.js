@@ -7,8 +7,8 @@ var KeyState = function(func){
     this.press = false;
     this.first = true;
     this.time = 0;
-    this.firstInterval = 0.2;
-    this.interval = 0.05;
+    this.firstInterval = 0.12;
+    this.interval = 0.03;
     this.handle = null;
 };
 KeyState.prototype = {

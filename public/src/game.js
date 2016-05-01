@@ -38,8 +38,11 @@ var Game = function(){
 Game.prototype = {
     constructor: Game,
     init: function(){
-        this.isPaused = false;
         this.single = true;
+        this.playing = false;
+        this.ready = false;
+
+        this.isPaused = false;
         this.firstGame = true;
         this.tetris = new Tetris(this, true);
         this.otherTetris = new Tetris(this, false);
@@ -125,8 +128,9 @@ Game.prototype = {
             }
         }
         else{
-            if(!this.playing){
+            if(!this.playing && !this.ready){
                 console.log("ready...");
+                this.ready = true;
                 this.playData.reset();
                 this.tetris.init();
                 socket.operate(OPERTABLE.ready);
@@ -140,6 +144,7 @@ Game.prototype = {
     startVS: function(shapes){
         console.log("start vs...");
         this.playing = true;
+        this.ready = false;
         this.otherTetris.restart(shapes);
         this.tetris.restart(shapes);
     },
@@ -160,10 +165,18 @@ Game.prototype = {
     someoneJoined: function(){
         console.log("someoneJoined");
         this.single = false;
+        this.playData.reset();
+        this.tetris.init();
     },
     someoneLeft: function(){
         console.log("someoneLeft");
+        this.otherTetris.init();
         this.single = true;
+        this.ready = false;
+        if(this.playing){
+            this.playing = false;
+            this.tetris.gameOver();
+        }
     },
     calculateDeltaTime: function () {
         var now = Date.now();
