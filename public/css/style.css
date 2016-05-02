@@ -18,16 +18,21 @@ a:hover{
     text-decoration: underline;
 }
 
+.verticalMiddle{
+    vertical-align:middle;
+}
 .topDiv {
     position:absolute;
     top:0;
-    width: 100%;
+    left:50%;
+    margin-left:-480px;
+    width: 960px;
     height: 100px;
     text-align:center;
     vertical-align:middle;
     background-color: #ffffff;
 }
-.wholeDiv{
+.wholeDiv {
     position:absolute;
     top:100px;
     left:50%;
@@ -35,13 +40,25 @@ a:hover{
     width: 960px;
     height: 640px;
     touch-action: none;
-    border: 1px solid black;
+    /*border: 1px solid black;*/
 }
-canvas {
+/*canvas {*/
+/*}*/
+#gameDiv {
+    position:absolute;
+    top:0px;
+    left:50%;
+    margin-left:-480px;
+    width: 960px;
+    height: 640px;
 }
-.gameDiv {
-}
-.mainDiv {
+#mainDiv{
+    position:absolute;
+    top:0px;
+    left:50%;
+    margin-left:-480px;
+    width: 960px;
+    height: 640px;
 }
 .bottomDiv {
     position:absolute;
@@ -51,4 +68,11 @@ canvas {
     background-color: #ffffff;
     text-align:center;
     vertical-align:middle;
+}
+
+#playDiv{
+    position:absolute;
+    top:250px;
+    left:520px;
+    width:300px;
 }

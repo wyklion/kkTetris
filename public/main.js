@@ -1,101 +1,66 @@
 var socket;
 var Main = function(){
     this.mainDiv = document.getElementById("mainDiv");
-    this.rooms = [];
-    this.users = [];
     this.init();
 };
 Main.prototype = {
     constructor: Main,
     init: function(){
-        var _this = this;
-        this.roomLabel = new UITextElement({
-            x:100,y:50,
-            value:"Room List:",
-            font:"Arial",
-            size:20,
-        }, this.mainDiv);
-        this.createRoomButton = new UIButtonElement({
-            x:300,y:50,
-            w:100,h:50,
-            value:"Create Room",
-            onclick: function(){
-                socket.createRoom();
-            }
-        }, this.mainDiv);
-        this.userLabel = new UITextElement({
-            x:600,y:50,
-            value:"Users:",
-            font:"Arial",
-            size:20,
-        }, this.mainDiv);
+        this.initUI();
+    },
+    initUI: function(){
+        $('#logoutButton').on('click', function () {
+            location.href = '/logout';
+        })
+        $('#createRoomButton').on('click', function () {
+            socket.createRoom();
+        })
+        $('#exitButton').on('click', function () {
+            socket.exitRoom();
+        })
     },
     onLogin: function(){
         var welcome = document.getElementById("welcome");
-        welcome.innerHTML = "Welcome "+socket.data.user+"<a href='/logout'>注销</a>"
+        //welcome.innerHTML = "Welcome "+socket.data.user+"<a href='/logout'>注销</a>"
+        welcome.innerHTML = "Welcome "+socket.data.user;
         this.updateRoomList();
         this.updateUserList();
     },
     updateRoomList: function(){
-        var _this = this;
-        for(var i = 0; i < this.rooms.length; i++){
-            this.rooms[i].label.dispose();
-            this.rooms[i].button.dispose();
-        }
-        this.rooms = [];
-        var count = 0;
-        for(var i in socket.data.rooms){
+        $('#roomList').empty();
+        for(var i in socket.data.rooms) {
             var room = socket.data.rooms[i];
-            this.rooms[count] = {};
-            this.rooms[count].label = new UITextElement({
-                x:100,y:150+30*count,
-                value:"Room "+room.id,
-                font:"Arial",
-                size:15,
-            }, this.mainDiv);
-            this.rooms[count].button = new UIButtonElement({
-                x:240,y:150+30*count,
-                w:80,h:40,
-                value:"Enter",
-                onclick: function(){
-                    socket.joinRoom(room.id);
-                }
-            }, this.mainDiv);
-            count++;
+            var str = "<tr><td>"+room.id+"</td><td>";
+            if(room.playUsers.length === 1){
+                str += room.playUsers[0] + " is waiting...</td><td><button id='room"+room.id+"' type='button' class='btn btn-default'>enter</button></td>";
+            }
+            else{
+                str += room.playUsers[0] + " vs " + room.playUsers[1] + "</td><td><button id='room"+room.id+"' type='button' class='btn btn-default disabled'>watch</button></td>";
+            }
+            $('#roomList').append(str);
+            $('#room'+room.id).on('click', function(){
+                socket.joinRoom(room.id);
+            });
         }
     },
     updateUserList: function(){
-        var _this = this;
-        for(var i = 0; i < this.users.length; i++){
-            this.users[i].dispose();
+        $('#userList').empty();
+        for(var i = 0; i < socket.data.users.length; i++) {
+            var user = "<li class='list-group-item'>"+socket.data.users[i]+"</li>";
+            $('#userList').append(user);
         }
-        this.users = [];
-        for(var i = 0; i < socket.data.users.length; i++){
-            var user = socket.data.users[i];
-            this.users[i] = new UITextElement({
-                x:600,y:150+30*i,
-                value:""+user,
-                font:"Arial",
-                size:15,
-            }, this.mainDiv);
-        }
-    },
-    setVisible: function(visible){
-        if(visible)
-            this.mainDiv.style.display="";
-        else
-            this.mainDiv.style.display="none";
     },
     goRoom: function(){
-        this.setVisible(false);
+        $('#mainDiv').hide();
+        $('#gameDiv').show();
         this.game = new Game();
         this.game.init();
-        if(socket.data.room.playUsers.length === 2){
-            this.game.single = false;
-        }
+        var single = socket.data.room.playUsers.length != 2;
+        this.game.setButton(single);
     },
     exitRoom: function(){
-        this.setVisible(true);
+        $('#mainDiv').show();
+        $('#gameDiv').hide();
         this.updateRoomList();
         this.updateUserList();
         this.game.dispose();

@@ -50,23 +50,10 @@ Game.prototype = {
         this.renderer = new Render(this);
         this.mainLoop();
         this.input();
-        this.initUI();
-    },
-    initUI: function(){
-        this.wholeDiv = document.getElementById("wholeDiv");
-        this.gameDiv = document.createElement("gameDiv");
-        this.wholeDiv.appendChild(this.gameDiv);
-        this.exitButton = new UIElement({
-            e:'input',
-            x:200,y:-50,
-            w:100,h:50,
-        }, this.gameDiv);
-        this.exitButton.element.type = "button";
-        this.exitButton.element.value = "Exit";
-        this.exitButton.element.name = "Exit";
-        this.exitButton.element.onclick= function(){
-            socket.exitRoom();
-        }
+        var _this = this;
+        $('#playButton').on("click", function(){
+            _this.readyOrPlay();
+        });
     },
     input: function(){
         var _this = this;
@@ -116,7 +103,17 @@ Game.prototype = {
             _this.keyManager.onKeyUp(e.keyCode);
         }
     },
+    setButton: function(single){
+        $('#playButton').empty();
+        if(!single){
+            $('#playButton').append("<h1>Ready(F2)</h1>");
+        }
+        else
+            $('#playButton').append("<h1>Play(F2)</h1>");
+        this.single = single;
+    },
     readyOrPlay: function(){
+        $('#playButton').hide();
         if(this.single){
             if(this.firstGame){
                 this.firstGame = false;
@@ -149,12 +146,14 @@ Game.prototype = {
         this.tetris.restart(shapes);
     },
     win: function(){
+        $('#playButton').show();
         this.keyManager.stop();
         this.playing = false;
         this.tetris.playing = false;
         this.otherTetris.playing = false;
     },
     lose: function(){
+        $('#playButton').show();
         this.keyManager.stop();
         if(!this.single){
             this.playing = false;
@@ -164,12 +163,14 @@ Game.prototype = {
     },
     someoneJoined: function(){
         console.log("someoneJoined");
+        this.setButton(false);
         this.single = false;
         this.playData.reset();
         this.tetris.init();
     },
     someoneLeft: function(){
         console.log("someoneLeft");
+        this.setButton(true);
         this.otherTetris.init();
         this.single = true;
         this.ready = false;
@@ -212,7 +213,6 @@ Game.prototype = {
         this.isPaused = !this.isPaused;
     },
     dispose: function(){
-        this.wholeDiv.removeChild(this.gameDiv);
         cancelAnimationFrame(this.aniHandle);
         this.renderer.clear();
         delete this;
