@@ -12,7 +12,7 @@ var sessionMidleware = session({
         maxAge: 1000*60*60*24*14
     },
     resave:false,
-    saveUninitialized:false,
+    saveUninitialized:true,
     store: mongoStore,
 });
 var path = require('path');
