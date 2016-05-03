@@ -143,6 +143,8 @@ GameSocket.prototype = {
             _this.sessionMidleware(socket.request, socket.request.res, next);
         });
         this.io.set('authorization', function(handshakeData, callback){
+            if(!handshakeData.headers.cookie)
+                return;
             // 通过客户端的cookie字符串来获取其session数据
             handshakeData.cookie = require('express/node_modules/cookie').parse(handshakeData.headers.cookie);
             var connect_sid = handshakeData.cookie['connect.sid'];
