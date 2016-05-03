@@ -60,6 +60,7 @@ router.route("/register").get(function(req,res){    // 到达此路径则渲染r
 
 /* GET main page. */
 router.get("/",function(req,res){
+    req.session = req.session;
     if(!req.session.user){                     //到达/play路径首先判断是否已经登录
         req.session.error = "请先登录"
         res.redirect("/login");                //未登录则重定向到 /login 路径
