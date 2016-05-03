@@ -142,7 +142,32 @@ GameSocket.prototype = {
         this.io.use(function(socket, next) {
             _this.sessionMidleware(socket.request, socket.request.res, next);
         });
-        this.io.set('authorization', function(handshakeData, callback){
+        this.io.use(function(socket, next){
+            socket.handshake.cookie = require('express/node_modules/cookie').parse(socket.handshake.headers.cookie);
+            var connect_sid = socket.handshake.cookie['connect.sid'];
+            var sid = '';
+            if(connect_sid){
+                sid = connect_sid.split(':')[1].split('.')[0];
+                _this.mongoStore.get(sid, function(error, session){
+                    if (error || !session) {
+                        //console.log("io auth error:", error);
+                        // if we cannot grab a session, turn down the connection
+                        console.log(error.message);
+                    }
+                    else {
+                        //console.log("io session:", sid, session);
+                        // save the session data and accept the connection
+                        socket.handshake.session = session;
+                        next();
+                    }
+                });
+            }
+            else{
+                console.log('nosession');
+            }
+            next();
+        });
+        /*this.io.set('authorization', function(handshakeData, callback){
             if(!handshakeData.headers.cookie)
                 return;
             // 通过客户端的cookie字符串来获取其session数据
@@ -168,7 +193,7 @@ GameSocket.prototype = {
             else{
                 callback('nosession');
             }
-        });
+        });*/
     },
     start: function(){
         this.io.on('connection', this.onConnection.bind(this));
@@ -177,7 +202,7 @@ GameSocket.prototype = {
         //})
     },
     onConnection: function(socket){
-        var session = socket.handshake.headers.session;
+        var session = socket.handshake.session;
         if(!session) return;
         //console.log(session);
         socket.userId = session.user.id;
