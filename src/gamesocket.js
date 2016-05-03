@@ -140,11 +140,13 @@ GameSocket.prototype = {
     init: function(){
         var _this = this;
         this.io.use(function(socket, next) {
-            _this.sessionMidleware(socket.request, socket.request.res, next);
+            console.log("cookie 1",socket.handshake.headers.cookie);
+            _this.sessionMidleware(socket.request, {}, next);
         });
         this.io.use(function(socket, next){
             if(!socket.handshake.headers.cookie)
                 return;
+            console.log("cookie 2",socket.handshake.headers.cookie);
             socket.handshake.cookie = require('express/node_modules/cookie').parse(socket.handshake.headers.cookie);
             var connect_sid = socket.handshake.cookie['connect.sid'];
             var sid = '';
