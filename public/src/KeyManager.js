@@ -142,6 +142,17 @@ KeyManager.prototype = {
             this.down.keyUp();
         }
     },
+    updateInput: function(){
+        var keyboard = socket.data.user.keyboard;
+        if (!keyboard) return;
+        this.leftKey = keyboard.left;
+        this.rightKey = keyboard.right;
+        this.downKey = keyboard.down;
+        this.dropKey = keyboard.drop;
+        this.rotateKey = keyboard.rotate;
+        this.rotateRightKey = keyboard.rotateRight;
+        this.holdKey = keyboard.hold;
+    },
     stop: function(){
         this.left.stop();
         this.right.stop();

@@ -6,11 +6,54 @@
     <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
 </head>
 <body>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h3 class="modal-title center-block" id="myModalLabel">
+                        Keyboard Setting
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <td>Operation</td>
+                            <td>Keyboard</td>
+                        </thead>
+                        <tbody>
+                            <tr><td>Left</td><td id="leftkey"><kbd>←</kbd></td></tr>
+                            <tr><td>Right</td><td id="rightkey"><kbd>→</kbd></td></tr>
+                            <tr><td>Down</td><td id="downkey"><kbd>↓</kbd></td></tr>
+                            <tr><td>Drop</td><td id="dropkey"><kbd>F</kbd></td></tr>
+                            <tr><td>RotateLeft</td><td id="rotatekey"><kbd>R</kbd></td></tr>
+                            <tr><td>RotateRight</td><td id="rotaterightkey"><kbd>E</kbd></td></tr>
+                            <tr><td>Hold</td><td id="holdkey"><kbd>T</kbd></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">Close
+                    </button>
+                    <button id="keyboardSave" type="button" class="btn btn-primary">
+                        Save changes
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
     <div class="topDiv">
         <nav class="navbar navbar-default navbar-inverse">
             <div class="container-fluid">
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-left">
+                        <li><button id="keyboardButton" type="button" class="btn btn-default navbar-btn">Keyboard</button></li>
+                    </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li><p id="welcome" class="navbar-text"></p></li>
                         <li><button id="logoutButton" type="button" class="btn btn-default navbar-btn">Logout</button></li>
@@ -39,28 +82,6 @@
                             <td>Enter</td>
                         </thead>
                         <tbody id="roomList">
-                            <tr>
-                                <td>123</td>
-                                <td>kk is waiting</td>
-                                <td><button id="room123" type="button" class="btn btn-default">enter</button></td>
-                            </tr>
-                            <tr>
-                                <td>123</td>
-                                <td>kk vs kkk</td>
-                                <td><button id="room124" type="button" class="btn btn-default disabled">watch</button></td>
-                            </tr>
-                            <tr>
-                                <td>sdfklj</td>
-                            </tr>
-                            <tr>
-                                <td>sdfklj</td>
-                            </tr>
-                            <tr>
-                                <td>sdfklj</td>
-                            </tr>
-                            <tr>
-                                <td>sdfklj</td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>

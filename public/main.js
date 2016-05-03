@@ -18,11 +18,71 @@ Main.prototype = {
         $('#exitButton').on('click', function () {
             socket.exitRoom();
         })
+        var _this = this;
+        $('#leftkey').on('click', function(){
+            $(this).empty();
+            _this.setkey = "left";
+        });
+        $('#rightkey').on('click', function(){
+            $(this).empty();
+            _this.setkey = "right";
+        });
+        $('#dropkey').on('click', function(){
+            $(this).empty();
+            _this.setkey = "drop";
+        });
+        $('#downkey').on('click', function(){
+            $(this).empty();
+            _this.setkey = "down";
+        });
+        $('#rotatekey').on('click', function(){
+            $(this).empty();
+            _this.setkey = "rotate";
+        });
+        $('#rotaterightkey').on('click', function(){
+            $(this).empty();
+            _this.setkey = "rotateright";
+        });
+        $('#holdkey').on('click', function(){
+            $(this).empty();
+            _this.setkey = "hold";
+        });
+        $('#keyboardButton').on('click', function () {
+            console.log("keyboardButton");
+            _this.settingKey = true;
+            $('#myModal').modal();
+        })
+        $('#myModal').on('shown.bs.modal', function () {
+            _this.keyboard = {};
+            for(var i in socket.data.user.keyboard){
+                $('#'+i+'key').empty();
+                $('#'+i+'key').empty();
+                var str = "<kbd>"+String.fromCharCode(socket.data.user.keyboard[i])+"</kbd>"
+                $('#'+i+'key').append(str);
+                _this.keyboard[i] = socket.data.user.keyboard[i];
+            }
+            $(document).keydown(function(event){
+                if(!_this.setkey) return;
+                var str = "<kbd>"+String.fromCharCode(event.keyCode)+"</kbd>"
+                $('#'+_this.setkey+'key').append(str);
+                _this.keyboard[_this.setkey] = event.keyCode;
+                _this.setkey = null;
+            });
+        });
+        $('#myModal').on('hide.bs.modal', function () {
+            _this.setkey = null;
+            $(document).unbind("keydown");
+        });
+        $('#keyboardSave').on('click', function () {
+            socket.setKeyboard(_this.keyboard);
+            _this.keyboard = null;
+            $('#myModal').modal('hide');
+        });
     },
     onLogin: function(){
         var welcome = document.getElementById("welcome");
         //welcome.innerHTML = "Welcome "+socket.data.user+"<a href='/logout'>注销</a>"
-        welcome.innerHTML = "Welcome "+socket.data.user;
+        welcome.innerHTML = "Welcome "+socket.data.user.id;
         this.updateRoomList();
         this.updateUserList();
     },

@@ -42,7 +42,13 @@ Mongo.prototype = {
         c.insertMany(docs, function(err, result) {
             callback(err, result);
         });
-    }
+    },
+    updateOne: function(collection, query, doc, callback){
+        var c = this.db.collection(collection);
+        c.updateOne(query, {$set: doc}, function(err, result) {
+            if(callback) callback(err, result);
+        });
+    },
 }
 
 module.exports = Mongo;

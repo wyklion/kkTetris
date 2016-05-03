@@ -217,7 +217,7 @@ GameSocket.prototype = {
         if(this.users.indexOf(socket.userId) === -1)
             this.users.push(socket.userId);
         socket.join("lobby");
-        socket.emit('onConnection', {err: null, user: socket.userId, users: this.users, rooms: this.roomManager.getRooms()});
+        socket.emit('onConnection', {err: null, user: session.user, users: this.users, rooms: this.roomManager.getRooms()});
         socket.broadcast.to("lobby").emit('lobbyInfo', {err: null, users: this.users});
 
         this.onDisconnect(socket);
@@ -226,6 +226,8 @@ GameSocket.prototype = {
         this.onExitRoom(socket);
 
         this.onPlaying(socket);
+
+        this.onSetting(socket);
     },
     onDisconnect: function(socket){
         var _this = this;
@@ -304,6 +306,14 @@ GameSocket.prototype = {
             }
             else if(oper === OPERTABLE.dead){
                 _this.roomManager.userDead(socket);
+            }
+        })
+    },
+    onSetting: function(socket){
+        var _this = this;
+        socket.on('setting', function(data){
+            if(data.type==="keyboard"){
+                mongo.updateOne("users", {id:socket.userId}, {keyboard: data.keyboard});
             }
         })
     },

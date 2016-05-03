@@ -170,5 +170,12 @@ GameSocket.prototype = {
                 }
             }
         });
-    }
+    },
+    setKeyboard: function(keyboard){
+        this.data.user.keyboard = keyboard;
+        if(main.game){
+            main.game.updateInput();
+        }
+        this.socket.emit("setting", {type:"keyboard", keyboard:keyboard});
+    },
 }

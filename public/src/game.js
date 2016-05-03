@@ -55,36 +55,43 @@ Game.prototype = {
             _this.readyOrPlay();
         });
     },
+    updateInput: function() {
+        this.keyManager.updateInput();
+    },
     input: function(){
+        var keyboard = socket.data.user.keyboard;
+        if(!keyboard){
+            keyboard = {left:37,right:39,down:70,drop:40,rotate:82,rotateRight:69,hold:84};
+        }
         var _this = this;
         this.keyManager = new KeyManager({
             socket: socket,
             left:{
-                key:37,
+                key:keyboard.left,//37,
                 func:function(){_this.tetris.move(-1,0);}
             },
             right:{
-                key:39,
+                key:keyboard.right,//39,
                 func:function(){_this.tetris.move(1,0);}
             },
             down:{
-                key:70,
+                key:keyboard.down,//70,
                 func:function(){return _this.tetris.move(0,-1);}
             },
             drop:{
-                key:40,
+                key:keyboard.drop,//40,
                 func:function(){return _this.tetris.drop();}
             },
             rotate:{
-                key:82,
+                key:keyboard.rotate,//82,
                 func:function(){_this.tetris.rotate(true);}
             },
             rotateRight:{
-                key:69,
+                key:keyboard.rotateRight,//69,
                 func:function(){_this.tetris.rotate(false);}
             },
             hold:{
-                key:84,
+                key:keyboard.hold,//84,
                 func:function(){_this.tetris.holdShape();}
             },
         });
