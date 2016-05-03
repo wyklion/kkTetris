@@ -127,6 +127,7 @@ RoomManager.prototype = {
 
 var GameSocket = function(app, server){
     this.mongoStore = app.mongoStore;
+    this.sessionMidleware = app.sessionMidleware;
     this.io = require('socket.io')(server);
     this.session = null;
     this.init();
@@ -138,6 +139,9 @@ GameSocket.prototype = {
     constructor: GameSocket,
     init: function(){
         var _this = this;
+        this.io.use(function(socket, next) {
+            _this.sessionMidleware(socket.request, socket.request.res, next);
+        });
         this.io.set('authorization', function(handshakeData, callback){
             // 通过客户端的cookie字符串来获取其session数据
             handshakeData.cookie = require('express/node_modules/cookie').parse(handshakeData.headers.cookie);
@@ -173,6 +177,7 @@ GameSocket.prototype = {
     onConnection: function(socket){
         var session = socket.handshake.headers.session;
         if(!session) return;
+        //console.log(session);
         socket.userId = session.user.id;
         console.log(socket.userId, "connected... " + socket.id);
         if(this.users.indexOf(socket.userId) === -1)

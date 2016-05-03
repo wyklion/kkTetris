@@ -6,6 +6,15 @@ var express = require('express');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var mongoStore = new MongoStore({url: 'mongodb://localhost/tetris'});
+var sessionMidleware = session({
+    secret: 'secret',
+    cookie:{
+        maxAge: 1000*60*60*24*14
+    },
+    resave:false,
+    saveUninitialized:false,
+    store: mongoStore,
+});
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -24,18 +33,12 @@ app.set('view engine', 'html');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-    secret: 'secret',
-    cookie:{
-        maxAge: 1000*60*60*24*14
-    },
-    store: mongoStore,
-}));
+app.use(sessionMidleware);
 
 app.use(function(req,res,next){
     res.locals.user = req.session.user;   // 从session 获取 user对象
@@ -85,3 +88,4 @@ if (app.get('env') === 'development') {
 
 exports = module.exports = app;
 exports.mongoStore = mongoStore;
+exports.sessionMidleware = sessionMidleware;

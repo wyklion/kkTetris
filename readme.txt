@@ -31,3 +31,19 @@ git push origin master
 vi .gitignore
 *~
 .idea/
+
+linux:
+sudo /sbin/iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+sudo /etc/rc.d/init.d/iptables save
+sudo vi /etc/sysconfig/iptables
+sudo /etc/init.d/iptables start
+sudo /etc/init.d/iptables status
+sudo yum -y install vsftpd
+sodu vi /etc/vsftpd/vsftpd.conf
+sudo useradd -d /home/ec2-user/work/kkTetris -s /sbin/nologin kkkkk
+sudo passwd kkkk
+sudo chmod -R 755 /home/ec2-user/work/kkTetris
+sudo chown -R kk /home/ec2-user/work/kkTetris
+sudo /etc/rc.d/init.d/vsftpd restart
+sudo chkconfig --level 35 vsftpd on
+
