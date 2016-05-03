@@ -139,44 +139,47 @@ GameSocket.prototype = {
     constructor: GameSocket,
     init: function(){
         var _this = this;
-        this.io.use(function(socket, next) {
-            console.log("cookie 1",socket.handshake.headers.cookie);
-            _this.sessionMidleware(socket.request, {}, next);
-        });
-        this.io.use(function(socket, next){
-            if(!socket.handshake.headers.cookie)
-                return;
-            console.log("cookie 2",socket.handshake.headers.cookie);
-            socket.handshake.cookie = require('express/node_modules/cookie').parse(socket.handshake.headers.cookie);
-            var connect_sid = socket.handshake.cookie['connect.sid'];
-            var sid = '';
-            if(connect_sid){
-                sid = connect_sid.split(':')[1].split('.')[0];
-                _this.mongoStore.get(sid, function(error, session){
-                    if (error || !session) {
-                        //console.log("io auth error:", error);
-                        // if we cannot grab a session, turn down the connection
-                        console.log(error.message);
-                    }
-                    else {
-                        //console.log("io session:", sid, session);
-                        // save the session data and accept the connection
-                        socket.handshake.session = session;
-                        next();
-                    }
-                });
-            }
-            else{
-                console.log('nosession');
-            }
-            next();
-        });
-        /*this.io.set('authorization', function(handshakeData, callback){
+        //this.io.use(function(socket, next) {
+        //    //console.log("sesseion 1:",socket.request.session);
+        //    //console.log("cookie 1", socket.request.headers.cookie);
+        //    _this.sessionMidleware(socket.request, {}, next);
+        //});
+        //this.io.use(function(socket, next){
+        //    //console.log("sesseion 2:",socket.request.session);
+        //    if(!socket.request.headers.cookie)
+        //        return;
+        //    //console.log("cookie 2",socket.request.headers.cookie);
+        //    socket.request.cookie = require('express/node_modules/cookie').parse(socket.request.headers.cookie);
+        //    var connect_sid = socket.request.cookie['connect.sid'];
+        //    var sid = '';
+        //    if(connect_sid){
+        //        sid = connect_sid.split(':')[1].split('.')[0];
+        //        _this.mongoStore.get(sid, function(error, session){
+        //            if (error || !session) {
+        //                //console.log("io auth error:", error);
+        //                // if we cannot grab a session, turn down the connection
+        //                console.log(error.message);
+        //            }
+        //            else {
+        //                console.log("io session:", sid, session);
+        //                // save the session data and accept the connection
+        //                socket.handshake.session = session;
+        //                next();
+        //            }
+        //        });
+        //    }
+        //    else{
+        //        console.log('nosession');
+        //    }
+        //    next();
+        //});
+        this.io.set('authorization', function(handshakeData, callback){
             if(!handshakeData.headers.cookie)
                 return;
             // 通过客户端的cookie字符串来获取其session数据
             handshakeData.cookie = require('express/node_modules/cookie').parse(handshakeData.headers.cookie);
             var connect_sid = handshakeData.cookie['connect.sid'];
+            //console.log("conid:", connect_sid, "auth:", handshakeData.cookie);
             var sid = '';
             if(connect_sid){
                 sid = connect_sid.split(':')[1].split('.')[0];
@@ -197,7 +200,7 @@ GameSocket.prototype = {
             else{
                 callback('nosession');
             }
-        });*/
+        });
     },
     start: function(){
         this.io.on('connection', this.onConnection.bind(this));
@@ -206,9 +209,9 @@ GameSocket.prototype = {
         //})
     },
     onConnection: function(socket){
-        var session = socket.handshake.session;
-        if(!session) return;
-        //console.log(session);
+        //console.log("connect session:", session);
+        var session = socket.request.headers.session;
+        if(!session || !session.user) return;
         socket.userId = session.user.id;
         console.log(socket.userId, "connected... " + socket.id);
         if(this.users.indexOf(socket.userId) === -1)

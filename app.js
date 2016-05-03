@@ -55,7 +55,7 @@ app.use(function(req,res,next){
 app.use('/', routes);  // 即为为路径 / 设置路由
 app.use('/login',routes); // 即为为路径 /login 设置路由
 app.use('/register',routes); // 即为为路径 /register 设置路由
-app.use('/home',routes); // 即为为路径 /home 设置路由
+app.use('/play',routes); // 即为为路径 /home 设置路由
 app.use("/logout",routes); // 即为为路径 /logout 设置路由
 
 // catch 404 and forward to error handler

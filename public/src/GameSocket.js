@@ -3,7 +3,7 @@
  */
 
 var GameSocket = function(){
-    this.socket = io('http://localhost');
+    this.socket = io('localhost');
     this.data = {
         user:null,
         users:[],
