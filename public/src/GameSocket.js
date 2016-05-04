@@ -3,7 +3,7 @@
  */
 
 var GameSocket = function(){
-    this.socket = io('localhost');
+    this.socket = io('www.kktetris.com');
     this.data = {
         user:null,
         users:[],
