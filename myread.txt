@@ -6,6 +6,17 @@ mongochef免费可选。
 startDatabase.bat
 startWeb.bat
 
+linux:
+安全组。开80端口。
+sudo /sbin/iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+sudo /sbin/iptables -I INPUT -p tcp --dport 21 -j ACCEPT
+sudo /sbin/iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 27017 -j ACCEPT
+sudo /etc/rc.d/init.d/iptables save
+sudo /etc/rc.d/init.d/iptables restart
+sudo /etc/init.d/iptables status
+
+
+
 安装git
 git config --global user.name "KK"
 git config --global user.email wyklion@qq.com

@@ -3,7 +3,7 @@
  */
 
 var GameSocket = function(){
-    this.socket = io('www.kktetris.com');
+    this.socket = io(SERVER_NAME);
     this.data = {
         user:null,
         users:[],
