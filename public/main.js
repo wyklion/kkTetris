@@ -48,19 +48,21 @@ Main.prototype = {
             _this.setkey = "hold";
         });
         $('#keyboardButton').on('click', function () {
-            console.log("keyboardButton");
             _this.settingKey = true;
             $('#myModal').modal();
         })
         $('#myModal').on('shown.bs.modal', function () {
             _this.keyboard = {};
             for(var i in socket.data.user.keyboard){
+                if(i==="dasDelay" || i=="moveDelay") continue;
                 $('#'+i+'key').empty();
                 $('#'+i+'key').empty();
                 var str = "<kbd>"+String.fromCharCode(socket.data.user.keyboard[i])+"</kbd>"
                 $('#'+i+'key').append(str);
                 _this.keyboard[i] = socket.data.user.keyboard[i];
             }
+            $('#dasDelay').val(socket.data.user.keyboard.dasDelay);
+            $('#moveDelay').val(socket.data.user.keyboard.moveDelay);
             $(document).keydown(function(event){
                 if(!_this.setkey) return;
                 var str = "<kbd>"+String.fromCharCode(event.keyCode)+"</kbd>"
@@ -74,6 +76,12 @@ Main.prototype = {
             $(document).unbind("keydown");
         });
         $('#keyboardSave').on('click', function () {
+            var dasDelay = parseInt($('#dasDelay').val());
+            if(dasDelay < 10) dasDelay = 10; else if(dasDelay > 1000) dasDelay = 1000;
+            var moveDelay = parseInt($('#moveDelay').val());
+            if(moveDelay < 0) moveDelay = 0; else if(moveDelay > 500) moveDelay = 500;
+            _this.keyboard.dasDelay = dasDelay;
+            _this.keyboard.moveDelay = moveDelay;
             socket.setKeyboard(_this.keyboard);
             _this.keyboard = null;
             $('#myModal').modal('hide');

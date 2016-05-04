@@ -61,37 +61,31 @@ Game.prototype = {
     input: function(){
         var keyboard = socket.data.user.keyboard;
         if(!keyboard){
-            keyboard = {left:37,right:39,down:70,drop:40,rotate:82,rotateRight:69,hold:84};
+            keyboard = {left:37,right:39,down:70,drop:40,rotate:82,rotateRight:69,hold:84,dasDelay:150,moveDelay:30};
         }
         var _this = this;
         this.keyManager = new KeyManager({
             socket: socket,
+            keyboard:keyboard,
             left:{
-                key:keyboard.left,//37,
                 func:function(){_this.tetris.move(-1,0);}
             },
             right:{
-                key:keyboard.right,//39,
                 func:function(){_this.tetris.move(1,0);}
             },
             down:{
-                key:keyboard.down,//70,
                 func:function(){return _this.tetris.move(0,-1);}
             },
             drop:{
-                key:keyboard.drop,//40,
                 func:function(){return _this.tetris.drop();}
             },
             rotate:{
-                key:keyboard.rotate,//82,
                 func:function(){_this.tetris.rotate(true);}
             },
             rotateRight:{
-                key:keyboard.rotateRight,//69,
                 func:function(){_this.tetris.rotate(false);}
             },
             hold:{
-                key:keyboard.hold,//84,
                 func:function(){_this.tetris.holdShape();}
             },
         });

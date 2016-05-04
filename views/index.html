@@ -21,17 +21,29 @@
                 <div class="modal-body">
                     <table class="table table-striped">
                         <thead>
-                            <td>Operation</td>
-                            <td>Keyboard</td>
+                            <td><h4>Operation</h4></td>
+                            <td><h4>Keyboard</h4></td>
                         </thead>
                         <tbody>
-                            <tr><td>Left</td><td id="leftkey"><kbd>â†?</kbd></td></tr>
-                            <tr><td>Right</td><td id="rightkey"><kbd>â†?</kbd></td></tr>
-                            <tr><td>Down</td><td id="downkey"><kbd>â†?</kbd></td></tr>
+                            <tr><td>Left</td><td id="leftkey"><kbd>ï¿½?</kbd></td></tr>
+                            <tr><td>Right</td><td id="rightkey"><kbd>ï¿½?</kbd></td></tr>
+                            <tr><td>Down</td><td id="downkey"><kbd>ï¿½?</kbd></td></tr>
                             <tr><td>Drop</td><td id="dropkey"><kbd>F</kbd></td></tr>
                             <tr><td>RotateLeft</td><td id="rotatekey"><kbd>R</kbd></td></tr>
                             <tr><td>RotateRight</td><td id="rotateRightkey"><kbd>E</kbd></td></tr>
                             <tr><td>Hold</td><td id="holdkey"><kbd>T</kbd></td></tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-striped">
+                        <tbody>
+                        <tr>
+                            <td>DAS delay(10~999ms)</td>
+                            <td><input id="dasDelay" type="number" value="150" min="0" max="999" size="5"></td>
+                        </tr>
+                        <tr>
+                            <td>Move delay(0~500ms)</td>
+                            <td><input id="moveDelay" type="number" value="30" min="0" max="999" size="5"></td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>

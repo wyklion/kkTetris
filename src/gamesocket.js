@@ -210,14 +210,24 @@ GameSocket.prototype = {
     },
     onConnection: function(socket){
         //console.log("connect session:", session);
+        var _this = this;
         var session = socket.request.headers.session;
         if(!session || !session.user) return;
         socket.userId = session.user.id;
         console.log(socket.userId, "connected... " + socket.id);
+        mongo.find("users", {id:socket.userId}, function(result){
+            if(result.length>0) {
+                _this.onDataConnection(result[0], socket);
+            }
+            else
+                console.log("cant' find user when connect...");
+        })
+    },
+    onDataConnection: function(userData, socket){
         if(this.users.indexOf(socket.userId) === -1)
             this.users.push(socket.userId);
         socket.join("lobby");
-        socket.emit('onConnection', {err: null, user: session.user, users: this.users, rooms: this.roomManager.getRooms()});
+        socket.emit('onConnection', {err: null, user: userData, users: this.users, rooms: this.roomManager.getRooms()});
         socket.broadcast.to("lobby").emit('lobbyInfo', {err: null, users: this.users});
 
         this.onDisconnect(socket);

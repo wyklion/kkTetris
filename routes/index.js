@@ -46,7 +46,7 @@ router.route("/register").get(function(req,res){    // 到达此路径则渲染r
             res.send(500);
         }else{
             mongo.insertOne("users", {id:uname, nick:uname, password: upwd,  win:0, lose:0, level:0, score:0, keyboard: {
-                left:37,right:39,down:70,drop:40,rotate:82,rotateRight:69,hold:84
+                left:37,right:39,down:70,drop:40,rotate:82,rotateRight:69,hold:84,dasDelay:150,moveDelay:30,
             }}, function(err, result){
                 if(err || result.result.n !== 1){
                     req.session.error = '创建用户失败！';
