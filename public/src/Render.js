@@ -25,13 +25,13 @@ var Render = function(game){
         x:830,y:20
     }
     this.holdPos = {
-        x:830,y:150
+        x:410,y:20
     }
     this.anotherPos = {
         x:120,y:20
     }
     this.playDataPos = {
-        x:470,y:20
+        x:470,y:120
     }
 };
 
@@ -122,22 +122,25 @@ Render.prototype = {
         this.ctx.restore();
     },
     drawNextShape: function(){
-        if(!this.tetris.nextShape) return;
+        if(!this.tetris.nextShapes || this.tetris.nextShapes.length === 0) return;
         //this.ctx.clearRect(this.nextPos.x-1,this.nextPos.y-1,121,121);
-        var pos = {x:this.nextPos.x,y:this.nextPos.y};
-        if(this.tetris.nextShape.shapeId>=3)
-            pos.x += 15;
-        this.ctx.fillStyle = colors[this.tetris.nextShape.shapeId-1];
-        if(!this.tetris.playing)
-            this.ctx.fillStyle = "rgba(0,0,0,0.2)";
-        for(var i = 0; i < 4; i++){
-            var x = 1+this.tetris.nextShape.shapeModel.cells[0][i*2];
-            var y = 1+this.tetris.nextShape.shapeModel.cells[0][i*2+1];
-            this.drawBlock(pos, x, 4-y);
+        for(var i = 0; i < this.tetris.nextShapes.length; i++){
+            var shape = this.tetris.nextShapes[i];
+            var pos = {x:this.nextPos.x,y:this.nextPos.y+i*120};
+            if(shape.shapeId>=3)
+                pos.x += 15;
+            this.ctx.fillStyle = colors[shape.shapeId-1];
+            if(!this.tetris.playing)
+                this.ctx.fillStyle = "rgba(0,0,0,0.2)";
+            for(var j = 0; j < 4; j++){
+                var x = 1+shape.shapeModel.cells[0][j*2];
+                var y = 1+shape.shapeModel.cells[0][j*2+1];
+                this.drawBlock(pos, x, 4-y);
+            }
         }
     },
     drawHoldShape: function(){
-        this.ctx.strokeRect(this.holdPos.x,this.holdPos.y,120,120);
+        this.ctx.strokeRect(this.holdPos.x+20,this.holdPos.y+10,80,100);
         if(!this.tetris.saveShape) return;
         var pos = {x:this.holdPos.x+20,y:this.holdPos.y+20};
         if(this.tetris.saveShape.shapeId>=3)

@@ -43,6 +43,10 @@ Main.prototype = {
             $(this).empty();
             _this.setkey = "rotateRight";
         });
+        $('#rotate180key').on('click', function(){
+            $(this).empty();
+            _this.setkey = "rotate180";
+        });
         $('#holdkey').on('click', function(){
             $(this).empty();
             _this.setkey = "hold";

@@ -12,7 +12,10 @@ var OPERTABLE = {
     drop:       13,
     rotateL:    14,
     rotateR:    15,
-    hold:       16,
+    rotate180:  16,
+    hold:       17,
+
+    trash:      21,
 
     start:      100,
 };
@@ -42,8 +45,13 @@ Game.prototype = {
         this.playing = false;
         this.ready = false;
 
+        this.attackMode = "0124";
+
         this.isPaused = false;
         this.firstGame = true;
+
+        this.trashes = [];
+
         this.tetris = new Tetris(this, true);
         this.otherTetris = new Tetris(this, false);
         this.playData = new PlayData();
@@ -61,20 +69,20 @@ Game.prototype = {
     input: function(){
         var keyboard = socket.data.user.keyboard;
         if(!keyboard){
-            keyboard = {left:37,right:39,down:70,drop:40,rotate:82,rotateRight:69,hold:84,dasDelay:150,moveDelay:30};
+            keyboard = {left:37,right:39,down:70,drop:40,rotate:82,rotateRight:69,rotate180:87,hold:84,dasDelay:150,moveDelay:30};
         }
         var _this = this;
         this.keyManager = new KeyManager({
             socket: socket,
             keyboard:keyboard,
             left:{
-                func:function(){_this.tetris.move(-1,0);}
+                func:function(){return _this.tetris.moveLeft();}
             },
             right:{
-                func:function(){_this.tetris.move(1,0);}
+                func:function(){return _this.tetris.moveRight();}
             },
             down:{
-                func:function(){return _this.tetris.move(0,-1);}
+                func:function(){return _this.tetris.moveDown();}
             },
             drop:{
                 func:function(){return _this.tetris.drop();}
@@ -85,6 +93,9 @@ Game.prototype = {
             rotateRight:{
                 func:function(){_this.tetris.rotate(false);}
             },
+            rotate180:{
+                func:function(){_this.tetris.rotate180();}
+            },
             hold:{
                 func:function(){_this.tetris.holdShape();}
             },
@@ -94,8 +105,8 @@ Game.prototype = {
             if(e.keyCode === 113){ // F2
                 _this.readyOrPlay();
             }
-            else if(e.keyCode === 80) // P
-                _this.pause();
+            //else if(e.keyCode === 80) // P
+            //    _this.pause();
             if(!_this.isPaused && _this.tetris.playing){
                 _this.keyManager.onKeyDown(e.keyCode);
             }
@@ -147,20 +158,21 @@ Game.prototype = {
         this.tetris.restart(shapes);
     },
     win: function(){
+        this.reset();
+    },
+    lose: function(){
+        this.reset();
+        if(!this.single){
+            socket.operate(OPERTABLE.dead);
+        }
+    },
+    reset: function(){
         $('#playButton').show();
         this.keyManager.stop();
         this.playing = false;
         this.tetris.playing = false;
         this.otherTetris.playing = false;
-    },
-    lose: function(){
-        $('#playButton').show();
-        this.keyManager.stop();
-        if(!this.single){
-            this.playing = false;
-            socket.operate(OPERTABLE.dead);
-            this.otherTetris.playing = false;
-        }
+        this.trashes = [];
     },
     someoneJoined: function(){
         console.log("someoneJoined");
@@ -179,6 +191,9 @@ Game.prototype = {
             this.playing = false;
             this.tetris.gameOver();
         }
+    },
+    trashPool: function(trash){
+        this.trashes.push(trash);
     },
     calculateDeltaTime: function () {
         var now = Date.now();
@@ -199,13 +214,18 @@ Game.prototype = {
         if(this.isPaused) return;
         if(this.tetris.playing){
             this.playData.time += dt;
-            if(this.single && this.playData.time >= 60)
-                this.tetris.gameOver();
             this.time += dt;
+            if(this.single){
+                if(this.playData.lines >= 40){
+                    this.tetris.gameOver();
+                    return;
+                }
+            }
             while(this.time > this.interval){
                 this.time -= this.interval;
                 var attack = this.tetris.move(0,-1);
-                socket.operate(OPERTABLE.down, attack);
+                if(!this.single)
+                    socket.operate(OPERTABLE.down, attack);
             }
         }
         this.renderer.render();

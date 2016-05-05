@@ -44,6 +44,12 @@ KeyState.prototype = {
                         _this.time -= _this.manager.dasDelay;
                     }
                 }
+                else if(_this.manager.moveDelay === 0){
+                    var ok = _this.func();
+                    while(ok){
+                        ok = _this.func();
+                    }
+                }
                 else if(_this.time >= _this.manager.moveDelay){
                     //console.log("fast");
                     _this.func();
@@ -60,26 +66,55 @@ KeyState.prototype = {
     }
 };
 
+var Keying = function(){
+    this.keying = 0;
+    this.keys = 0;
+};
+Keying.prototype = {
+    constructor: Keying,
+    changeKey: function(key, lock){
+        if(lock)
+            this.keys |= key;
+        else
+            this.keys &=(~key);
+        this.keying = this.key === 0;
+        console.log("keying:", this.keying);
+    },
+};
+Keying.LEFT =           1 << 0;
+Keying.RIGHT =          1 << 1;
+Keying.DOWN =           1 << 2;
+Keying.DROP =           1 << 3;
+Keying.ROTATE =         1 << 4;
+Keying.ROTATERIGHT =    1 << 5;
+Keying.ROTATE180 =      1 << 6;
+Keying.HOLD =           1 << 7;
+
 var KeyManager = function(options){
     var _this = this;
     this.socket = options.socket;
+    this.keying = new Keying();
+
     var keyboard = options.keyboard;
     this.dasDelay = keyboard.dasDelay/1000;
     this.moveDelay = keyboard.moveDelay/1000;
     this.leftKey = keyboard.left;
     this.leftFunc = function(){
         _this.socket.operate(OPERTABLE.left);
-        options.left.func();
+        return options.left.func();
     }
     this.rightKey = keyboard.right;
     this.rightFunc = function(){
         _this.socket.operate(OPERTABLE.right);
-        options.right.func();
+        return options.right.func();
     }
     this.downKey = keyboard.down;
     this.downFunc = function(){
-        var attack = options.down.func();
-        _this.socket.operate(OPERTABLE.down, attack);
+        var result = options.down.func();
+        if(result.ok){
+            _this.socket.operate(OPERTABLE.down, result.attack);
+        }
+        return result.ok;
     }
     this.dropKey = keyboard.drop;
     this.dropFunc = function(){
@@ -95,6 +130,11 @@ var KeyManager = function(options){
     this.rotateRightFunc = function(){
         _this.socket.operate(OPERTABLE.rotateR);
         options.rotateRight.func();
+    }
+    this.rotate180Key = keyboard.rotate180;
+    this.rotate180Func = function(){
+        _this.socket.operate(OPERTABLE.rotate180);
+        options.rotate180.func();
     }
     this.holdKey = keyboard.hold;
     this.holdFunc = function(){
@@ -121,13 +161,18 @@ KeyManager.prototype = {
             this.down.keyDown();
         }
         else if(key === this.dropKey){
+            this.keying = true;
             this.dropFunc();
+            this.keying = true;
         }
         else if(key === this.rotateKey){
             this.rotateFunc();
         }
         else if(key === this.rotateRightKey){
             this.rotateRightFunc();
+        }
+        else if(key === this.rotate180Key){
+            this.rotate180Func();
         }
         else if(key === this.holdKey){
             this.holdFunc();
@@ -153,6 +198,7 @@ KeyManager.prototype = {
         this.dropKey = keyboard.drop;
         this.rotateKey = keyboard.rotate;
         this.rotateRightKey = keyboard.rotateRight;
+        this.rotate180Key = keyboard.rotate180;
         this.holdKey = keyboard.hold;
 
         this.dasDelay = keyboard.dasDelay/1000;

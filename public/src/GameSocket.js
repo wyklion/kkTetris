@@ -147,16 +147,13 @@ GameSocket.prototype = {
                         tetris.move(1,0);
                         break;
                     case OPERTABLE.down:
-                        var attack = tetris.move(0,-1);
-                        if(attack && attack == data.data){
-                            myTetris.trash(attack);
-                        }
+                        tetris.moveDown();
                         break;
                     case OPERTABLE.drop:
-                        var attack = tetris.drop();
-                        if(attack && attack == data.data){
-                            myTetris.trash(attack);
-                        }
+                        tetris.drop();
+                        break;
+                    case OPERTABLE.trash:
+                        main.game.trashPool(data.data);
                         break;
                     case OPERTABLE.rotateL:
                         tetris.rotate(true);

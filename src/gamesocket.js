@@ -12,7 +12,10 @@ var OPERTABLE = {
     drop:       13,
     rotateL:    14,
     rotateR:    15,
-    hold:       16,
+    rotate180:  16,
+    hold:       17,
+
+    trash:      21,
 
     start:      100,
 };

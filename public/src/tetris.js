@@ -178,14 +178,20 @@ Shape.prototype = {
         }
         return false;
     },
-    rotateCheck: function(r, antiClock){
+    rotateCheck: function(r, rType){
         if(this.check(this.x, this.y, r))
             return true;
-        else if(this.shapeId === 1 && this.checkI(r, antiClock))
-            return true;
-        else if(this.shapeId >= 2 && this.checkJLSTZ(r, antiClock))//JLSTZ
-            return true;
-        return false;
+        if(rType === "180"){
+            return false;
+        }
+        else {
+            var antiClock = rType === "left";
+            if (this.shapeId === 1 && this.checkI(r, antiClock))
+                return true;
+            else if (this.shapeId >= 2 && this.checkJLSTZ(r, antiClock))//JLSTZ
+                return true;
+            return false;
+        }
     },
     makeShadow: function(){
         this.shadowY = this.y;
@@ -203,21 +209,32 @@ Shape.prototype = {
         }
     },
     rotate: function(antiClock){
-        var r;
+        var r,rType;
         if(antiClock){
+            rType = "left";
             r = this.rotation+1;
             if(r>3) r = 0;
         }
         else{
+            rType = "right";
             r = this.rotation-1;
             if(r<0) r = 3;
         }
-        if(this.rotateCheck(r, antiClock)){
+        if(this.rotateCheck(r, rType)){
             this.rotation = r;
             this.makeShadow();
             return true;
         }
         return false;
+    },
+    rotate180: function(){
+        var r = this.rotation+2;
+        if(r>3) r -= 4;
+        if(this.rotateCheck(r, "180")){
+            this.rotation = r;
+            this.makeShadow();
+            return true;
+        }
     },
     move: function(offX,offY){
         if(this.check(this.x+offX, this.y+offY, this.rotation)){
@@ -278,7 +295,7 @@ Tetris.prototype = {
         }
         this.shapes = [];
         this.shape = null;
-        this.nextShape = null;
+        this.nextShapes = [];
         this.saveShape = null;
         this.playing = false;
     },
@@ -289,23 +306,24 @@ Tetris.prototype = {
         }
         else
             this.shapes = RandomGenerator();
-        //var shapeId = Math.ceil(Math.random()*7);
-        var shapeId = this.shapes.shift();
-        //console.log(this.me, "shapeId:",shapeId);
-        this.nextShape = new Shape(this, shapeId);
+        for(var i = 0; i < 3; i++){
+            var shapeId = this.shapes.shift();
+            this.nextShapes[i] = new Shape(this, shapeId);
+        }
+
         this.newShape();
         this.playing = true;
     },
     newShape: function(){
         this.holded = false;
-        this.shape = this.nextShape;
+        this.shape = this.nextShapes.shift();
         //var shapeId = Math.ceil(Math.random()*7);
         var shapeId = this.shapes.shift();
         if(!shapeId){
             this.gameOver();
             return;
         }
-        this.nextShape = new Shape(this, shapeId);
+        this.nextShapes.push(new Shape(this, shapeId));
         if(!this.shape.checkSelf())
             this.gameOver();
     },
@@ -371,9 +389,11 @@ Tetris.prototype = {
 
         // play data
         this.game.playData.lines += rowCount;
-        if(rowCount >= 2){
-            this.attackLines = rowCount;
-            this.game.playData.attack += rowCount;
+        if(this.game.attackMode === "0124"){
+            if(rowCount >= 2){
+                this.attackLines = rowCount === 4 ? rowCount : rowCount - 1;
+                this.game.playData.attack += this.attackLines;
+            }
         }
 
         var line = lines.shift();
@@ -401,10 +421,27 @@ Tetris.prototype = {
     rotate: function(anti){
         this.shape.rotate(anti);
     },
+    rotate180: function(){
+        this.shape.rotate180();
+    },
     move: function(offX, offY){
-        this.attackLines = 0;
         this.shape.move(offX, offY);
-        return this.attackLines;
+    },
+    moveLeft: function(){
+        var x = this.shape.x;
+        this.move(-1, 0);
+        return x != this.shape.x;
+    },
+    moveRight: function(){
+        var x = this.shape.x;
+        this.move(1, 0);
+        return x != this.shape.x;
+    },
+    moveDown: function(){
+        var x = this.shape.x;
+        this.attackLines = 0;
+        this.move(0, -1);
+        return {ok: y != this.shape.y, attack: this.attackLines};
     },
     drop: function(){
         this.attackLines = 0;
