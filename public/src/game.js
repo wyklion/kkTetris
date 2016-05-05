@@ -82,7 +82,7 @@ Game.prototype = {
                 func:function(){return _this.tetris.moveRight();}
             },
             down:{
-                func:function(){return _this.tetris.moveDown();}
+                func:function(){return _this.tetris.moveDown(true);}
             },
             drop:{
                 func:function(){return _this.tetris.drop();}

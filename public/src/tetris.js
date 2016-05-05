@@ -140,6 +140,9 @@ Shape.prototype = {
             this.makeShadow();
         return ok;
     },
+    checkDown: function(){
+        return this.check(this.x, this.y-1, this.rotation);
+    },
     check: function(px,py,r){
         var board = this.tetris.board;
         for(var i = 0; i < 4; i++){
@@ -437,8 +440,12 @@ Tetris.prototype = {
         this.move(1, 0);
         return x != this.shape.x;
     },
-    moveDown: function(){
-        var x = this.shape.x;
+    moveDown: function(oper){
+        if(oper){
+            if(!this.shape.checkDown())
+                return {ok: false, attack: 0};
+        }
+        var y = this.shape.y;
         this.attackLines = 0;
         this.move(0, -1);
         return {ok: y != this.shape.y, attack: this.attackLines};

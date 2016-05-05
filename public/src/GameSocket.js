@@ -16,7 +16,7 @@ var GameSocket = function(){
     this._onCreateRoom();
     this._onJoinRoom();
     this._onExitRoom();
-    this._onPerate();
+    this._onOperate();
 }
 GameSocket.prototype = {
     constructor: GameSocket,
@@ -123,7 +123,7 @@ GameSocket.prototype = {
         }
         this.socket.emit("operation", info);
     },
-    _onPerate: function(){
+    _onOperate: function(){
         var _this = this;
         this.socket.on("onOperation", function(data){
             //console.log("other operate:", data.oper);
