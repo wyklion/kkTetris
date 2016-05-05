@@ -20,6 +20,11 @@ var OPERTABLE = {
     start:      100,
 };
 
+var getTime = function(){
+    var date = new Date();
+    return date.getTime();
+};
+
 var RandomGenerator = function(){
     var shapes = [];
     for(var i = 0; i < 100; i++){
@@ -114,6 +119,7 @@ RoomManager.prototype = {
                 var randomShapes = RandomGenerator();
                 socket.emit("onOperation", {oper:OPERTABLE.start, shapes: randomShapes});
                 socket.broadcast.to("room"+socket.roomId).emit("onOperation", {oper:OPERTABLE.start, shapes: randomShapes});
+                mongo.insertOne("gameinfo", {id:socket.userId, type:"exitRoom", roomId:roomId, time:getTime()})
             }
         }
         console.log("room", socket.roomId, "user", socket.userId, "is ready...");
@@ -265,6 +271,7 @@ GameSocket.prototype = {
             socket.emit("onCreateRoom", {err:null, room: _this.roomManager.getRoom(idx)});
             socket.broadcast.to("lobby").emit('lobbyInfo', {rooms:_this.roomManager.getRooms()});
             console.log(socket.userId, "createRoom", socket.roomId);
+            mongo.insertOne("gameinfo", {id:socket.userId, type:"createRoom", roomId:idx, time:getTime()})
         });
     },
     onJoinRoom: function(socket){
@@ -279,6 +286,7 @@ GameSocket.prototype = {
                 socket.broadcast.to("room"+socket.roomId).emit('roomInfo', {room:_this.roomManager.getRoom(socket.roomId)});
                 // 通知房间内人员
                 _this.io.to("room"+socket.roomId).emit('msg', socket.userId + '加入了房间', _this.roomManager.getRoom(socket.roomId));
+                mongo.insertOne("gameinfo", {id:socket.userId, type:"joinRoom", roomId:socket.roomId, time:getTime()})
             }
             else{
                 socket.emit("onJoinRoom", {err:result.err})
@@ -304,6 +312,7 @@ GameSocket.prototype = {
                 socket.roomId = null;
                 socket.emit("onExitRoom", {err:null, result:"ok"});
                 socket.emit("lobbyInfo", {users: _this.users, rooms:_this.roomManager.getRooms()});
+                mongo.insertOne("gameinfo", {id:socket.userId, type:"exitRoom", roomId:roomId, time:getTime()})
             }
             else
                 socket.emit("onExitRoom", {err:result.err});

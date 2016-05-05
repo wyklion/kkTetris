@@ -34,13 +34,13 @@ Mongo.prototype = {
     insertOne: function(collection, doc, callback){
         var c = this.db.collection(collection);
         c.insertMany([doc], function(err, result) {
-            callback(err, result);
+            if(callback) callback(err, result);
         });
     },
     insert: function(collection, docs, callback){
         var c = this.db.collection(collection);
         c.insertMany(docs, function(err, result) {
-            callback(err, result);
+            if(callback) callback(err, result);
         });
     },
     updateOne: function(collection, query, doc, callback){
