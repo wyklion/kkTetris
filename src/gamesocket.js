@@ -15,6 +15,7 @@ var OPERTABLE = {
     rotate180:  16,
     hold:       17,
 
+    attack:     20,
     trash:      21,
 
     start:      100,
@@ -119,7 +120,7 @@ RoomManager.prototype = {
                 var randomShapes = RandomGenerator();
                 socket.emit("onOperation", {oper:OPERTABLE.start, shapes: randomShapes});
                 socket.broadcast.to("room"+socket.roomId).emit("onOperation", {oper:OPERTABLE.start, shapes: randomShapes});
-                mongo.insertOne("gameinfo", {id:socket.userId, type:"exitRoom", roomId:roomId, time:getTime()})
+                mongo.insertOne("gameinfo", {id:socket.userId, type:"exitRoom", roomId:socket.roomId, time:getTime()})
             }
         }
         console.log("room", socket.roomId, "user", socket.userId, "is ready...");

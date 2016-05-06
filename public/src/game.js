@@ -15,6 +15,7 @@ var OPERTABLE = {
     rotate180:  16,
     hold:       17,
 
+    attack:     20,
     trash:      21,
 
     start:      100,
@@ -193,7 +194,8 @@ Game.prototype = {
         }
     },
     trashPool: function(trash){
-        this.trashes.push(trash);
+        //this.trashes.push(trash);
+        this.tetris.trash(trash);
     },
     calculateDeltaTime: function () {
         var now = Date.now();
@@ -223,9 +225,12 @@ Game.prototype = {
             }
             while(this.time > this.interval){
                 this.time -= this.interval;
-                var attack = this.tetris.move(0,-1);
-                if(!this.single)
-                    socket.operate(OPERTABLE.down, attack);
+                var result = this.tetris.moveDown();
+                if(!this.single){
+                    if(result.ok){
+                        socket.operate(OPERTABLE.down, result.attack);
+                    }
+                }
             }
         }
         this.renderer.render();

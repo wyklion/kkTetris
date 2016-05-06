@@ -152,8 +152,11 @@ GameSocket.prototype = {
                     case OPERTABLE.drop:
                         tetris.drop();
                         break;
-                    case OPERTABLE.trash:
+                    case OPERTABLE.attack:
                         main.game.trashPool(data.data);
+                        break;
+                    case OPERTABLE.trash:
+                        tetris.trash(data.data);
                         break;
                     case OPERTABLE.rotateL:
                         tetris.rotate(true);

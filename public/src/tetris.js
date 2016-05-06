@@ -396,6 +396,12 @@ Tetris.prototype = {
             if(rowCount >= 2){
                 this.attackLines = rowCount === 4 ? rowCount : rowCount - 1;
                 this.game.playData.attack += this.attackLines;
+                if(this.me){
+                    var trash = [];
+                    for(var i = 0; i < this.attackLines; i++)
+                        trash.push(Math.floor(Math.random()*COL));
+                    socket.operate(OPERTABLE.attack, trash);
+                }
             }
         }
 
@@ -455,10 +461,44 @@ Tetris.prototype = {
         this.shape.drop();
         return this.attackLines;
     },
-    trash: function(lines){
-        console.log("get trash:", lines);
-        //var idx = Math.floor(Math.random()*COL);
-        //for(var )
+    trash: function(trash){
+        if(this.me){
+            console.log("i get trash:", trash);
+            socket.operate(OPERTABLE.trash, trash);
+        }
+        else
+            console.log("other get trash:", trash);
+
+        var dead = false;
+        var trashLengh = trash.length;
+        for(var y = this.row-1; y >=trashLengh; y--){
+            for(var x = 0; x < this.col; x++){
+                if(y >= this.row - trashLengh && this.board[y][x] > 0)
+                    dead = true;
+                this.board[y][x] = this.board[y - trashLengh][x];
+            }
+        }
+        for(var i = 0; i < trashLengh; i++){
+            var blank = trash[i];
+            for(var col = 0; col < COL; col++){
+                if(col === blank){
+                    continue;
+                    this.board[trashLengh-1-i][col] = 0;
+                }
+                var id = Math.floor(Math.random()*7);
+                this.board[trashLengh-1-i][col] = id;
+            }
+        }
+        var ok = this.shape.check(this.shape.x,this.shape.y,this.shape.rotation);
+        while(!ok && this.shape.y<19){
+            this.shape.y++;
+            ok = this.shape.check(this.shape.x,this.shape.y,this.shape.rotation);
+        }
+        if(!ok)
+            dead = true;
+        if(dead){
+            this.gameOver();
+        }
     },
     print: function(){
         console.log(this.board);
