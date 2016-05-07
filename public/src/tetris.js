@@ -461,17 +461,10 @@ Tetris.prototype = {
         this.shape.drop();
         return this.attackLines;
     },
-    trash: function(trash){
-        if(this.me){
-            console.log("i get trash:", trash);
-            socket.operate(OPERTABLE.trash, trash);
-        }
-        else
-            console.log("other get trash:", trash);
-
+    riseRow: function(trash){
         var dead = false;
         var trashLengh = trash.length;
-        for(var y = this.row-1; y >=trashLengh; y--){
+        for(var y = this.row; y >=trashLengh; y--){
             for(var x = 0; x < this.col; x++){
                 if(y >= this.row - trashLengh && this.board[y][x] > 0)
                     dead = true;
@@ -480,25 +473,46 @@ Tetris.prototype = {
         }
         for(var i = 0; i < trashLengh; i++){
             var blank = trash[i];
+            var id = 1+Math.floor(Math.random()*7);
             for(var col = 0; col < COL; col++){
                 if(col === blank){
-                    continue;
                     this.board[trashLengh-1-i][col] = 0;
                 }
-                var id = Math.floor(Math.random()*7);
-                this.board[trashLengh-1-i][col] = id;
+                else
+                    this.board[trashLengh-1-i][col] = id;
             }
         }
+        return dead;
+    },
+    //is me...
+    hurt: function(trash){
+        var dead = this.riseRow(trash);
+
         var ok = this.shape.check(this.shape.x,this.shape.y,this.shape.rotation);
+        var offY = 0;
         while(!ok && this.shape.y<19){
+            offY++;
             this.shape.y++;
             ok = this.shape.check(this.shape.x,this.shape.y,this.shape.rotation);
         }
+
+        this.shape.makeShadow();
+
+        console.log("i get trash:", trash, "offY:", offY);
+        socket.operate(OPERTABLE.trash, {trash:trash,offY:offY});
+
         if(!ok)
             dead = true;
         if(dead){
             this.gameOver();
         }
+    },
+    //is other...
+    trash: function(data){
+        console.log("other get trash:", data.trash, data.offY);
+        var dead = this.riseRow(data.trash);
+        this.shape.y += data.offY;
+        this.shape.makeShadow();
     },
     print: function(){
         console.log(this.board);

@@ -195,7 +195,7 @@ Game.prototype = {
     },
     trashPool: function(trash){
         //this.trashes.push(trash);
-        this.tetris.trash(trash);
+        this.tetris.hurt(trash);
     },
     calculateDeltaTime: function () {
         var now = Date.now();
