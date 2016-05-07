@@ -498,7 +498,7 @@ Tetris.prototype = {
 
         this.shape.makeShadow();
 
-        console.log("i get trash:", trash, "offY:", offY);
+        //console.log("i get trash:", trash, "offY:", offY);
         socket.operate(OPERTABLE.trash, {trash:trash,offY:offY});
 
         if(!ok)
@@ -509,7 +509,7 @@ Tetris.prototype = {
     },
     //is other...
     trash: function(data){
-        console.log("other get trash:", data.trash, data.offY);
+        //console.log("other get trash:", data.trash, data.offY);
         var dead = this.riseRow(data.trash);
         this.shape.y += data.offY;
         this.shape.makeShadow();

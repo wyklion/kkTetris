@@ -59,13 +59,20 @@ GameSocket.prototype = {
                 console.log(data.err);
         });
     },
+    getRoomOtherUser: function(){
+        if(!this.data.room) return null;
+        if(this.data.room.playUsers.length < 2) return null;
+        var otherUser = this.data.user.id === this.data.room.playUsers[0] ? this.data.room.playUsers[1] : this.data.room.playUsers[0];
+        return otherUser;
+    },
     _onRoomInfo: function(){
         var _this = this;
         this.socket.on('roomInfo', function (data) {
             _this.data.room = data.room;
             console.log("roomInfo:",_this.data.room);
-            if(main.game.single && _this.data.room.playUsers.length == 2)
+            if(main.game.single && _this.data.room.playUsers.length == 2){
                 main.game.someoneJoined();
+            }
             else if(!main.game.single && _this.data.room.playUsers.length == 1)
                 main.game.someoneLeft();
         });

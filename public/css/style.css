@@ -76,3 +76,21 @@ a:hover{
     left:520px;
     width:300px;
 }
+#otherDiv{
+    position:absolute;
+    top:250px;
+    left:140px;
+    width:300px;
+}
+#otherNameDiv{
+    position:absolute;
+    top:-40px;
+    left:140px;
+    width:300px;
+}
+#myDiv{
+    position:absolute;
+    top:250px;
+    left:520px;
+    width:300px;
+}
