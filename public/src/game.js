@@ -165,8 +165,8 @@ Game.prototype = {
         }
     },
     readyOrPlay: function(){
-        this.ui.readyOrPlay();
         if(this.single){
+            this.ui.readyOrPlay();
             if(this.firstGame){
                 this.firstGame = false;
                 this.tetris.start();
@@ -179,6 +179,7 @@ Game.prototype = {
         else{
             if(!this.playing && !this.ready){
                 console.log("ready...");
+                this.ui.readyOrPlay();
                 this.ready = true;
                 this.playData.reset();
                 this.tetris.init();

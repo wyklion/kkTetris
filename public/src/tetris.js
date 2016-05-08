@@ -337,6 +337,7 @@ Tetris.prototype = {
                 return;
             var shapeId = this.shape.shapeId;
             this.shape.setId(this.saveShape.shapeId);
+            this.shape.makeShadow();
             this.saveShape.setId(shapeId);
         }
         else{
@@ -350,8 +351,7 @@ Tetris.prototype = {
             this.game.playData.count++;
         this.shape.freeze();
         this.clearLines();
-        if(!this.checkOver())
-            this.newShape();
+        this.newShape();
     },
     checkOver: function(){
         for(var i = 0; i < this.col; i++){
