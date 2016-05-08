@@ -71,6 +71,7 @@ GameUI.prototype = {
     readyOrPlay: function(){
         if(this.game.single){
             $('#playButton').hide();
+            $('#myStatus').empty();
         }
         else{
             $('#playButton').hide();
