@@ -19,6 +19,7 @@ var OPERTABLE = {
     trash:      21,
 
     start:      100,
+    gameover:   200,
 };
 
 var PlayData = function(){
@@ -82,6 +83,16 @@ GameUI.prototype = {
     startVS: function(){
         $('#myStatus').empty();
         $('#otherStatus').empty();
+    },
+    gameOver: function(win){
+        if(win){
+            $('#myStatus').text("Win!");
+            $('#otherStatus').text("Lose!");
+        }
+        else{
+            $('#myStatus').text("Lose!");
+            $('#otherStatus').text("Win!");
+        }
     },
 };
 
@@ -200,11 +211,15 @@ Game.prototype = {
         this.otherTetris.restart(shapes);
         this.tetris.restart(shapes);
     },
-    win: function(){
+    gameOver: function(result){
+        console.log(result);
         this.reset();
+        if(result.win === socket.data.user.id)
+            this.ui.gameOver(true);
+        else
+            this.ui.gameOver(false);
     },
     lose: function(){
-        this.reset();
         if(!this.single){
             socket.operate(OPERTABLE.dead);
         }

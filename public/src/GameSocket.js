@@ -144,8 +144,10 @@ GameSocket.prototype = {
                     case OPERTABLE.start:
                         main.game.startVS(data.shapes);
                         break;
+                    case OPERTABLE.gameover:
+                        main.game.gameOver(data.result);
+                        break;
                     case OPERTABLE.dead:
-                        main.game.win();
                         break;
                     case OPERTABLE.left:
                         tetris.move(-1,0);

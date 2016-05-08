@@ -70,27 +70,27 @@ a:hover{
     vertical-align:middle;
 }
 
-#playDiv{
-    position:absolute;
-    top:250px;
-    left:520px;
-    width:300px;
-}
-#otherDiv{
-    position:absolute;
-    top:250px;
-    left:140px;
-    width:300px;
-}
 #otherNameDiv{
     position:absolute;
     top:-40px;
     left:140px;
     width:300px;
 }
+#playDiv{
+    position:absolute;
+    top:300px;
+    left:520px;
+    width:300px;
+}
 #myDiv{
     position:absolute;
-    top:250px;
+    top:200px;
     left:520px;
+    width:300px;
+}
+#otherDiv{
+    position:absolute;
+    top:200px;
+    left:140px;
     width:300px;
 }
