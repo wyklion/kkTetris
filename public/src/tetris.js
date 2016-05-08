@@ -454,6 +454,11 @@ Tetris.prototype = {
         var y = this.shape.y;
         this.attackLines = 0;
         this.move(0, -1);
+        if(oper){
+            if(!this.shape.checkDown()){
+                this.game.time = 0;
+            }
+        }
         return {ok: y != this.shape.y, attack: this.attackLines};
     },
     drop: function(){

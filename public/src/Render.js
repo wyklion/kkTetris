@@ -49,8 +49,8 @@ Render.prototype = {
         if(!this.game.otherTetris) return;
         var tetris = this.game.otherTetris;
         this.ctx.save();
-        this.ctx.shadowOffsetX = 2;
-        this.ctx.shadowOffsetY = 2;
+        //this.ctx.shadowOffsetX = 2;
+        //this.ctx.shadowOffsetY = 2;
         this.ctx.shadowColor = 'rgba(100,100,100,0.5)';
         this.ctx.shadowBlur = 5;
         for(var i = 0; i < tetris.row; i++){
@@ -103,8 +103,8 @@ Render.prototype = {
         this.ctx.strokeRect(this.myPos.x,this.myPos.y,this.areaW-1,this.areaH-1);
 
         this.ctx.save();
-        this.ctx.shadowOffsetX = 2;
-        this.ctx.shadowOffsetY = 2;
+        //this.ctx.shadowOffsetX = 2;
+        //this.ctx.shadowOffsetY = 2;
         this.ctx.shadowColor = 'rgba(100,100,100,0.5)';
         this.ctx.shadowBlur = 5;
         for(var i = 0; i < this.tetris.row; i++){
