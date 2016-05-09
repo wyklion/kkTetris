@@ -270,6 +270,9 @@ Game.prototype = {
         };
         callback();
     },
+    clearFloorTime: function(){
+        this.time = 0;
+    },
     update: function(dt){
         if(this.isPaused) return;
         if(this.tetris.playing){

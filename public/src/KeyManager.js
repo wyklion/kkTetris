@@ -2,9 +2,10 @@
  * Created by KK on 2016/4/24.
  */
 
-var KeyState = function(manager, func){
+var KeyState = function(manager, func, isDown){
     this.manager = manager;
     this.func = func;
+    this.isDown = isDown;
     this.press = false;
     this.first = true;
     this.time = 0;
@@ -36,7 +37,7 @@ KeyState.prototype = {
                 var deltaTime = (now - _this.lastTime) / 1000;
                 _this.lastTime = now;
                 _this.time += deltaTime;
-                if(_this.first){
+                if(_this.first && !_this.isDown){
                     if(_this.time >= _this.manager.dasDelay){
                         //console.log("first");
                         _this.first = false;
@@ -93,7 +94,7 @@ Keying.HOLD =           1 << 7;
 var KeyManager = function(options){
     var _this = this;
     this.socket = options.socket;
-    this.keying = new Keying();
+    //this.keying = new Keying();
 
     var keyboard = options.keyboard;
     this.dasDelay = keyboard.dasDelay/1000;
@@ -144,7 +145,7 @@ var KeyManager = function(options){
 
     this.left = new KeyState(this, this.leftFunc);
     this.right = new KeyState(this, this.rightFunc);
-    this.down = new KeyState(this, this.downFunc);
+    this.down = new KeyState(this, this.downFunc, true);
 };
 KeyManager.prototype = {
     constructor: KeyManager,
@@ -161,9 +162,7 @@ KeyManager.prototype = {
             this.down.keyDown();
         }
         else if(key === this.dropKey){
-            this.keying = true;
             this.dropFunc();
-            this.keying = true;
         }
         else if(key === this.rotateKey){
             this.rotateFunc();

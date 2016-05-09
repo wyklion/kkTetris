@@ -427,11 +427,21 @@ Tetris.prototype = {
                 this.board[i][x] = 0;
         }
     },
+    checkFloorTime: function(){
+        if(this.shape.floor && this.shape.floorCount<15){
+            this.shape.floorCount++;
+            this.game.clearFloorTime();
+        }
+    },
     rotate: function(anti){
-        this.shape.rotate(anti);
+        var ok = this.shape.rotate(anti);
+        if(ok)
+            this.checkFloorTime();
     },
     rotate180: function(){
-        this.shape.rotate180();
+        var ok = this.shape.rotate180();
+        if(ok)
+            this.checkFloorTime();
     },
     move: function(offX, offY){
         this.shape.move(offX, offY);
@@ -439,12 +449,18 @@ Tetris.prototype = {
     moveLeft: function(){
         var x = this.shape.x;
         this.move(-1, 0);
-        return x != this.shape.x;
+        var ok = x!= this.shape.x;
+        if(ok)
+            this.checkFloorTime();
+        return ok;
     },
     moveRight: function(){
         var x = this.shape.x;
         this.move(1, 0);
-        return x != this.shape.x;
+        var ok = x!= this.shape.x;
+        if(ok)
+            this.checkFloorTime();
+        return ok;
     },
     moveDown: function(oper){
         if(oper){
@@ -456,7 +472,9 @@ Tetris.prototype = {
         this.move(0, -1);
         if(oper){
             if(!this.shape.checkDown()){
-                this.game.time = 0;
+                this.shape.floor = true;
+                this.shape.floorCount = 0;
+                this.game.clearFloorTime();
             }
         }
         return {ok: y != this.shape.y, attack: this.attackLines};
