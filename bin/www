@@ -19,7 +19,10 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+var server = http.createServer({
+    key: fs.readFileSync('../other/2_www.kktetris.com.key'),
+    cert: fs.readFileSync('../other/1_www.kktetris.com_bundle.crt'),
+}, app);
 
 /**
  * Listen on provided port, on all network interfaces.
