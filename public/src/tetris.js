@@ -433,15 +433,16 @@ Tetris.prototype = {
 
         //data...
         if(allclear)
-            this.attackLines = attackLine + 4;
+            this.attackLines = attackLine + 6;
         else
             this.attackLines = attackLine;
 
         this.game.playData.attack += this.attackLines;
         if(this.me && !this.game.single){
             var trash = [];
+            var hole = Math.floor(Math.random()*COL);
             for(var i = 0; i < this.attackLines; i++)
-                trash.push(Math.floor(Math.random()*COL));
+                trash.push(hole);
             socket.operate(OPERTABLE.attack, trash);
         }
     },
@@ -503,24 +504,18 @@ Tetris.prototype = {
         }
         return false;
     },
-    checkFloorTime: function(){
-        if(this.shape.floor && this.shape.floorCount<15){
-            this.shape.floorCount++;
-            this.game.clearFloorTime();
-        }
-    },
     rotate: function(anti){
         var ok = this.shape.rotate(anti);
         if(ok){
             this.lastRotate = true;
-            this.checkFloorTime();
+            this.checkFloor();
         }
     },
     rotate180: function(){
         var ok = this.shape.rotate180();
         if(ok){
             this.lastRotate = true;
-            this.checkFloorTime();
+            this.checkFloor();
         }
     },
     move: function(offX, offY){
@@ -532,7 +527,7 @@ Tetris.prototype = {
         var ok = x!= this.shape.x;
         if(ok){
             this.lastRotate = false;
-            this.checkFloorTime();
+            this.checkFloor();
         }
         return ok;
     },
@@ -542,7 +537,7 @@ Tetris.prototype = {
         var ok = x!= this.shape.x;
         if(ok){
             this.lastRotate = false;
-            this.checkFloorTime();
+            this.checkFloor();
         }
         return ok;
     },
@@ -559,11 +554,7 @@ Tetris.prototype = {
             this.lastRotate = false;
         }
         if(oper){
-            if(!this.shape.checkDown()){
-                this.shape.floor = true;
-                this.shape.floorCount = 0;
-                this.game.clearFloorTime();
-            }
+            this.checkFloor();
         }
         return {ok: ok, attack: this.attackLines};
     },
@@ -572,6 +563,20 @@ Tetris.prototype = {
         this.shape.drop();
         return this.attackLines;
     },
+    checkFloor: function(){
+        if(this.shape.floor){
+            if(this.shape.floorCount<15){
+                this.shape.floorCount++;
+                this.game.clearFloorTime();
+            }
+        }
+        else if(!this.shape.checkDown()){
+            this.shape.floor = true;
+            this.shape.floorCount = 0;
+            this.game.clearFloorTime();
+        }
+    },
+    //=============== for vs game =================
     riseRow: function(trash){
         var dead = false;
         var trashLengh = trash.length;

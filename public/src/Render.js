@@ -139,7 +139,8 @@ function makeSprite(cellSize) {
 }
 
 var colors = [
-    'cyan', 'yellow', 'purple', 'orange', 'blue', 'red', 'green',
+    //'cyan', 'yellow', 'purple', 'orange', 'blue', 'red', 'green',
+    'rgb(30,144,255)', 'yellow', 'purple', 'orange', 'blue', 'red', 'green',
 ];
 
 var Render = function(game){
