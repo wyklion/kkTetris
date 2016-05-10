@@ -19,6 +19,7 @@ var OPERTABLE = {
     trash:      21,
 
     start:      100,
+    gameover:   200,
 };
 
 var getTime = function(){
@@ -117,6 +118,7 @@ RoomManager.prototype = {
         var otherUser = this.getOtherUserId(room, socket.userId);
         if(otherUser){
             if(room.ready[otherUser]){
+                room.win = null;
                 var randomShapes = RandomGenerator();
                 socket.emit("onOperation", {oper:OPERTABLE.start, shapes: randomShapes});
                 socket.broadcast.to("room"+socket.roomId).emit("onOperation", {oper:OPERTABLE.start, shapes: randomShapes});
@@ -130,7 +132,11 @@ RoomManager.prototype = {
         var room = this.rooms[socket.roomId];
         if(!room) return;
         room.ready = {};
+        if(room.win) return; //already gameover...
         var otherUser = this.getOtherUserId(room, socket.userId);
+        room.win = otherUser;
+        socket.emit("onOperation", {oper:OPERTABLE.gameover, result:{win:otherUser,lose:socket.userId}});
+        socket.broadcast.to("room"+socket.roomId).emit('onOperation', {oper:OPERTABLE.gameover, result:{win:otherUser,lose:socket.userId}});
         console.log("room", socket.roomId, "user", socket.userId, "lose", otherUser, "win");
     },
 };
@@ -323,12 +329,13 @@ GameSocket.prototype = {
         var _this = this;
         socket.on('operation', function(data){
             var oper = data.oper;
+            if(oper === OPERTABLE.dead){
+                _this.roomManager.userDead(socket);
+                return;
+            }
             socket.broadcast.to("room"+socket.roomId).emit('onOperation', data);
             if(oper === OPERTABLE.ready){
                 _this.roomManager.userReady(socket);
-            }
-            else if(oper === OPERTABLE.dead){
-                _this.roomManager.userDead(socket);
             }
         })
     },

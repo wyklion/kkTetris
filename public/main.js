@@ -128,7 +128,8 @@ Main.prototype = {
         this.game = new Game();
         this.game.init();
         var single = socket.data.room.playUsers.length != 2;
-        this.game.setButton(single);
+        this.game.single = single;
+        this.game.ui.reset(single);
     },
     exitRoom: function(){
         $('#mainDiv').show();

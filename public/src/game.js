@@ -19,6 +19,7 @@ var OPERTABLE = {
     trash:      21,
 
     start:      100,
+    gameover:   200,
 };
 
 var PlayData = function(){
@@ -32,6 +33,67 @@ PlayData.prototype = {
         this.score = 0;
         this.lines = 0;
         this.attack = 0;
+    },
+};
+
+var GameUI = function(game){
+    this.game = game;
+    var _this = this;
+    $('#playButton').on("click", function(){
+        $(this).hide();
+        _this.game.readyOrPlay();
+    });
+};
+GameUI.prototype = {
+    constructor: GameUI,
+    reset: function(single){
+        if(!single){
+            $('#playButton').html("<h1>Ready(F2)</h1>");
+            $('#myStatus').empty();
+            $('#otherStatus').text('Waiting...')
+            $('#otherName').text(socket.getRoomOtherUser());
+        }
+        else{
+            $('#playButton').html("<h1>Play(F2)</h1>");
+            $('#myStatus').empty();
+            $('#otherStatus').empty();
+        }
+        $('#playButton').show();
+    },
+    someoneJoined: function(){
+        $('#otherName').text(socket.getRoomOtherUser());
+        this.reset(false);
+    },
+    someoneLeft: function(){
+        $('#otherName').empty();
+        this.reset(true);
+    },
+    readyOrPlay: function(){
+        if(this.game.single){
+            $('#playButton').hide();
+            $('#myStatus').empty();
+        }
+        else{
+            $('#playButton').hide();
+            $('#myStatus').text("I'm ready!");
+        }
+    },
+    otherReady: function(){
+        $('#otherStatus').text("Is ready!");
+    },
+    startVS: function(){
+        $('#myStatus').empty();
+        $('#otherStatus').empty();
+    },
+    gameOver: function(win){
+        if(win){
+            $('#myStatus').text("Win!");
+            $('#otherStatus').text("Lose!");
+        }
+        else{
+            $('#myStatus').text("Lose!");
+            $('#otherStatus').text("Win!");
+        }
     },
 };
 
@@ -58,11 +120,9 @@ Game.prototype = {
         this.playData = new PlayData();
         this.renderer = new Render(this);
         this.mainLoop();
+
+        this.ui = new GameUI(this);
         this.input();
-        var _this = this;
-        $('#playButton').on("click", function(){
-            _this.readyOrPlay();
-        });
     },
     updateInput: function() {
         this.keyManager.updateInput();
@@ -116,18 +176,9 @@ Game.prototype = {
             _this.keyManager.onKeyUp(e.keyCode);
         }
     },
-    setButton: function(single){
-        $('#playButton').empty();
-        if(!single){
-            $('#playButton').append("<h1>Ready(F2)</h1>");
-        }
-        else
-            $('#playButton').append("<h1>Play(F2)</h1>");
-        this.single = single;
-    },
     readyOrPlay: function(){
-        $('#playButton').hide();
         if(this.single){
+            this.ui.readyOrPlay();
             if(this.firstGame){
                 this.firstGame = false;
                 this.tetris.start();
@@ -140,6 +191,7 @@ Game.prototype = {
         else{
             if(!this.playing && !this.ready){
                 console.log("ready...");
+                this.ui.readyOrPlay();
                 this.ready = true;
                 this.playData.reset();
                 this.tetris.init();
@@ -149,26 +201,32 @@ Game.prototype = {
     },
     otherReady: function(){
         console.log("other is ready...");
+        this.ui.otherReady();
         this.otherTetris.init();
     },
     startVS: function(shapes){
         console.log("start vs...");
+        this.ui.startVS();
         this.playing = true;
         this.ready = false;
         this.otherTetris.restart(shapes);
         this.tetris.restart(shapes);
     },
-    win: function(){
+    gameOver: function(result){
+        console.log(result);
         this.reset();
+        if(result.win === socket.data.user.id)
+            this.ui.gameOver(true);
+        else
+            this.ui.gameOver(false);
     },
     lose: function(){
-        this.reset();
         if(!this.single){
             socket.operate(OPERTABLE.dead);
         }
     },
     reset: function(){
-        $('#playButton').show();
+        this.ui.reset(this.single);
         this.keyManager.stop();
         this.playing = false;
         this.tetris.playing = false;
@@ -177,14 +235,14 @@ Game.prototype = {
     },
     someoneJoined: function(){
         console.log("someoneJoined");
-        this.setButton(false);
+        this.ui.someoneJoined();
         this.single = false;
         this.playData.reset();
         this.tetris.init();
     },
     someoneLeft: function(){
         console.log("someoneLeft");
-        this.setButton(true);
+        this.ui.someoneLeft();
         this.otherTetris.init();
         this.single = true;
         this.ready = false;
@@ -195,7 +253,7 @@ Game.prototype = {
     },
     trashPool: function(trash){
         //this.trashes.push(trash);
-        this.tetris.trash(trash);
+        this.tetris.hurt(trash);
     },
     calculateDeltaTime: function () {
         var now = Date.now();
@@ -211,6 +269,9 @@ Game.prototype = {
             _this.aniHandle = requestAnimationFrame(callback);
         };
         callback();
+    },
+    clearFloorTime: function(){
+        this.time = 0;
     },
     update: function(dt){
         if(this.isPaused) return;

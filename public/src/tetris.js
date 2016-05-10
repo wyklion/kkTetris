@@ -337,6 +337,7 @@ Tetris.prototype = {
                 return;
             var shapeId = this.shape.shapeId;
             this.shape.setId(this.saveShape.shapeId);
+            this.shape.makeShadow();
             this.saveShape.setId(shapeId);
         }
         else{
@@ -350,8 +351,7 @@ Tetris.prototype = {
             this.game.playData.count++;
         this.shape.freeze();
         this.clearLines();
-        if(!this.checkOver())
-            this.newShape();
+        this.newShape();
     },
     checkOver: function(){
         for(var i = 0; i < this.col; i++){
@@ -427,11 +427,21 @@ Tetris.prototype = {
                 this.board[i][x] = 0;
         }
     },
+    checkFloorTime: function(){
+        if(this.shape.floor && this.shape.floorCount<15){
+            this.shape.floorCount++;
+            this.game.clearFloorTime();
+        }
+    },
     rotate: function(anti){
-        this.shape.rotate(anti);
+        var ok = this.shape.rotate(anti);
+        if(ok)
+            this.checkFloorTime();
     },
     rotate180: function(){
-        this.shape.rotate180();
+        var ok = this.shape.rotate180();
+        if(ok)
+            this.checkFloorTime();
     },
     move: function(offX, offY){
         this.shape.move(offX, offY);
@@ -439,12 +449,18 @@ Tetris.prototype = {
     moveLeft: function(){
         var x = this.shape.x;
         this.move(-1, 0);
-        return x != this.shape.x;
+        var ok = x!= this.shape.x;
+        if(ok)
+            this.checkFloorTime();
+        return ok;
     },
     moveRight: function(){
         var x = this.shape.x;
         this.move(1, 0);
-        return x != this.shape.x;
+        var ok = x!= this.shape.x;
+        if(ok)
+            this.checkFloorTime();
+        return ok;
     },
     moveDown: function(oper){
         if(oper){
@@ -454,6 +470,13 @@ Tetris.prototype = {
         var y = this.shape.y;
         this.attackLines = 0;
         this.move(0, -1);
+        if(oper){
+            if(!this.shape.checkDown()){
+                this.shape.floor = true;
+                this.shape.floorCount = 0;
+                this.game.clearFloorTime();
+            }
+        }
         return {ok: y != this.shape.y, attack: this.attackLines};
     },
     drop: function(){
@@ -461,17 +484,10 @@ Tetris.prototype = {
         this.shape.drop();
         return this.attackLines;
     },
-    trash: function(trash){
-        if(this.me){
-            console.log("i get trash:", trash);
-            socket.operate(OPERTABLE.trash, trash);
-        }
-        else
-            console.log("other get trash:", trash);
-
+    riseRow: function(trash){
         var dead = false;
         var trashLengh = trash.length;
-        for(var y = this.row-1; y >=trashLengh; y--){
+        for(var y = this.row; y >=trashLengh; y--){
             for(var x = 0; x < this.col; x++){
                 if(y >= this.row - trashLengh && this.board[y][x] > 0)
                     dead = true;
@@ -480,25 +496,46 @@ Tetris.prototype = {
         }
         for(var i = 0; i < trashLengh; i++){
             var blank = trash[i];
+            var id = 1+Math.floor(Math.random()*7);
             for(var col = 0; col < COL; col++){
                 if(col === blank){
-                    continue;
                     this.board[trashLengh-1-i][col] = 0;
                 }
-                var id = Math.floor(Math.random()*7);
-                this.board[trashLengh-1-i][col] = id;
+                else
+                    this.board[trashLengh-1-i][col] = id;
             }
         }
+        return dead;
+    },
+    //is me...
+    hurt: function(trash){
+        var dead = this.riseRow(trash);
+
         var ok = this.shape.check(this.shape.x,this.shape.y,this.shape.rotation);
+        var offY = 0;
         while(!ok && this.shape.y<19){
+            offY++;
             this.shape.y++;
             ok = this.shape.check(this.shape.x,this.shape.y,this.shape.rotation);
         }
+
+        this.shape.makeShadow();
+
+        //console.log("i get trash:", trash, "offY:", offY);
+        socket.operate(OPERTABLE.trash, {trash:trash,offY:offY});
+
         if(!ok)
             dead = true;
         if(dead){
             this.gameOver();
         }
+    },
+    //is other...
+    trash: function(data){
+        //console.log("other get trash:", data.trash, data.offY);
+        var dead = this.riseRow(data.trash);
+        this.shape.y += data.offY;
+        this.shape.makeShadow();
     },
     print: function(){
         console.log(this.board);
