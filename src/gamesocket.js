@@ -70,7 +70,7 @@ RoomManager.prototype = {
                 return {err:null};
             }
             else
-                return {err:"room "+data.roomId+" is empty."};
+                return {err:"room "+roomId+" is empty."};
         }
         else
             return {err: "room "+roomId+" not exists."}
