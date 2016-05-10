@@ -98,7 +98,7 @@ GameUI.prototype = {
 };
 
 var Game = function(){
-    this.interval = 1;
+    this.interval = 0.5;
     this.time = 0;
 };
 Game.prototype = {
