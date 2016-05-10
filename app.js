@@ -49,10 +49,10 @@ app.use(function(req,res,next){
         res.locals.message = '<div class="alert alert-danger" style="margin-bottom:20px;color:red;">'+err+'</div>';
     }
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
-    res.header("X-Powered-By",' 3.2.1')
-    res.header("Content-Type", "application/json;charset=utf-8");
+    //res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    //res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+    //res.header("X-Powered-By",' 3.2.1')
+    //res.header("Content-Type", "application/json;charset=utf-8");
 
     next();  //中间件传递
 });

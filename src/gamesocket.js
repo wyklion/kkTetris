@@ -1,7 +1,7 @@
 /**
  * Created by kk on 2016/4/28.
  */
-var SocketIO = require('socket.io')();
+var SocketIO = require('socket.io');
 
 var OPERTABLE = {
     ready:      0,
