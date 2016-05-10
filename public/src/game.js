@@ -98,7 +98,7 @@ GameUI.prototype = {
 };
 
 var Game = function(){
-    this.interval = 0.5;
+    this.interval = 1;
     this.time = 0;
 };
 Game.prototype = {
@@ -108,7 +108,10 @@ Game.prototype = {
         this.playing = false;
         this.ready = false;
 
-        this.attackMode = "0124";
+        this.setting = {
+            attackMode: "0124",
+            tspinMode: "3T",
+        }
 
         this.isPaused = false;
         this.firstGame = true;
@@ -223,6 +226,9 @@ Game.prototype = {
     lose: function(){
         if(!this.single){
             socket.operate(OPERTABLE.dead);
+        }
+        else{
+            this.reset();
         }
     },
     reset: function(){

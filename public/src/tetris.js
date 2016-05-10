@@ -301,6 +301,9 @@ Tetris.prototype = {
         this.nextShapes = [];
         this.saveShape = null;
         this.playing = false;
+
+        this.lastClear = false;
+        this.lastRotate = false;
     },
     start: function(shapes){
         if(shapes){
@@ -333,10 +336,10 @@ Tetris.prototype = {
     holdShape: function(){
         if(this.holded) return;
         if(this.saveShape){
-            if(!this.saveShape.check(this.shape.x, this.shape.y, 0))
+            if(!this.saveShape.check(4, 19, 0))
                 return;
             var shapeId = this.shape.shapeId;
-            this.shape.setId(this.saveShape.shapeId);
+            this.shape.init(this.saveShape.shapeId);
             this.shape.makeShadow();
             this.saveShape.setId(shapeId);
         }
@@ -390,20 +393,7 @@ Tetris.prototype = {
         if(rowCount === 0)
             return;
 
-        // play data
-        this.game.playData.lines += rowCount;
-        if(this.game.attackMode === "0124"){
-            if(rowCount >= 2){
-                this.attackLines = rowCount === 4 ? rowCount : rowCount - 1;
-                this.game.playData.attack += this.attackLines;
-                if(this.me){
-                    var trash = [];
-                    for(var i = 0; i < this.attackLines; i++)
-                        trash.push(Math.floor(Math.random()*COL));
-                    socket.operate(OPERTABLE.attack, trash);
-                }
-            }
-        }
+        this.checkClear(rowCount);
 
         var line = lines.shift();
         var moveTable = [];
@@ -427,6 +417,69 @@ Tetris.prototype = {
                 this.board[i][x] = 0;
         }
     },
+    checkClear: function(lines){
+        this.game.playData.lines += lines;
+        var attackLine;
+        if(this.checkTspin()){
+            if(this.lastClear)
+                attackLine = lines === 3 ? 8 : lines * 2 + 1;
+            else
+                attackLine = lines * 2;
+            this.lastClear = true;
+        }
+        else if(this.game.setting.attackMode === "0124") {
+            if (lines >= 2) {
+                if (lines === 4) {
+                    if(this.lastClear)
+                        attackLine = 5;
+                    else
+                        attackLine = 4;
+                    this.lastClear = true;
+                }
+                else {
+                    attackLine = lines - 1;
+                    this.lastClear = false;
+                }
+            }
+            else
+                attackLine = 0;
+        }
+        this.attackLines = attackLine;
+        this.game.playData.attack += this.attackLines;
+        if(this.me && !this.game.single){
+            var trash = [];
+            for(var i = 0; i < this.attackLines; i++)
+                trash.push(Math.floor(Math.random()*COL));
+            socket.operate(OPERTABLE.attack, trash);
+        }
+    },
+    checkTspin: function(){
+        if(this.game.setting.tspinMode === "3T"){
+            if(!this.lastRotate || this.shape.shapeId !== 3) return false;
+            var x = this.shape.x, y = this.shape.y;
+            if(y===0){
+                if(this.board[y+1][x-1]>0||this.board[y+1][x+1]>0)
+                    return true;
+            }
+            else if(x===0){
+                if(this.board[y+1][x+1]>0||this.board[y-1][x+1]>0)
+                    return true;
+            }
+            else if(x===COL-1){
+                if(this.board[y+1][x-1]>0||this.board[y-1][x-1]>0)
+                    return true;
+            }
+            else{
+                var t = 0;
+                if(this.board[y+1][x-1]>0) t++;
+                if(this.board[y+1][x+1]>0) t++;
+                if(this.board[y-1][x-1]>0) t++;
+                if(this.board[y-1][x+1]>0) t++;
+                if(t>=3) return true;
+            }
+        }
+        return false;
+    },
     checkFloorTime: function(){
         if(this.shape.floor && this.shape.floorCount<15){
             this.shape.floorCount++;
@@ -435,13 +488,17 @@ Tetris.prototype = {
     },
     rotate: function(anti){
         var ok = this.shape.rotate(anti);
-        if(ok)
+        if(ok){
+            this.lastRotate = true;
             this.checkFloorTime();
+        }
     },
     rotate180: function(){
         var ok = this.shape.rotate180();
-        if(ok)
+        if(ok){
+            this.lastRotate = true;
             this.checkFloorTime();
+        }
     },
     move: function(offX, offY){
         this.shape.move(offX, offY);
@@ -450,16 +507,20 @@ Tetris.prototype = {
         var x = this.shape.x;
         this.move(-1, 0);
         var ok = x!= this.shape.x;
-        if(ok)
+        if(ok){
+            this.lastRotate = false;
             this.checkFloorTime();
+        }
         return ok;
     },
     moveRight: function(){
         var x = this.shape.x;
         this.move(1, 0);
         var ok = x!= this.shape.x;
-        if(ok)
+        if(ok){
+            this.lastRotate = false;
             this.checkFloorTime();
+        }
         return ok;
     },
     moveDown: function(oper){
@@ -470,6 +531,10 @@ Tetris.prototype = {
         var y = this.shape.y;
         this.attackLines = 0;
         this.move(0, -1);
+        var ok = y != this.shape.y;
+        if(ok){
+            this.lastRotate = false;
+        }
         if(oper){
             if(!this.shape.checkDown()){
                 this.shape.floor = true;
@@ -477,7 +542,7 @@ Tetris.prototype = {
                 this.game.clearFloorTime();
             }
         }
-        return {ok: y != this.shape.y, attack: this.attackLines};
+        return {ok: ok, attack: this.attackLines};
     },
     drop: function(){
         this.attackLines = 0;
