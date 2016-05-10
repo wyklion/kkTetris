@@ -1,6 +1,7 @@
 /**
  * Created by kk on 2016/4/28.
  */
+var SocketIO = require('socket.io')();
 
 var OPERTABLE = {
     ready:      0,
@@ -141,10 +142,12 @@ RoomManager.prototype = {
     },
 };
 
-var GameSocket = function(app, server){
+var GameSocket = function(app, server, httpServer){
     this.mongoStore = app.mongoStore;
     this.sessionMidleware = app.sessionMidleware;
-    this.io = require('socket.io')(server);
+    this.io = new SocketIO();
+    this.io.attach(server);
+    this.io.attach(httpServer);
     this.session = null;
     this.init();
 

@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('test:server');
 var http = require('http');
+var https = require('https')
 var fs = require("fs");
 
 /**
@@ -20,10 +21,13 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer({
-    key: fs.readFileSync('../other/2_www.kktetris.com.key'),
-    cert: fs.readFileSync('../other/1_www.kktetris.com_bundle.crt'),
-}, app);
+var server = http.createServer(app);
+
+var options = {
+  key: fs.readFileSync('other/2_www.kktetris.com.key'),
+  cert: fs.readFileSync('other/1_www.kktetris.com_bundle.crt')
+};
+var httpsServer = https.createServer(options, app).listen(443);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -96,7 +100,7 @@ function onListening() {
 //start mongo and socket...
 var Mongo = require('../src/mongo');
 var GameSocket = require('../src/gamesocket');
-var gameSocket = new GameSocket(app, server);
+var gameSocket = new GameSocket(app, server, httpsServer);
 var init = function(){
     gameSocket.start();
 }
