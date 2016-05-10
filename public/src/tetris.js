@@ -473,7 +473,8 @@ Tetris.prototype = {
             else
                 attackLine = 0;
         }
-        return attackLine + this.combo >= 11 ? 5 : Combo[this.combo];
+        attackLine += this.combo >= 11 ? 5 : Combo[this.combo];
+        return attackLine;
     },
     checkTspin: function(){
         if(this.game.setting.tspinMode === "3T"){
