@@ -398,7 +398,7 @@ Tetris.prototype = {
             return;
         }
 
-        this.checkClear(rowCount);
+        var attackLine = this.checkClear(rowCount);
 
         var line = lines.shift();
         var moveTable = [];
@@ -420,6 +420,27 @@ Tetris.prototype = {
         for(var i = moveTable.length; i < this.row; i++){
             for(var x = 0; x < this.col; x++)
                 this.board[i][x] = 0;
+        }
+
+        //check all clear
+        var allclear = true;
+        for(var i = 0; i < COL; i++){
+            if(this.board[0][i] > 0){
+                allclear = false;
+                break;
+            }
+        }
+
+        //data...
+        if(allclear)
+            this.attackLines = attackLine + 4;
+
+        this.game.playData.attack += this.attackLines;
+        if(this.me && !this.game.single){
+            var trash = [];
+            for(var i = 0; i < this.attackLines; i++)
+                trash.push(Math.floor(Math.random()*COL));
+            socket.operate(OPERTABLE.attack, trash);
         }
     },
     checkClear: function(lines){
@@ -450,14 +471,7 @@ Tetris.prototype = {
             else
                 attackLine = 0;
         }
-        this.attackLines = attackLine + Combo[this.combo];
-        this.game.playData.attack += this.attackLines;
-        if(this.me && !this.game.single){
-            var trash = [];
-            for(var i = 0; i < this.attackLines; i++)
-                trash.push(Math.floor(Math.random()*COL));
-            socket.operate(OPERTABLE.attack, trash);
-        }
+        return attackLine + this.combo >= 11 ? 5 : Combo[this.combo];
     },
     checkTspin: function(){
         if(this.game.setting.tspinMode === "3T"){
