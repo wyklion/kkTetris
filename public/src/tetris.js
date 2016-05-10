@@ -434,6 +434,8 @@ Tetris.prototype = {
         //data...
         if(allclear)
             this.attackLines = attackLine + 4;
+        else
+            this.attackLines = attackLine;
 
         this.game.playData.attack += this.attackLines;
         if(this.me && !this.game.single){
