@@ -278,6 +278,8 @@ var RandomGenerator = function(){
     return shapes;
 };
 
+var Combo = [0,0,0,1,1,2,2,3,3,4,4,4,5];
+
 var Tetris = function(game, me){
     this.game = game;
     this.me = me;
@@ -304,6 +306,7 @@ Tetris.prototype = {
 
         this.lastClear = false;
         this.lastRotate = false;
+        this.combo = 0;
     },
     start: function(shapes){
         if(shapes){
@@ -390,8 +393,10 @@ Tetris.prototype = {
                 lines.push(y);
         }
         var rowCount = lines.length;
-        if(rowCount === 0)
+        if(rowCount === 0){
+            this.combo = 0;
             return;
+        }
 
         this.checkClear(rowCount);
 
@@ -418,6 +423,7 @@ Tetris.prototype = {
         }
     },
     checkClear: function(lines){
+        this.combo++;
         this.game.playData.lines += lines;
         var attackLine;
         if(this.checkTspin()){
@@ -444,7 +450,7 @@ Tetris.prototype = {
             else
                 attackLine = 0;
         }
-        this.attackLines = attackLine;
+        this.attackLines = attackLine + Combo[this.combo];
         this.game.playData.attack += this.attackLines;
         if(this.me && !this.game.single){
             var trash = [];
