@@ -57,6 +57,7 @@ GameUI.prototype = {
             $('#playButton').html("<h1>Play(F2)</h1>");
             $('#myStatus').empty();
             $('#otherStatus').empty();
+            $('#otherName').empty();
         }
         $('#playButton').show();
     },
@@ -243,6 +244,7 @@ Game.prototype = {
         console.log("someoneJoined");
         this.ui.someoneJoined();
         this.single = false;
+        this.ready = false;
         this.playData.reset();
         this.tetris.init();
     },
