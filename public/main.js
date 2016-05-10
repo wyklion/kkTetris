@@ -90,6 +90,18 @@ Main.prototype = {
             _this.keyboard = null;
             $('#myModal').modal('hide');
         });
+
+        this.wholeDiv = document.getElementById('wholeDiv');
+    },
+    spin: function(){
+        this.waiting = true;
+        $("<div class='waitingDiv'></div>").appendTo($("body"));
+        this.spinner = new Spinner().spin(this.wholeDiv);
+    },
+    stopSpin: function(){
+        this.waiting = false;
+        $(".waitingDiv").remove();
+        this.spinner.stop();
     },
     onLogin: function(){
         var welcome = document.getElementById("welcome");

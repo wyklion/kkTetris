@@ -21,6 +21,16 @@ a:hover{
 .verticalMiddle{
     vertical-align:middle;
 }
+.waitingDiv {
+    position:absolute;
+    top:0px;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    z-index: 100;
+    /*background:#000;*/
+    /*opacity: 0.5;*/
+}
 .topDiv {
     position:absolute;
     top:0;

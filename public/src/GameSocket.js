@@ -78,6 +78,7 @@ GameSocket.prototype = {
         });
     },
     createRoom: function(){
+        main.spin();
         this.socket.emit("createRoom");
     },
     _onCreateRoom: function(){
@@ -90,9 +91,11 @@ GameSocket.prototype = {
             }
             else
                 console.log(data.err);
+            main.stopSpin();
         });
     },
     joinRoom: function(roomId){
+        main.spin();
         this.socket.emit("joinRoom", {roomId:roomId});
     },
     _onJoinRoom: function(){
@@ -105,9 +108,11 @@ GameSocket.prototype = {
             }
             else
                 console.log(data.err);
+            main.stopSpin();
         });
     },
     exitRoom: function(){
+        main.spin();
         this.socket.emit("exitRoom");
     },
     _onExitRoom: function(){
@@ -121,6 +126,7 @@ GameSocket.prototype = {
             }
             else
                 console.log(data.err);
+            main.stopSpin();
         });
     },
     operate: function(oper, data){
