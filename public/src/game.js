@@ -289,7 +289,7 @@ Game.prototype = {
             if(this.single){
                 if(this.playData.lines >= 40){
                     this.tetris.gameOver();
-                    socket.single(this.time);
+                    socket.single(this.playData.time);
                     return;
                 }
             }
