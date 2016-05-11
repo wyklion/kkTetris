@@ -46,9 +46,9 @@ KeyState.prototype = {
                         _this.time -= _this.manager.dasDelay;
                     }
                 }
-                else if(_this.manager.moveDelay === 0){
-                    _this.endFunc();
-                }
+                //else if(_this.manager.moveDelay === 0){
+                //    _this.endFunc();
+                //}
                 else if(_this.time >= _this.manager.moveDelay){
                     //console.log("fast");
                     _this.func();

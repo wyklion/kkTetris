@@ -510,7 +510,7 @@ Tetris.prototype = {
     rotate: function(anti){
         var ok = this.shape.rotate(anti);
         if(ok){
-            if(this.me){
+            if(this.me && !this.game.single){
                 if(anti)
                     socket.operate(OPERTABLE.rotateL);
                 else
@@ -523,7 +523,7 @@ Tetris.prototype = {
     rotate180: function(){
         var ok = this.shape.rotate180();
         if(ok){
-            if(this.me)
+            if(this.me && !this.game.single)
                 socket.operate(OPERTABLE.rotate180);
             this.lastRotate = true;
             this.checkFloor();
@@ -539,7 +539,7 @@ Tetris.prototype = {
         if(ok){
             this.lastRotate = false;
             this.checkFloor();
-            if(this.me)
+            if(this.me && !this.game.single)
                 socket.operate(OPERTABLE.left);
         }
         return ok;
@@ -557,7 +557,7 @@ Tetris.prototype = {
         if(ok){
             this.lastRotate = false;
             this.checkFloor();
-            if(this.me)
+            if(this.me && !this.game.single)
                 socket.operate(OPERTABLE.right);
         }
         return ok;
