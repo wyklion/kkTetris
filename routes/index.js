@@ -108,7 +108,6 @@ router.route("/admin").get(function(req,res){
     else{
         res.render("admin");
     }
-    res.render("admin",{});
 }).post(function(req,res){
     if(!req.session.user || req.session.user.id != "kk"){
         req.session.error = "请用管理员帐号登录"

@@ -8,25 +8,106 @@
     <link rel='stylesheet' href='/css/style.css' />
 </head>
 <body>
-    <div id="datas"></div>
+    <nav class="navbar navbar-default navbar-inverse navbar-collapse">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-center">
+                    <li><button id="userButton" type="button" class="btn btn-default navbar-btn">Users</button></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-left">
+                    <li><button id="gameButton" type="button" class="btn btn-default navbar-btn">GameInfo</button></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="resultDiv" class="container-fluid">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10 text-center">
+                <table class="table table-striped table-condensed">
+                    <thead id="resultHead">
+                    </thead>
+                    <tbody id="resultBody">
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
     <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
     <script src="https://apps.bdimg.com/libs/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script type="text/javascript">
-        $(function(){
-            $.ajax({
-                url: '/admin',
-                type: 'post',
-                data: {type:0, collection:"users", query:{id:"kk"}},
-                success: function(data,status){
-                    if(status == 'success'){
-                        $("#datas").text(data);
+    <script src='src/config.js'></script>
+<script type="text/javascript">
+    var getUsers = function(){
+        $.ajax({
+            url: '/admin',
+            type: 'post',
+            data: {type:0, collection:"users", query:{id:"kk"}},
+            success: function(data,status){
+                if(status == 'success'){
+                    $('#resultHead').empty();
+                    $('#resultBody').empty();
+                    var thStr = "";
+                    for(var i = 0; i < data.length; i++){
+                        var tdStr = "";
+                        for(var item in data[i]){
+                            if(item === "_id") continue;
+                            if(i === 0)
+                                thStr += "<td>"+item+"</td>";
+                            var str = "";
+                            if(item === "keyboard"){
+                                var count = 0;
+                                for(var t in data[i][item]){
+                                    var keystr;
+                                    if(t=="dasDelay" || t=="moveDelay")
+                                        keystr = data[i][item][t];
+                                    else
+                                        keystr = key[data[i][item][t]];
+                                    str += t+":"+keystr+";";
+                                    count++;
+                                    if(count===4){
+                                        count=0;
+                                        str+="<br>";
+                                    }
+                                }
+                            }
+                            else
+                                str = data[i][item];
+                            tdStr+="<td>"+str+"</td>";
+                        }
+                        for(var j = 0; j<10; j++)
+                            $('#resultBody').append("<tr>"+tdStr+"</tr>");
+                        console.log(data[i]);
                     }
-                },
-                error: function(data,err){
-                    $("#datas").text(err);
+                    $('#resultHead').append("<tr>"+thStr+"</tr>");
                 }
-            });
+            },
+            error: function(data,err){
+                $("#datas").text(err);
+            }
         });
-    </script>
+    };
+    var gameInfo = function(){
+        $.ajax({
+            url: '/admin',
+            type: 'post',
+            data: {type:0, collection:"users", query:{id:"kk"}},
+            success: function(data,status){
+                if(status == 'success'){
+                    $('#resultHead').empty();
+                    $('#resultBody').empty();
+                    var thStr = "";
+                }
+            },
+            error: function(data,err){
+                $("#datas").text(err);
+                console.log(err);
+            }
+
+    };
+    $('#userButton').on('click', function () {
+        getUsers();
+    })
+</script>
 </body>
 </html>
