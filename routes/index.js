@@ -99,4 +99,15 @@ router.get("/logout",function(req,res){    // 到达 /logout 路径则登出， 
     res.redirect("/login");
 });
 
+//kk admin
+router.route("/admin").post(function(req,res){
+    var type = req.body.type;
+    var collection = req.body.collection;
+    var query = req.body.query;
+    mongo.find(collection, query, function(result){
+        res.send(result);
+        res.status(200);
+    });
+});
+
 module.exports = router;
