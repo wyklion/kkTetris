@@ -3,6 +3,7 @@
  */
 
 var GameSocket = function(){
+    main.spin();
     this.socket = io(SERVER_NAME);
     this.data = {
         user:null,
@@ -32,6 +33,7 @@ GameSocket.prototype = {
             }
             else
                 console.log(data.err);
+            main.stopSpin();
         });
     },
     _onMsg: function(){
