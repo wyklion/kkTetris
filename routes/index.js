@@ -93,14 +93,28 @@ router.get("/play",function(req,res){
 });
 
 /* GET logout page. */
-router.get("/logout",function(req,res){    // 到达 /logout 路径则登出， session中user,error对象置空，并重定向到根路径
+router.get("/logout",function(req,res){
     req.session.user = null;
     req.session.error = null;
     res.redirect("/login");
 });
 
 //kk admin
-router.route("/admin").post(function(req,res){
+router.route("/admin").get(function(req,res){
+    if(!req.session.user || req.session.user.id != "kk"){
+        req.session.error = "请用管理员帐号登录"
+        res.redirect("/login");
+    }
+    else{
+        res.render("admin");
+    }
+    res.render("admin",{});
+}).post(function(req,res){
+    if(!req.session.user || req.session.user.id != "kk"){
+        req.session.error = "请用管理员帐号登录"
+        res.redirect("/login");
+        return;
+    }
     var type = req.body.type;
     var collection = req.body.collection;
     var query = req.body.query;

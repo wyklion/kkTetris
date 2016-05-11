@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
+    <link rel='stylesheet' href='/css/style.css' />
+</head>
+<body>
+    <div id="datas"></div>
+    <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+    <script src="https://apps.bdimg.com/libs/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $.ajax({
+                url: '/admin',
+                type: 'post',
+                data: {type:0, collection:"users", query:{id:"kk"}},
+                success: function(data,status){
+                    if(status == 'success'){
+                        $("#datas").text(data);
+                    }
+                },
+                error: function(data,err){
+                    $("#datas").text(err);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
