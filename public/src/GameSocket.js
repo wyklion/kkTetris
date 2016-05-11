@@ -11,6 +11,8 @@ var GameSocket = function(){
         rooms:{},
     };
     this._onConnection();
+    this._onDisconnect();
+    this._onReconnect();
     this._onMsg();
     this._onLobbyInfo();
     this._onRoomInfo();
@@ -34,6 +36,18 @@ GameSocket.prototype = {
             else
                 console.log(data.err);
             main.stopSpin();
+        });
+    },
+    _onDisconnect: function(){
+        var _this = this;
+        this.socket.on('disconnect', function(){
+            console.log('disconnect');
+            _this.socket.socket.reconnect();
+        });
+    },
+    _onReconnect: function(){
+        this.socket.on('reconnect', function(transport_type,reconnectionAttempts){
+            console.log('reconnect...',transport_type,reconnectionAttempts);
         });
     },
     _onMsg: function(){
