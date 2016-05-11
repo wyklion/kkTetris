@@ -49,6 +49,12 @@ Mongo.prototype = {
             if(callback) callback(err, result);
         });
     },
+    updateAddValue: function(collection, query, doc, callback){
+        var c = this.db.collection(collection);
+        c.updateOne(query, {$inc: doc}, function(err, result) {
+            if(callback) callback(err, result);
+        });
+    },
 }
 
 module.exports = Mongo;

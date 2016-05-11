@@ -202,6 +202,11 @@ GameSocket.prototype = {
             }
         });
     },
+    single: function(time){
+        this.socket.emit("single40", {
+            time:time,
+        });
+    },
     setKeyboard: function(keyboard){
         this.data.user.keyboard = keyboard;
         if(main.game){

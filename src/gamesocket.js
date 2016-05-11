@@ -99,6 +99,10 @@ RoomManager.prototype = {
             if(idx > -1){
                 this.rooms[i].playUsers.splice(idx, 1);
                 this.rooms[i].ready = {};
+                if(this.rooms[i].playing){
+                    this.rooms[i].playing = false;
+                    mongo.updateAddValue("users", {id:userId}, {disconnect: 1});
+                }
                 if(this.rooms[i].playUsers.length === 0){
                     delete this.rooms[i];
                 }
@@ -120,6 +124,7 @@ RoomManager.prototype = {
         if(otherUser){
             if(room.ready[otherUser]){
                 room.win = null;
+                room.playing = true;
                 var randomShapes = RandomGenerator();
                 socket.emit("onOperation", {oper:OPERTABLE.start, shapes: randomShapes});
                 socket.broadcast.to("room"+socket.roomId).emit("onOperation", {oper:OPERTABLE.start, shapes: randomShapes});
@@ -133,12 +138,15 @@ RoomManager.prototype = {
         var room = this.rooms[socket.roomId];
         if(!room) return;
         room.ready = {};
+        room.playing = false;
         if(room.win) return; //already gameover...
         var otherUser = this.getOtherUserId(room, socket.userId);
         room.win = otherUser;
         socket.emit("onOperation", {oper:OPERTABLE.gameover, result:{win:otherUser,lose:socket.userId}});
         socket.broadcast.to("room"+socket.roomId).emit('onOperation', {oper:OPERTABLE.gameover, result:{win:otherUser,lose:socket.userId}});
         console.log("room", socket.roomId, "user", socket.userId, "lose", otherUser, "win");
+        mongo.updateAddValue("users", {id:socket.userId}, {lose: 1});
+        mongo.updateAddValue("users", {id:otherUser}, {win: 1});
     },
 };
 
@@ -255,6 +263,7 @@ GameSocket.prototype = {
         this.onExitRoom(socket);
 
         this.onPlaying(socket);
+        this.onSingle(socket);
 
         this.onSetting(socket);
     },
@@ -340,6 +349,13 @@ GameSocket.prototype = {
             if(oper === OPERTABLE.ready){
                 _this.roomManager.userReady(socket);
             }
+        })
+    },
+    onSingle: function(socket){
+        var _this = this;
+        socket.on('single40', function(data){
+            mongo.updateAddValue("users", {id:socket.userId}, {single40Times: 1});
+            mongo.updateOne("users", {id:socket.userId, single40Best:{"$gt":data.time}}, {single40Best: data.time});
         })
     },
     onSetting: function(socket){
