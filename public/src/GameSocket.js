@@ -180,6 +180,9 @@ GameSocket.prototype = {
                     case OPERTABLE.down:
                         tetris.moveDown();
                         break;
+                    case OPERTABLE.downNature:
+                        tetris.moveDownNature();
+                        break;
                     case OPERTABLE.drop:
                         tetris.drop();
                         break;

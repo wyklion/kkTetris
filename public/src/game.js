@@ -9,6 +9,7 @@ var OPERTABLE = {
     left:       10,
     right:      11,
     down:       12,
+    downNature: 18,
     drop:       13,
     rotateL:    14,
     rotateR:    15,
@@ -112,6 +113,7 @@ Game.prototype = {
         this.setting = {
             attackMode: "0124",
             tspinMode: "3T",
+            useBuffer: true,
         }
 
         this.isPaused = false;
@@ -140,30 +142,17 @@ Game.prototype = {
         this.keyManager = new KeyManager({
             socket: socket,
             keyboard:keyboard,
-            left:{
-                func:function(){return _this.tetris.moveLeft();}
-            },
-            right:{
-                func:function(){return _this.tetris.moveRight();}
-            },
-            down:{
-                func:function(){return _this.tetris.moveDown(true);}
-            },
-            drop:{
-                func:function(){return _this.tetris.drop();}
-            },
-            rotate:{
-                func:function(){_this.tetris.rotate(true);}
-            },
-            rotateRight:{
-                func:function(){_this.tetris.rotate(false);}
-            },
-            rotate180:{
-                func:function(){_this.tetris.rotate180();}
-            },
-            hold:{
-                func:function(){_this.tetris.holdShape();}
-            },
+            leftFunc:function(){_this.tetris.moveLeft();},
+            leftEndFunc:function(){_this.tetris.moveLeftToEnd();},
+            rightFunc:function(){_this.tetris.moveRight();},
+            rightEndFunc:function(){_this.tetris.moveRightToEnd();},
+            downFunc:function(){_this.tetris.moveDown();},
+            downEndFunc:function(){_this.tetris.moveDownToEnd();},
+            dropFunc:function(){_this.tetris.drop();},
+            rotateFunc:function(){_this.tetris.rotate(true);},
+            rotateRightFunc:function(){_this.tetris.rotate(false);},
+            rotate180Func:function(){_this.tetris.rotate180();},
+            holdFunc:function(){_this.tetris.holdShape();},
         });
 
         document.body.onkeydown = function( e ) {
@@ -295,12 +284,7 @@ Game.prototype = {
             }
             while(this.time > this.interval){
                 this.time -= this.interval;
-                var result = this.tetris.moveDown();
-                if(!this.single){
-                    if(result.ok){
-                        socket.operate(OPERTABLE.down, result.attack);
-                    }
-                }
+                this.tetris.moveDownNature();
             }
         }
         this.renderer.render();

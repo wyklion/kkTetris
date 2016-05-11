@@ -2,9 +2,10 @@
  * Created by KK on 2016/4/24.
  */
 
-var KeyState = function(manager, func, isDown){
+var KeyState = function(manager, func, endFunc, isDown){
     this.manager = manager;
     this.func = func;
+    this.endFunc = endFunc;
     this.isDown = isDown;
     this.press = false;
     this.first = true;
@@ -46,10 +47,7 @@ KeyState.prototype = {
                     }
                 }
                 else if(_this.manager.moveDelay === 0){
-                    var ok = _this.func();
-                    while(ok){
-                        ok = _this.func();
-                    }
+                    _this.endFunc();
                 }
                 else if(_this.time >= _this.manager.moveDelay){
                     //console.log("fast");
@@ -100,52 +98,28 @@ var KeyManager = function(options){
     this.dasDelay = keyboard.dasDelay/1000;
     this.moveDelay = keyboard.moveDelay/1000;
     this.leftKey = keyboard.left;
-    this.leftFunc = function(){
-        _this.socket.operate(OPERTABLE.left);
-        return options.left.func();
-    }
+    this.leftFunc = options.leftFunc;
+    this.leftEndFunc = options.leftEndFunc;
     this.rightKey = keyboard.right;
-    this.rightFunc = function(){
-        _this.socket.operate(OPERTABLE.right);
-        return options.right.func();
-    }
+    this.rightFunc = options.rightFunc;
+    this.rightEndFunc = options.rightEndFunc;
     this.downKey = keyboard.down;
-    this.downFunc = function(){
-        var result = options.down.func();
-        if(result.ok){
-            _this.socket.operate(OPERTABLE.down, result.attack);
-        }
-        return result.ok;
-    }
+    this.downFunc = options.downFunc;
+    this.downEndFunc = options.downEndFunc;
     this.dropKey = keyboard.drop;
-    this.dropFunc = function(){
-        var attack = options.drop.func();
-        _this.socket.operate(OPERTABLE.drop, attack);
-    }
+    this.dropFunc = options.dropFunc;
     this.rotateKey = keyboard.rotate;
-    this.rotateFunc = function(){
-        _this.socket.operate(OPERTABLE.rotateL);
-        options.rotate.func();
-    }
+    this.rotateFunc = options.rotateFunc;
     this.rotateRightKey = keyboard.rotateRight;
-    this.rotateRightFunc = function(){
-        _this.socket.operate(OPERTABLE.rotateR);
-        options.rotateRight.func();
-    }
+    this.rotateRightFunc = options.rotateRightFunc
     this.rotate180Key = keyboard.rotate180;
-    this.rotate180Func = function(){
-        _this.socket.operate(OPERTABLE.rotate180);
-        options.rotate180.func();
-    }
+    this.rotate180Func = options.rotate180Func;
     this.holdKey = keyboard.hold;
-    this.holdFunc = function(){
-        _this.socket.operate(OPERTABLE.hold);
-        options.hold.func();
-    }
+    this.holdFunc = options.holdFunc;
 
-    this.left = new KeyState(this, this.leftFunc);
-    this.right = new KeyState(this, this.rightFunc);
-    this.down = new KeyState(this, this.downFunc, true);
+    this.left = new KeyState(this, this.leftFunc, this.leftEndFunc);
+    this.right = new KeyState(this, this.rightFunc, this.rightEndFunc);
+    this.down = new KeyState(this, this.downFunc, this.downEndFunc, true);
 };
 KeyManager.prototype = {
     constructor: KeyManager,

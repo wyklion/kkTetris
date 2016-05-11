@@ -10,6 +10,7 @@ var OPERTABLE = {
     left:       10,
     right:      11,
     down:       12,
+    downNature: 18,
     drop:       13,
     rotateL:    14,
     rotateR:    15,
@@ -246,8 +247,10 @@ GameSocket.prototype = {
             if(result.length>0) {
                 _this.onDataConnection(result[0], socket);
             }
-            else
-                console.log("cant' find user when connect...");
+            else{
+                socket.emit('onConnection', {err: "Can't find user when connect..."});
+                console.log("Can't find user when connect...");
+            }
         })
     },
     onDataConnection: function(userData, socket){

@@ -162,13 +162,13 @@ var Render = function(game){
         x:830,y:20
     }
     this.holdPos = {
-        x:410,y:20
+        x:390,y:20
     }
     this.anotherPos = {
-        x:120,y:20
+        x:100,y:20
     }
     this.playDataPos = {
-        x:470,y:120
+        x:450,y:120
     }
     //makeSprite(this.baseSize);
     //this.drawData = {
@@ -290,6 +290,7 @@ Render.prototype = {
         this.drawShape(this.myPos, this.tetris.shape);
         this.drawNextShape();
         this.drawHoldShape();
+        this.drawBufferBar();
         this.ctx.restore();
     },
     drawNextShape: function(){
@@ -324,6 +325,16 @@ Render.prototype = {
             var y = 1+this.tetris.saveShape.shapeModel.cells[0][i*2+1];
             this.baseFillRect(pos.x+this.smallSize * x, pos.y+this.smallSize *(4-y), this.smallSize - 1 , this.smallSize - 1 );
             this.baseStrokeRect(pos.x+this.smallSize * x, pos.y+this.smallSize *(4-y), this.smallSize - 1 , this.smallSize - 1 );
+        }
+    },
+    drawBufferBar: function(){
+        if(this.game.setting.useBuffer){
+            this.baseStrokeRect(this.myPos.x-11,this.myPos.y,10,this.areaH-1);
+            var trashLine = this.tetris.trashes.length;
+            if(trashLine > 0){
+                this.ctx.fillStyle = "rgba(255,0,0,1)";
+                this.baseFillRect(this.myPos.x-11,this.myPos.y+30*(20-trashLine),10,30*trashLine-1);
+            }
         }
     },
     drawText: function(){
