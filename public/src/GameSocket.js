@@ -42,7 +42,7 @@ GameSocket.prototype = {
         var _this = this;
         this.socket.on('disconnect', function(){
             console.log('disconnect');
-            _this.socket.socket.reconnect();
+            _this.socket.reconnect();
         });
     },
     _onReconnect: function(){
