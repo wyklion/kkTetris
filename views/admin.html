@@ -15,7 +15,7 @@
                     <li><button id="userButton" type="button" class="btn btn-default navbar-btn">Users</button></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-left">
-                    <li><button id="gameButton" type="button" class="btn btn-default navbar-btn">GameInfo</button></li>
+                    <li><button id="gameinfoButton" type="button" class="btn btn-default navbar-btn">GameInfo</button></li>
                 </ul>
             </div>
         </div>
@@ -42,7 +42,7 @@
         $.ajax({
             url: '/admin',
             type: 'post',
-            data: {type:0, collection:"users", query:{id:"kk"}},
+            data: {type:0, collection:"users", query:{}},
             success: function(data,status){
                 if(status == 'success'){
                     $('#resultHead').empty();
@@ -85,15 +85,33 @@
             }
         });
     };
-    var gameInfo = function(){
+    var getGameInfo = function(){
         $.ajax({
             url: '/admin',
             type: 'post',
-            data: {type: 0, collection: "users", query: {id: "kk"}},
+            data: {type: 0, collection: "gameinfo", query: {}},
             success: function(data, status){
                 if(status == 'success'){
                     $('#resultHead').empty();
                     $('#resultBody').empty();
+                    var thStr = "";
+                    for(var i = 0; i < data.length; i++){
+                        var tdStr = "";
+                        for(var item in data[i]){
+                            if(item === "_id") continue;
+                            if(i === 0)
+                                thStr += "<td>"+item+"</td>";
+                            var str;
+                            if(item === "time"){
+                                str = new Date(data[i][item]).toLocaleString();
+                            }
+                            else
+                                str = data[i][item];
+                            tdStr+="<td>"+str+"</td>";
+                        }
+                        $('#resultBody').append("<tr>"+tdStr+"</tr>");
+                    }
+                    $('#resultHead').append("<tr>"+thStr+"</tr>");
                 }
             },
             error: function(data, err){
@@ -105,6 +123,10 @@
     $('#userButton').on('click', function () {
         getUsers();
     })
+    $('#gameinfoButton').on('click', function () {
+        getGameInfo();
+    })
+    getUsers();
 </script>
 </body>
 </html>
