@@ -75,9 +75,7 @@
                                 str = data[i][item];
                             tdStr+="<td>"+str+"</td>";
                         }
-                        for(var j = 0; j<10; j++)
-                            $('#resultBody').append("<tr>"+tdStr+"</tr>");
-                        console.log(data[i]);
+                        $('#resultBody').append("<tr>"+tdStr+"</tr>");
                     }
                     $('#resultHead').append("<tr>"+thStr+"</tr>");
                 }
