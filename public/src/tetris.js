@@ -571,7 +571,8 @@ Tetris.prototype = {
     moveDown: function(){
         if(!this.shape.checkDown())
             return;
-        socket.operate(OPERTABLE.down);
+        if(this.me && !this.game.single)
+            socket.operate(OPERTABLE.down);
         this.move(0, -1);
         this.lastRotate = false;
         this.checkFloor();
@@ -584,7 +585,7 @@ Tetris.prototype = {
         }
     },
     moveDownNature: function(){
-        if(this.me)
+        if(this.me && !this.game.single)
             socket.operate(OPERTABLE.downNature);
         this.move(0, -1);
     },
