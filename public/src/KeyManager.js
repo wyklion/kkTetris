@@ -45,17 +45,17 @@ KeyState.prototype = {
                         _this.func();
                         _this.time -= _this.manager.dasDelay;
                     }
-                    _this.handle = requestAnimationFrame(callback);
                 }
                 else if(_this.manager.moveDelay === 0){
                     _this.endFunc();
+                    cancelAnimationFrame(_this.handle);
                 }
                 else if(_this.time >= _this.manager.moveDelay){
                     //console.log("fast");
                     _this.func();
                     _this.time -= _this.manager.moveDelay;
-                    _this.handle = requestAnimationFrame(callback);
                 }
+                _this.handle = requestAnimationFrame(callback);
             }
         }
         callback();
