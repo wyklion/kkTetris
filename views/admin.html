@@ -47,10 +47,12 @@
                 if(status == 'success'){
                     $('#resultHead').empty();
                     $('#resultBody').empty();
+                    var head = ["id","password","level","score","win","lose","disconnect","single40Times","single40Best","keyboard"];
                     var thStr = "";
                     for(var i = 0; i < data.length; i++){
                         var tdStr = "";
-                        for(var item in data[i]){
+                        for(var j = 0; j < head.length; j++){
+                            var item = head[j];
                             if(item === "_id") continue;
                             if(i === 0)
                                 thStr += "<td>"+item+"</td>";
