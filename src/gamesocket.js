@@ -68,15 +68,19 @@ RoomManager.prototype = {
         this.rooms[idx] = {
             id: idx,
             playUsers:[userId],
+            watchUsers:[],
             ready:{},
         };
         return idx;
     },
-    joinRoom: function(roomId, userId){
+    joinRoom: function(roomId, userId, watch){
         var room = this.rooms[roomId];
         if(room) {
             if (room.playUsers.length == 1) {
-                room.playUsers.push(userId);
+                if(watch)
+                    room.watchUsers.push(userId);
+                else
+                    room.playUsers.push(userId);
                 return {err:null};
             }
             else
@@ -309,16 +313,16 @@ GameSocket.prototype = {
     onJoinRoom: function(socket){
         var _this = this;
         socket.on('joinRoom', function(data){
-            var result = _this.roomManager.joinRoom(data.roomId, socket.userId);
+            var result = _this.roomManager.joinRoom(data.roomId, socket.userId, data.watch);
             if(!result.err){
                 socket.roomId = data.roomId;
                 socket.emit("onJoinRoom", {err:null, room:_this.roomManager.getRoom(socket.roomId)});
-                console.log(socket.userId, "joinRoom", socket.roomId);
+                console.log(socket.userId, data.watch?"watchRoom":"joinRoom", socket.roomId);
                 socket.join("room"+socket.roomId);
                 socket.broadcast.to("room"+socket.roomId).emit('roomInfo', {room:_this.roomManager.getRoom(socket.roomId)});
                 // 通知房间内人员
                 _this.io.to("room"+socket.roomId).emit('msg', socket.userId + '加入了房间', _this.roomManager.getRoom(socket.roomId));
-                mongo.insertOne("gameinfo", {id:socket.userId, type:"joinRoom", roomId:socket.roomId, time:getTime()})
+                mongo.insertOne("gameinfo", {id:socket.userId, type:data.watch?"watchRoom":"joinRoom", roomId:socket.roomId, time:getTime()})
             }
             else{
                 socket.emit("onJoinRoom", {err:result.err})

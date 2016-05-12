@@ -23,24 +23,29 @@ var GameUI = function(game){
         $(this).hide();
         _this.game.readyOrPlay();
     });
-    this.reset(this.game.single);
+    this.reset();
 };
 GameUI.prototype = {
     constructor: GameUI,
-    reset: function(single){
-        if(!single){
-            $('#playButton').html("<h1>Ready(F2)</h1>");
-            $('#myStatus').empty();
-            $('#otherStatus').text('Waiting...')
-            $('#otherName').text(socket.getRoomOtherUser());
+    reset: function(){
+        if(this.game.watch){
+
         }
         else{
-            $('#playButton').html("<h1>Play(F2)</h1>");
-            $('#myStatus').empty();
-            $('#otherStatus').empty();
-            $('#otherName').empty();
+            if(!this.game.single){
+                $('#playButton').html("<h1>Ready(F2)</h1>");
+                $('#myStatus').empty();
+                $('#otherStatus').text('Waiting...')
+                $('#otherName').text(socket.getRoomOtherUser());
+            }
+            else{
+                $('#playButton').html("<h1>Play(F2)</h1>");
+                $('#myStatus').empty();
+                $('#otherStatus').empty();
+                $('#otherName').empty();
+            }
+            $('#playButton').show();
         }
-        $('#playButton').show();
     },
     someoneJoined: function(){
         $('#otherName').text(socket.getRoomOtherUser());
@@ -88,6 +93,7 @@ var Game = function(){
     this.interval = 0.5;
     this.time = 0;
     this.single = true;
+    this.watch = false;
     this.playing = false;
     this.ready = false;
 
@@ -132,6 +138,7 @@ Game.prototype = {
         });
 
         document.body.onkeydown = function( e ) {
+            if(_this.watch) return;
             if(e.keyCode === 113){ // F2
                 _this.readyOrPlay();
             }
@@ -142,6 +149,7 @@ Game.prototype = {
             }
         }
         document.body.onkeyup = function( e ) {
+            if(_this.watch) return;
             _this.keyManager.onKeyUp(e.keyCode);
         }
     },
@@ -195,7 +203,7 @@ Game.prototype = {
         }
     },
     reset: function(){
-        this.ui.reset(this.single);
+        this.ui.reset();
         this.keyManager.stop();
         this.playing = false;
         this.tetris.playing = false;

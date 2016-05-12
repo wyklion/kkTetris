@@ -143,17 +143,23 @@ GameSocket.prototype = {
             main.stopSpin();
         });
     },
-    joinRoom: function(roomId){
+    joinRoom: function(roomId, watch){
         main.spin();
-        this.socket.emit("joinRoom", {roomId:roomId});
+        this.socket.emit("joinRoom", {roomId:roomId, watch:watch});
     },
     _onJoinRoom: function(){
         var _this = this;
         this.socket.on("onJoinRoom", function(data){
             if(!data.err){
                 _this.data.room = data.room;
-                main.goRoom();
-                console.log("onJoinRoom", _this.data.room);
+                if(_this.data.room.watchUsers.indexOf(_this.data.user.id)>0){
+                    main.goRoom(true);
+                    console.log("watch room:", _this.data.room);
+                }
+                else{
+                    main.goRoom();
+                    console.log("onJoinRoom", _this.data.room);
+                }
             }
             else
                 console.log(data.err);

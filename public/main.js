@@ -96,7 +96,6 @@ Main.prototype = {
     },
     initChat: function(){
         var _this = this;
-        //$('#lobbyTextarea').attr("readOnly", true);
         $('#lobbySay').bind('keypress',function(event){
             if(event.keyCode == "13")
             {
@@ -107,7 +106,6 @@ Main.prototype = {
         });
     },
     putMsg: function(user, msg, me){
-        console.log(user, msg, me);
         //var txt;
         //if(me)
         //    txt = "<font color=#8a2be2>"+user+": "+msg+"</font><br>";
@@ -142,11 +140,14 @@ Main.prototype = {
                 str += room.playUsers[0] + " is waiting...</td><td><button id='room"+room.id+"' type='button' class='btn btn-default'>enter</button></td>";
             }
             else{
-                str += room.playUsers[0] + " vs " + room.playUsers[1] + "</td><td><button id='room"+room.id+"' type='button' class='btn btn-default disabled'>watch</button></td>";
+                str += room.playUsers[0] + " vs " + room.playUsers[1] + "</td><td><button id='watch"+room.id+"' type='button' class='btn btn-default'>watch</button></td>";
             }
             $('#roomList').append(str);
             $('#room'+room.id).on('click', function(){
                 socket.joinRoom(room.id);
+            });
+            $('#watch'+room.id).on('click', function(){
+                socket.joinRoom(room.id, true);
             });
         }
     },
@@ -157,12 +158,14 @@ Main.prototype = {
             $('#userList').append(user);
         }
     },
-    goRoom: function(){
+    goRoom: function(watch){
         $('#mainDiv').hide();
         $('#gameDiv').show();
         this.game = new Game();
         var single = socket.data.room.playUsers.length != 2;
         this.game.single = single;
+        if(watch)
+            this.game.watch = true;
         this.game.init();
     },
     exitRoom: function(){
