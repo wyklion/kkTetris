@@ -16,6 +16,9 @@ var OPERTABLE = {
     rotateR:    15,
     rotate180:  16,
     hold:       17,
+    leftEnd:    18,
+    rightEnd:   19,
+    downEnd:    20,
 
     attack:     20,
     trash:      21,

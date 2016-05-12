@@ -2,6 +2,30 @@
  * Created by kk on 2016/4/28.
  */
 
+var OPERTABLE = {
+    ready:      0,
+    dead:       1,
+
+    left:       10,
+    right:      11,
+    down:       12,
+    downNature: 18,
+    drop:       13,
+    rotateL:    14,
+    rotateR:    15,
+    rotate180:  16,
+    hold:       17,
+    leftEnd:    18,
+    rightEnd:   19,
+    downEnd:    20,
+
+    attack:     20,
+    trash:      21,
+
+    start:      100,
+    gameover:   200,
+};
+
 var GameSocket = function(){
     main.spin();
     this.socket = io(SERVER_NAME);
@@ -172,13 +196,22 @@ GameSocket.prototype = {
                     case OPERTABLE.dead:
                         break;
                     case OPERTABLE.left:
-                        tetris.move(-1,0);
+                        tetris.moveLeft();
+                        break;
+                    case OPERTABLE.leftEnd:
+                        tetris.moveLeftToEnd();
                         break;
                     case OPERTABLE.right:
-                        tetris.move(1,0);
+                        tetris.moveRight();
+                        break;
+                    case OPERTABLE.rightEnd:
+                        tetris.moveRightToEnd();
                         break;
                     case OPERTABLE.down:
                         tetris.moveDown();
+                        break;
+                    case OPERTABLE.downEnd:
+                        tetris.moveDownToEnd();
                         break;
                     case OPERTABLE.downNature:
                         tetris.moveDownNature();
@@ -187,7 +220,7 @@ GameSocket.prototype = {
                         tetris.drop();
                         break;
                     case OPERTABLE.attack:
-                        main.game.trashPool(data.data);
+                        myTetris.hurt(data.data);
                         break;
                     case OPERTABLE.trash:
                         tetris.trash(data.data);

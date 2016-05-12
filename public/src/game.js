@@ -2,27 +2,6 @@
  * Created by KK on 2016/4/24.
  */
 
-var OPERTABLE = {
-    ready:      0,
-    dead:       1,
-
-    left:       10,
-    right:      11,
-    down:       12,
-    downNature: 18,
-    drop:       13,
-    rotateL:    14,
-    rotateR:    15,
-    rotate180:  16,
-    hold:       17,
-
-    attack:     20,
-    trash:      21,
-
-    start:      100,
-    gameover:   200,
-};
-
 var PlayData = function(){
     this.reset();
 };
@@ -44,6 +23,7 @@ var GameUI = function(game){
         $(this).hide();
         _this.game.readyOrPlay();
     });
+    this.reset(this.game.single);
 };
 GameUI.prototype = {
     constructor: GameUI,
@@ -100,27 +80,23 @@ GameUI.prototype = {
 };
 
 var Game = function(){
+    this.setting = {
+        attackMode: "0124",
+        tspinMode: "3T",
+        useBuffer: true,
+    }
     this.interval = 0.5;
     this.time = 0;
+    this.single = true;
+    this.playing = false;
+    this.ready = false;
+
+    this.isPaused = false;
+    this.firstGame = true;
 };
 Game.prototype = {
     constructor: Game,
     init: function(){
-        this.single = true;
-        this.playing = false;
-        this.ready = false;
-
-        this.setting = {
-            attackMode: "0124",
-            tspinMode: "3T",
-            useBuffer: true,
-        }
-
-        this.isPaused = false;
-        this.firstGame = true;
-
-        this.trashes = [];
-
         this.tetris = new Tetris(this, true);
         this.otherTetris = new Tetris(this, false);
         this.playData = new PlayData();
@@ -214,10 +190,7 @@ Game.prototype = {
             this.ui.gameOver(false);
     },
     lose: function(){
-        if(!this.single){
-            socket.operate(OPERTABLE.dead);
-        }
-        else{
+        if(this.single){
             this.reset();
         }
     },
@@ -227,7 +200,6 @@ Game.prototype = {
         this.playing = false;
         this.tetris.playing = false;
         this.otherTetris.playing = false;
-        this.trashes = [];
     },
     someoneJoined: function(){
         console.log("someoneJoined");
@@ -249,7 +221,6 @@ Game.prototype = {
         }
     },
     trashPool: function(trash){
-        //this.trashes.push(trash);
         this.tetris.hurt(trash);
     },
     calculateDeltaTime: function () {

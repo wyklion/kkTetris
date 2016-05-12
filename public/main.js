@@ -138,10 +138,9 @@ Main.prototype = {
         $('#mainDiv').hide();
         $('#gameDiv').show();
         this.game = new Game();
-        this.game.init();
         var single = socket.data.room.playUsers.length != 2;
         this.game.single = single;
-        this.game.ui.reset(single);
+        this.game.init();
     },
     exitRoom: function(){
         $('#mainDiv').show();
