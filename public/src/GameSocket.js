@@ -27,6 +27,11 @@ var OPERTABLE = {
     gameover:   200,
 };
 
+var MSG_TYPE = {
+    lobby: 0,
+    room: 1,
+};
+
 var GameSocket = function(){
     main.spin();
     this.socket = io(SERVER_NAME);
@@ -75,9 +80,12 @@ GameSocket.prototype = {
             console.log('reconnect...',transport_type,reconnectionAttempts);
         });
     },
+    sendMsg: function(data){
+        this.socket.emit("msg", data);
+    },
     _onMsg: function(){
-        this.socket.on('msg', function (data, data2) {
-            console.log("msg:", data, data2);
+        this.socket.on('msg', function (data) {
+            main.putMsg(data.user, data.msg);
         });
     },
     _onLobbyInfo: function(){

@@ -92,6 +92,29 @@ Main.prototype = {
         });
 
         this.wholeDiv = document.getElementById('wholeDiv');
+        this.initChat();
+    },
+    initChat: function(){
+        var _this = this;
+        //$('#lobbyTextarea').attr("readOnly", true);
+        $('#lobbySay').bind('keypress',function(event){
+            if(event.keyCode == "13")
+            {
+                socket.sendMsg({type:MSG_TYPE.lobby, msg:$('#lobbySay').val()});
+                _this.putMsg(socket.data.user.id, $('#lobbySay').val(), true);
+                $('#lobbySay').val("");
+            }
+        });
+    },
+    putMsg: function(user, msg, me){
+        console.log(user, msg, me);
+        //var txt;
+        //if(me)
+        //    txt = "<font color=#8a2be2>"+user+": "+msg+"</font><br>";
+        //else
+        //    txt = "<font color=#1e90ff>"+user+": "+msg+"</font><br>";
+        //$('#lobbyTextarea').append(txt);
+        $('#lobbyTextarea').append(user+": "+msg+"\n");
     },
     spin: function(){
         this.waiting = true;

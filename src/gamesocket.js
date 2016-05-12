@@ -28,6 +28,11 @@ var OPERTABLE = {
     gameover:   200,
 };
 
+var MSG_TYPE = {
+    lobby: 0,
+    room: 1,
+};
+
 var getTime = function(){
     var date = new Date();
     return date.getTime();
@@ -273,6 +278,7 @@ GameSocket.prototype = {
         this.onSingle(socket);
 
         this.onSetting(socket);
+        this.onMsg(socket);
     },
     onDisconnect: function(socket){
         var _this = this;
@@ -370,6 +376,14 @@ GameSocket.prototype = {
         socket.on('setting', function(data){
             if(data.type==="keyboard"){
                 mongo.updateOne("users", {id:socket.userId}, {keyboard: data.keyboard});
+            }
+        })
+    },
+    onMsg: function(socket){
+        var _this = this;
+        socket.on('msg', function(data){
+            if(data.type===MSG_TYPE.lobby){
+                socket.broadcast.to("lobby").emit("msg", {user:socket.userId, msg:data.msg});
             }
         })
     },
