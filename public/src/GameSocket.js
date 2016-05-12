@@ -71,8 +71,8 @@ GameSocket.prototype = {
     _onDisconnect: function(){
         var _this = this;
         this.socket.on('disconnect', function(){
-            console.log('disconnect');
-            _this.socket.reconnect();
+            console.log('disconnect...');
+            //_this.socket.reconnect();
         });
     },
     _onReconnect: function(){
@@ -81,10 +81,10 @@ GameSocket.prototype = {
         });
     },
     sendMsg: function(data){
-        this.socket.emit("msg", data);
+        this.socket.emit("chat", data);
     },
     _onMsg: function(){
-        this.socket.on('msg', function (data) {
+        this.socket.on('chat', function (data) {
             main.putMsg(data.user, data.msg);
         });
     },

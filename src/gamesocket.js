@@ -107,15 +107,16 @@ RoomManager.prototype = {
         else
             return {err: "room "+roomId+" not exists."}
     },
-    userLeave: function(userId){
+    userLeave: function(socket){
         for(var i in this.rooms){
-            var idx = this.rooms[i].playUsers.indexOf(userId);
+            var idx = this.rooms[i].playUsers.indexOf(socket.userId);
             if(idx > -1){
                 this.rooms[i].playUsers.splice(idx, 1);
                 this.rooms[i].ready = {};
                 if(this.rooms[i].playing){
                     this.rooms[i].playing = false;
-                    mongo.updateAddValue("users", {id:userId}, {disconnect: 1});
+                    socket.broadcast.to("room"+socket.roomId).emit('roomInfo', {room:this.rooms[i]});
+                    mongo.updateAddValue("users", {id:socket.userId}, {disconnect: 1});
                 }
                 if(this.rooms[i].playUsers.length === 0){
                     delete this.rooms[i];
@@ -291,7 +292,7 @@ GameSocket.prototype = {
             if(idx > -1){
                 console.log(socket.userId, "disconnect");
                 _this.users.splice(idx,1);
-                _this.roomManager.userLeave(socket.userId);
+                _this.roomManager.userLeave(socket);
                 socket.broadcast.to("lobby").emit('lobbyInfo',
                     {err: null, users: _this.users, rooms:_this.roomManager.getRooms()});
             }
@@ -385,9 +386,9 @@ GameSocket.prototype = {
     },
     onMsg: function(socket){
         var _this = this;
-        socket.on('msg', function(data){
+        socket.on('chat', function(data){
             if(data.type===MSG_TYPE.lobby){
-                socket.broadcast.to("lobby").emit("msg", {user:socket.userId, msg:data.msg});
+                socket.broadcast.to("lobby").emit("chat", {user:socket.userId, msg:data.msg});
             }
         })
     },

@@ -211,8 +211,8 @@ Game.prototype = {
     },
     someoneJoined: function(){
         console.log("someoneJoined");
-        this.ui.someoneJoined();
         this.single = false;
+        this.ui.someoneJoined();
         this.ready = false;
         this.playData.reset();
         this.tetris.init();
