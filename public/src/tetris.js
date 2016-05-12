@@ -238,6 +238,7 @@ Shape.prototype = {
             this.makeShadow();
             return true;
         }
+        return false;
     },
     move: function(offX,offY){
         if(this.check(this.x+offX, this.y+offY, this.rotation)){
@@ -505,7 +506,8 @@ Tetris.prototype = {
             this.newShape();
         }
         this.holded = true;
-        socket.operate(OPERTABLE.hold);
+        if(this.me && !this.game.single)
+            socket.operate(OPERTABLE.hold);
     },
     rotate: function(anti){
         var ok = this.shape.rotate(anti);
@@ -533,9 +535,7 @@ Tetris.prototype = {
         return this.shape.move(offX, offY);
     },
     moveLeft: function(){
-        var x = this.shape.x;
-        this.move(-1, 0);
-        var ok = x!= this.shape.x;
+        var ok = this.move(-1, 0);
         if(ok){
             this.lastRotate = false;
             this.checkFloor();
@@ -551,9 +551,7 @@ Tetris.prototype = {
         }
     },
     moveRight: function(){
-        var x = this.shape.x;
-        this.move(1, 0);
-        var ok = x!= this.shape.x;
+        var ok = this.move(1, 0);
         if(ok){
             this.lastRotate = false;
             this.checkFloor();
@@ -594,7 +592,6 @@ Tetris.prototype = {
         if(this.me && !this.game.single)
             socket.operate(OPERTABLE.drop);
         this.shape.drop();
-        return this.attackLines;
     },
     checkFloor: function(){
         if(this.shape.floor){
