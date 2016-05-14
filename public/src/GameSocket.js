@@ -120,11 +120,17 @@ GameSocket.prototype = {
         this.socket.on('roomInfo', function (data) {
             _this.data.room = data.room;
             console.log("roomInfo:",_this.data.room);
-            if(main.game.single && _this.data.room.playUsers.length == 2){
-                main.game.someoneJoined();
+            if(data.join){
+                main.game.someoneJoined(data.userId, data.watch);
             }
-            else if(!main.game.single && _this.data.room.playUsers.length == 1)
-                main.game.someoneLeft();
+            else{
+                main.game.someoneLeft(data.userId, data.watch);
+            }
+            //if(main.game.single && _this.data.room.playUsers.length == 2){
+            //    main.game.someoneJoined();
+            //}
+            //else if(!main.game.single && _this.data.room.playUsers.length == 1)
+            //    main.game.someoneLeft();
         });
     },
     createRoom: function(){
@@ -153,7 +159,7 @@ GameSocket.prototype = {
         this.socket.on("onJoinRoom", function(data){
             if(!data.err){
                 _this.data.room = data.room;
-                if(_this.data.room.watchUsers.indexOf(_this.data.user.id)>0){
+                if(data.watch){
                     main.goRoom(true);
                     console.log("watch room:", _this.data.room);
                 }
@@ -167,9 +173,9 @@ GameSocket.prototype = {
             main.stopSpin();
         });
     },
-    exitRoom: function(){
+    exitRoom: function(watch){
         main.spin();
-        this.socket.emit("exitRoom");
+        this.socket.emit("exitRoom", {watch:watch});
     },
     _onExitRoom: function(){
         var _this = this;

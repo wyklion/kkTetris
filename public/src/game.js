@@ -47,12 +47,24 @@ GameUI.prototype = {
             $('#playButton').show();
         }
     },
-    someoneJoined: function(){
-        $('#otherName').text(socket.getRoomOtherUser());
-        this.reset(false);
+    someoneJoined: function(userId, watch){
+        if(!watch){
+            $('#otherName').text(userId);
+            this.reset(false);
+        }
+        else{
+        }
     },
-    someoneLeft: function(){
-        $('#otherName').empty();
+    someoneLeft: function(userId, watch){
+        if(!watch){
+            $('#otherName').empty();
+        }
+        else{
+            if(this.game.hostUser === userId)
+                $('#hostName').empty();
+            else
+                $('#otherName').empty();
+        }
         this.reset(true);
     },
     readyOrPlay: function(){
@@ -67,6 +79,14 @@ GameUI.prototype = {
     },
     otherReady: function(){
         $('#otherStatus').text("Is ready!");
+    },
+    userReady: function(userId){
+        if(userId === this.game.hostUser){
+            $('#myStatus').text("I'm ready!");
+        }
+        else{
+            $('#otherStatus').text("Is ready!");
+        }
     },
     startVS: function(){
         $('#myStatus').empty();
@@ -103,14 +123,22 @@ var Game = function(){
 Game.prototype = {
     constructor: Game,
     init: function(){
-        this.tetris = new Tetris(this, true);
+        if(!this.watch){
+            this.tetris = new Tetris(this, true);
+        }
+        else{
+            this.hostUser = socket.data.room.playUsers[0];
+            this.otherUser = socket.data.room.playUsers[1];
+            this.tetris = new Tetris(this, false);
+        }
         this.otherTetris = new Tetris(this, false);
         this.playData = new PlayData();
         this.renderer = new Render(this);
         this.mainLoop();
 
         this.ui = new GameUI(this);
-        this.input();
+        if(!this.watch)
+            this.input();
     },
     updateInput: function() {
         this.keyManager.updateInput();
@@ -138,7 +166,6 @@ Game.prototype = {
         });
 
         document.body.onkeydown = function( e ) {
-            if(_this.watch) return;
             if(e.keyCode === 113){ // F2
                 _this.readyOrPlay();
             }
@@ -149,7 +176,6 @@ Game.prototype = {
             }
         }
         document.body.onkeyup = function( e ) {
-            if(_this.watch) return;
             _this.keyManager.onKeyUp(e.keyCode);
         }
     },
@@ -179,6 +205,7 @@ Game.prototype = {
     //for watch
     userReady: function(userId){
         console.log(userId,"ready");
+        this.ui.userReady(userId);
     },
     otherReady: function(){
         console.log("other is ready...");
@@ -213,23 +240,27 @@ Game.prototype = {
         this.tetris.playing = false;
         this.otherTetris.playing = false;
     },
-    someoneJoined: function(){
-        console.log("someoneJoined");
-        this.single = false;
-        this.ui.someoneJoined();
-        this.ready = false;
-        this.playData.reset();
-        this.tetris.init();
+    someoneJoined: function(userId, watch){
+        console.log("someoneJoined, ", watch?"watch":"play");
+        this.ui.someoneJoined(userId, watch);
+        if(!watch && !this.watch){
+            this.single = false;
+            this.ready = false;
+            this.playData.reset();
+            this.tetris.init();
+        }
     },
-    someoneLeft: function(){
-        console.log("someoneLeft");
-        this.ui.someoneLeft();
-        this.otherTetris.init();
-        this.single = true;
-        this.ready = false;
-        if(this.playing){
-            this.playing = false;
-            this.tetris.gameOver();
+    someoneLeft: function(userId, watch){
+        console.log("someoneLeft", watch?"watcher":"player");
+        this.ui.someoneLeft(userId, watch);
+        if(!watch && !this.watch){
+            this.otherTetris.init();
+            this.single = true;
+            this.ready = false;
+            if(this.playing){
+                this.playing = false;
+                this.tetris.gameOver();
+            }
         }
     },
     trashPool: function(trash){
