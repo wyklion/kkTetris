@@ -86,11 +86,18 @@ a:hover{
     left:520px;
     width:300px;
 }
-#myDiv{
+#hostDiv{
     position:absolute;
     top:200px;
     left:520px;
     width:300px;
+}
+#hostNameDiv{
+    position:absolute;
+    top:-40px;
+    left:500px;
+    width:300px;
+    text-align: center;
 }
 #otherDiv{
     position:absolute;

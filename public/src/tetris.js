@@ -360,8 +360,8 @@ Tetris.prototype = {
         return false;
     },
     gameOver: function(){
+        this.playing = false;
         if(this.me){
-            this.playing = false;
             this.operate(OPERTABLE.dead);
             this.game.lose();
         }

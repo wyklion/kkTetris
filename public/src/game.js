@@ -19,10 +19,12 @@ PlayData.prototype = {
 var GameUI = function(game){
     this.game = game;
     var _this = this;
-    $('#playButton').on("click", function(){
-        $(this).hide();
-        _this.game.readyOrPlay();
-    });
+    if(!this.game.watch){
+        $('#playButton').on("click", function(){
+            $(this).hide();
+            _this.game.readyOrPlay();
+        });
+    }
     this.reset();
 };
 GameUI.prototype = {
@@ -30,18 +32,42 @@ GameUI.prototype = {
     reset: function(){
         if(this.game.watch){
             $('#playButton').hide();
+            if(this.game.hostUser){
+                $('#hostName').text(this.game.hostUser);
+                if(socket.data.room.ready[this.game.hostUser])
+                    $('#hostStatus').text("I'm ready!");
+                else
+                    $('#hostStatus').text("Waiting...");
+            }
+            else{
+                $('#hostName').empty();
+                $('#hostStatus').empty();
+            }
+            if(this.game.otherUser) {
+                $('#otherName').text(this.game.otherUser);
+                if (socket.data.room.ready[this.game.otherUser])
+                    $('#otherStatus').text("I'm ready!");
+                else
+                    $('#otherStatus').text("Waiting...");
+            }
+            else{
+                $('#otherName').empty();
+                $('#otherStatus').empty();
+            }
         }
         else{
             if(!this.game.single){
                 $('#playButton').html("<h1>Ready(F2)</h1>");
-                $('#myStatus').empty();
+                $('#hostStatus').empty();
                 $('#otherStatus').text('Waiting...')
-                $('#otherName').text(socket.getRoomOtherUser());
+                $('#hostName').text(this.game.hostUser);
+                $('#otherName').text(this.game.otherUser);
             }
             else{
                 $('#playButton').html("<h1>Play(F2)</h1>");
-                $('#myStatus').empty();
+                $('#hostStatus').empty();
                 $('#otherStatus').empty();
+                $('#hostName').text(this.game.hostUser);
                 $('#otherName').empty();
             }
             $('#playButton').show();
@@ -50,7 +76,7 @@ GameUI.prototype = {
     someoneJoined: function(userId, watch){
         if(!watch){
             $('#otherName').text(userId);
-            this.reset(false);
+            this.reset();
         }
         else{
         }
@@ -65,16 +91,16 @@ GameUI.prototype = {
             else
                 $('#otherName').empty();
         }
-        this.reset(true);
+        this.reset();
     },
     readyOrPlay: function(){
         if(this.game.single){
             $('#playButton').hide();
-            $('#myStatus').empty();
+            $('#hostStatus').empty();
         }
         else{
             $('#playButton').hide();
-            $('#myStatus').text("I'm ready!");
+            $('#hostStatus').text("I'm ready!");
         }
     },
     otherReady: function(){
@@ -82,23 +108,23 @@ GameUI.prototype = {
     },
     userReady: function(userId){
         if(userId === this.game.hostUser){
-            $('#myStatus').text("I'm ready!");
+            $('#hostStatus').text("I'm ready!");
         }
         else{
             $('#otherStatus').text("Is ready!");
         }
     },
     startVS: function(){
-        $('#myStatus').empty();
+        $('#hostStatus').empty();
         $('#otherStatus').empty();
     },
     gameOver: function(win){
         if(win){
-            $('#myStatus').text("Win!");
+            $('#hostStatus').text("Win!");
             $('#otherStatus').text("Lose!");
         }
         else{
-            $('#myStatus').text("Lose!");
+            $('#hostStatus').text("Lose!");
             $('#otherStatus').text("Win!");
         }
     },
@@ -125,6 +151,9 @@ Game.prototype = {
     init: function(){
         if(!this.watch){
             this.tetris = new Tetris(this, true);
+            this.hostUser = socket.data.user.id;
+            if(!this.single)
+                this.otherUser = socket.data.room.playUsers[0] === this.hostUser ? socket.data.room.playUsers[1] : socket.data.room.playUsers[0];
         }
         else{
             this.hostUser = socket.data.room.playUsers[0];
@@ -205,6 +234,10 @@ Game.prototype = {
     //for watch
     userReady: function(userId){
         console.log(userId,"ready");
+        if(this.hostUser === userId)
+            this.tetris.init();
+        else if(this.otherUser === userId)
+            this.otherTetris.init();
         this.ui.userReady(userId);
     },
     otherReady: function(){
@@ -235,33 +268,50 @@ Game.prototype = {
     },
     reset: function(){
         this.ui.reset();
-        this.keyManager.stop();
+        if(!this.watch)
+            this.keyManager.stop();
         this.playing = false;
         this.tetris.playing = false;
         this.otherTetris.playing = false;
     },
     someoneJoined: function(userId, watch){
-        console.log("someoneJoined, ", watch?"watch":"play");
-        this.ui.someoneJoined(userId, watch);
-        if(!watch && !this.watch){
+        console.log(userId+" joined to ", watch?"watch":"play");
+        if(this.hostUser)
+            this.otherUser = userId;
+        else
+            this.hostUser = userId;
+        if(!watch){
             this.single = false;
             this.ready = false;
             this.playData.reset();
             this.tetris.init();
+            this.otherTetris.init();
         }
+        this.ui.someoneJoined(userId, watch);
     },
     someoneLeft: function(userId, watch){
-        console.log("someoneLeft", watch?"watcher":"player");
-        this.ui.someoneLeft(userId, watch);
-        if(!watch && !this.watch){
-            this.otherTetris.init();
+        console.log(watch?"watcher ":"player "+userId+" left");
+        if(!watch){
             this.single = true;
             this.ready = false;
-            if(this.playing){
-                this.playing = false;
-                this.tetris.gameOver();
+            if(!this.watch || userId === this.otherUser){
+                this.otherUser = null;
+                this.otherTetris.init();
+                if(this.playing){
+                    this.playing = false;
+                    this.tetris.gameOver();
+                }
+            }
+            else{
+                this.hostUser = null;
+                this.tetris.init();
+                if(this.playing){
+                    this.playing = false;
+                    this.otherTetris.gameOver();
+                }
             }
         }
+        this.ui.someoneLeft(userId, watch);
     },
     trashPool: function(trash){
         this.tetris.hurt(trash);
@@ -296,9 +346,11 @@ Game.prototype = {
                     return;
                 }
             }
-            while(this.time > this.interval){
-                this.time -= this.interval;
-                this.tetris.moveDownNature();
+            if(!this.watch){
+                while(this.time > this.interval){
+                    this.time -= this.interval;
+                    this.tetris.moveDownNature();
+                }
             }
         }
         this.renderer.render();

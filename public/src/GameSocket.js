@@ -173,9 +173,9 @@ GameSocket.prototype = {
             main.stopSpin();
         });
     },
-    exitRoom: function(watch){
+    exitRoom: function(){
         main.spin();
-        this.socket.emit("exitRoom", {watch:watch});
+        this.socket.emit("exitRoom", {watch:main.game.watch});
     },
     _onExitRoom: function(){
         var _this = this;
@@ -203,12 +203,18 @@ GameSocket.prototype = {
         this.socket.on("onOperation", function(data){
             //console.log("other operate:", data.oper);
             if(main.game){
-                var myTetris,tetris;
+                var hostTetris,imitateTetris;
                 if(main.game.watch){
-                    console.log(data.userId);
+                    if(main.game.hostUser === data.userId){
+                        imitateTetris = main.game.tetris;
+                    }
+                    else
+                        imitateTetris = main.game.otherTetris;
                 }
-                myTetris = main.game.tetris;
-                tetris = main.game.otherTetris;
+                else{
+                    hostTetris = main.game.tetris;
+                    imitateTetris = main.game.otherTetris;
+                }
                 switch(data.oper){
                     case OPERTABLE.ready:
                         if(main.game.watch)
@@ -225,43 +231,44 @@ GameSocket.prototype = {
                     case OPERTABLE.dead:
                         break;
                     case OPERTABLE.left:
-                        tetris.moveLeft();
+                        imitateTetris.moveLeft();
                         break;
                     case OPERTABLE.leftEnd:
-                        tetris.moveLeftToEnd();
+                        imitateTetris.moveLeftToEnd();
                         break;
                     case OPERTABLE.right:
-                        tetris.moveRight();
+                        imitateTetris.moveRight();
                         break;
                     case OPERTABLE.rightEnd:
-                        tetris.moveRightToEnd();
+                        imitateTetris.moveRightToEnd();
                         break;
                     case OPERTABLE.down:
-                        tetris.moveDown();
+                        imitateTetris.moveDown();
                         break;
                     case OPERTABLE.downEnd:
-                        tetris.moveDownToEnd();
+                        imitateTetris.moveDownToEnd();
                         break;
                     case OPERTABLE.downNature:
-                        tetris.moveDownNature();
+                        imitateTetris.moveDownNature();
                         break;
                     case OPERTABLE.drop:
-                        tetris.drop();
+                        imitateTetris.drop();
                         break;
                     case OPERTABLE.attack:
-                        myTetris.hurt(data.data);
+                        if(!main.game.watch)
+                            hostTetris.hurt(data.data);
                         break;
                     case OPERTABLE.trash:
-                        tetris.trash(data.data);
+                        imitateTetris.trash(data.data);
                         break;
                     case OPERTABLE.rotateL:
-                        tetris.rotate(true);
+                        imitateTetris.rotate(true);
                         break;
                     case OPERTABLE.rotateR:
-                        tetris.rotate(false);
+                        imitateTetris.rotate(false);
                         break;
                     case OPERTABLE.hold:
-                        tetris.holdShape();
+                        imitateTetris.holdShape();
                         break;
                 }
             }
