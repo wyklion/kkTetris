@@ -29,7 +29,7 @@ GameUI.prototype = {
     constructor: GameUI,
     reset: function(){
         if(this.game.watch){
-
+            $('#playButton').hide();
         }
         else{
             if(!this.game.single){
@@ -175,6 +175,10 @@ Game.prototype = {
                 socket.operate(OPERTABLE.ready);
             }
         }
+    },
+    //for watch
+    userReady: function(userId){
+        console.log(userId,"ready");
     },
     otherReady: function(){
         console.log("other is ready...");

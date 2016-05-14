@@ -76,15 +76,20 @@ RoomManager.prototype = {
     joinRoom: function(roomId, userId, watch){
         var room = this.rooms[roomId];
         if(room) {
-            if (room.playUsers.length == 1) {
-                if(watch)
-                    room.watchUsers.push(userId);
-                else
+            if(!watch) {
+                if (room.playUsers.length == 1) {
                     room.playUsers.push(userId);
-                return {err:null};
+                    return {err: null};
+                }
+                else
+                    return {err: "room " + roomId + " is empty."};
+            }
+            else if (room.playUsers.length == 2){
+                room.watchUsers.push(userId);
+                return {err: null};
             }
             else
-                return {err:"room "+roomId+" is empty."};
+                return {err: "room " + roomId + " is not full."};
         }
         else
             return {err: "room "+roomId+" not exists."}
@@ -320,6 +325,7 @@ GameSocket.prototype = {
                 socket.emit("onJoinRoom", {err:null, room:_this.roomManager.getRoom(socket.roomId)});
                 console.log(socket.userId, data.watch?"watchRoom":"joinRoom", socket.roomId);
                 socket.join("room"+socket.roomId);
+                socket.broadcast.to("lobby").emit('lobbyInfo', {rooms:_this.roomManager.getRooms()});
                 socket.broadcast.to("room"+socket.roomId).emit('roomInfo', {room:_this.roomManager.getRoom(socket.roomId)});
                 // 通知房间内人员
                 _this.io.to("room"+socket.roomId).emit('msg', socket.userId + '加入了房间', _this.roomManager.getRoom(socket.roomId));
@@ -363,6 +369,7 @@ GameSocket.prototype = {
                 _this.roomManager.userDead(socket);
                 return;
             }
+            data.userId = socket.userId;
             socket.broadcast.to("room"+socket.roomId).emit('onOperation', data);
             if(oper === OPERTABLE.ready){
                 _this.roomManager.userReady(socket);

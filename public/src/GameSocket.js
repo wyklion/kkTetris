@@ -197,11 +197,18 @@ GameSocket.prototype = {
         this.socket.on("onOperation", function(data){
             //console.log("other operate:", data.oper);
             if(main.game){
-                var myTetris = main.game.tetris;
-                var tetris = main.game.otherTetris;
+                var myTetris,tetris;
+                if(main.game.watch){
+                    console.log(data.userId);
+                }
+                myTetris = main.game.tetris;
+                tetris = main.game.otherTetris;
                 switch(data.oper){
                     case OPERTABLE.ready:
-                        main.game.otherReady();
+                        if(main.game.watch)
+                            main.game.userReady(data.userId);
+                        else
+                            main.game.otherReady();
                         break;
                     case OPERTABLE.start:
                         main.game.startVS(data.shapes);
