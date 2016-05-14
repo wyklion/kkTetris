@@ -46,7 +46,7 @@
                 if(status == 'success'){
                     $('#resultHead').empty();
                     $('#resultBody').empty();
-                    var head = ["id","password","level","score","win","lose","disconnect","single40Times","single40Best","keyboard"];
+                    var head = ["id","password","level","score","win","lose","disconnect","single40Times","single40Best","setting", "keyboard"];
                     var thStr = "";
                     for(var i = 0; i < data.length; i++){
                         var tdStr = "";
@@ -70,6 +70,11 @@
                                         count=0;
                                         str+="<br>";
                                     }
+                                }
+                            }
+                            else if(item === "setting"){
+                                for(var t in data[i][item]){
+                                    str += t+":"+data[i][item][t]+";";
                                 }
                             }
                             else

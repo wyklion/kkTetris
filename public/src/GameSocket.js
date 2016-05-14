@@ -34,6 +34,7 @@ var MSG_TYPE = {
 
 var GameSocket = function(){
     main.spin();
+    $('#openWaiting').remove();
     this.socket = io(SERVER_NAME);
     this.data = {
         user:null,
@@ -257,6 +258,10 @@ GameSocket.prototype = {
         this.socket.emit("single40", {
             time:time,
         });
+    },
+    setSetting: function(setting){
+        this.data.user.setting = setting;
+        this.socket.emit("setting", {type:"setting", setting:setting});
     },
     setKeyboard: function(keyboard){
         this.data.user.keyboard = keyboard;

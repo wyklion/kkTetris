@@ -379,8 +379,11 @@ GameSocket.prototype = {
     onSetting: function(socket){
         var _this = this;
         socket.on('setting', function(data){
-            if(data.type==="keyboard"){
+            if(data.type === "keyboard"){
                 mongo.updateOne("users", {id:socket.userId}, {keyboard: data.keyboard});
+            }
+            else if(data.type === "setting"){
+                mongo.updateOne("users", {id:socket.userId}, {setting: data.setting});
             }
         })
     },

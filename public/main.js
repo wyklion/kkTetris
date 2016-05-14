@@ -6,7 +6,6 @@ var Main = function(){
 Main.prototype = {
     constructor: Main,
     init: function(){
-        this.initUI();
     },
     initUI: function(){
         $('#logoutButton').on('click', function () {
@@ -18,6 +17,66 @@ Main.prototype = {
         $('#exitButton').on('click', function () {
             socket.exitRoom();
         })
+        this.initKeyboardSetting();
+        this.initSetting();
+        this.initChat();
+        this.setTheme();
+        $('body').css('display','block');
+    },
+    initSetting: function(){
+        var _this = this;
+        $('#settingButton').on('click', function () {
+            $('#settingModal').modal();
+        })
+        $('#settingModal').on('show.bs.modal', function () {
+            if(socket.data.user.setting.theme === 0)
+                $('#themeSelect').selectpicker('val', 'White Theme');
+            else
+                $('#themeSelect').selectpicker('val', 'Black Theme');
+            _this.setting = {
+                theme: socket.data.user.setting.theme,
+            };
+        });
+        $('#settingSave').on('click', function () {
+            $('#settingModal').modal('hide');
+            var theme = $('#themeSelect').val();
+            var newThemeIdx = theme === "White Theme" ? 0 : 1;
+            if(_this.setting.theme === newThemeIdx) return;
+            _this.setting.theme = newThemeIdx;
+            socket.setSetting(_this.setting);
+            _this.setTheme();
+        });
+    },
+    setTheme: function(){
+        if(!socket.data.user.setting)
+            socket.data.user.setting = {theme:0};
+        var theme = socket.data.user.setting.theme;
+        if(theme === 0){
+            $(".myTheme").css("background-color","#FFFFFF");
+            $(".myTheme").css("border-color","#AAAAAA");
+            $("body").css("background-color","#FFFFFF");
+            //$("body").css("color","#000");
+            //$('#userList').css('background-color','white');
+        }
+        else{
+            $(".myTheme").css("background-color","#999999");
+            $(".myTheme").css("border-color","#555555");
+            $("body").css("background-color","#555555");
+            //$("body").css("color","#FFF");
+            //$('#userList').css('background-color','#999999');
+        }
+        this.updateUserList();
+    },
+    initKeyboardSetting: function(){
+        for(var i in socket.data.user.keyboard){
+            if(i==="dasDelay" || i=="moveDelay") continue;
+            $('#'+i+'key').empty();
+            var str = "<kbd>"+key[socket.data.user.keyboard[i]]+"</kbd>"
+            $('#'+i+'key').append(str);
+        }
+        $('#dasDelay').val(socket.data.user.keyboard.dasDelay);
+        $('#moveDelay').val(socket.data.user.keyboard.moveDelay);
+
         var _this = this;
         $('#leftkey').on('click', function(){
             $(this).empty();
@@ -59,10 +118,6 @@ Main.prototype = {
             _this.keyboard = {};
             for(var i in socket.data.user.keyboard){
                 if(i==="dasDelay" || i=="moveDelay") continue;
-                $('#'+i+'key').empty();
-                $('#'+i+'key').empty();
-                var str = "<kbd>"+key[socket.data.user.keyboard[i]]+"</kbd>"
-                $('#'+i+'key').append(str);
                 _this.keyboard[i] = socket.data.user.keyboard[i];
             }
             $('#dasDelay').val(socket.data.user.keyboard.dasDelay);
@@ -90,9 +145,6 @@ Main.prototype = {
             _this.keyboard = null;
             $('#myModal').modal('hide');
         });
-
-        this.wholeDiv = document.getElementById('wholeDiv');
-        this.initChat();
     },
     initChat: function(){
         var _this = this;
@@ -115,12 +167,10 @@ Main.prototype = {
         $('#lobbyTextarea').append(user+": "+msg+"\n");
     },
     spin: function(){
-        this.waiting = true;
         $("<div class='waitingDiv'></div>").appendTo($("body"));
-        this.spinner = new Spinner().spin(this.wholeDiv);
+        this.spinner = new Spinner().spin($("#wholeDiv")[0]);
     },
     stopSpin: function(){
-        this.waiting = false;
         $(".waitingDiv").remove();
         this.spinner.stop();
     },
@@ -128,6 +178,8 @@ Main.prototype = {
         var welcome = document.getElementById("welcome");
         //welcome.innerHTML = "Welcome "+socket.data.user+"<a href='/logout'>注销</a>"
         welcome.innerHTML = "Welcome "+socket.data.user.id;
+        this.initUI();
+
         this.updateRoomList();
         this.updateUserList();
     },
@@ -154,7 +206,7 @@ Main.prototype = {
     updateUserList: function(){
         $('#userList').empty();
         for(var i = 0; i < socket.data.users.length; i++) {
-            var user = "<li class='list-group-item'>"+socket.data.users[i]+"</li>";
+            var user = "<li class='myTheme list-group-item'>"+socket.data.users[i]+"</li>";
             $('#userList').append(user);
         }
     },

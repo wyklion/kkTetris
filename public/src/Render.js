@@ -143,6 +143,17 @@ var colors = [
     'rgb(30,144,255)', 'yellow', 'purple', 'orange', 'blue', 'red', 'green',
 ];
 
+var Theme = [
+    //white
+    {
+        bg:'rgb(225,225,225)',
+    },
+    //black
+    {
+        bg:'rgb(20,20,20)',
+    },
+]
+
 var Render = function(game){
     this.scale = 1;
 
@@ -351,6 +362,7 @@ Render.prototype = {
     },
     drawPlayData: function(){
         this.ctx.save();
+        this.ctx.fillStyle = "rgba(0,0,0,1)";
         this.ctx.font = "25px Arial";
         this.ctx.textBaseline = 'middle';
         var length;
@@ -376,7 +388,8 @@ Render.prototype = {
     },
     render: function(){
         //this.clearDrawData();
-
+        //this.ctx.fillStyle = Theme[socket.data.user.setting.theme||0].bg;
+        //this.ctx.fillRect(0,0,960,640);
         this.ctx.clearRect(0,0,960,640);
         this.drawMyArea();
         this.drawAnotherArea();

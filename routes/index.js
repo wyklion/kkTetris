@@ -45,15 +45,7 @@ router.route("/register").get(function(req,res){    // 到达此路径则渲染r
             req.session.error = '用户名已存在！';
             res.send(500);
         }else{
-            mongo.insertOne("users", {
-                id:uname, nick:uname, password: upwd,
-                level:0, score:0,
-                win:0, lose:0, disconnect: 0,
-                single40Times:0, single40Best:999,
-                keyboard: {
-                left:37,right:39,down:70,drop:40,rotate:82,rotateRight:69,rotate180:87,hold:84,dasDelay:150,moveDelay:30,
-                }
-            }, function(err, result){
+            mongo.createNewUser(uname, upwd, function(err, result){
                 if(err || result.result.n !== 1){
                     req.session.error = '创建用户失败！';
                     res.send(500);
@@ -61,7 +53,7 @@ router.route("/register").get(function(req,res){    // 到达此路径则渲染r
                 else{
                     req.session.error = '用户名创建成功！';
                     res.send(200);}
-            })
+            });
         }
     });
 });

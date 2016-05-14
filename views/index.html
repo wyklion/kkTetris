@@ -2,11 +2,54 @@
 <html>
 <head>
     <title>KK Tetris</title>
-    <link rel='stylesheet' href='/css/style.css' />
+    <!--<SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="https://seal.wosign.com/tws-en.js"></SCRIPT>-->
+    <!--<link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" media="screen">-->
+    <!--<link rel='stylesheet' href='//cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.min.css' />-->
+
     <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
-    <SCRIPT LANGUAGE="JavaScript" TYPE="text/javascript" SRC="https://seal.wosign.com/tws-en.js"></SCRIPT>
+    <link rel='stylesheet' href='css/bootstrap-select.min.css' />
+
+    <link rel='stylesheet' href='/css/style.css' />
 </head>
-<body>
+<body style="display:none">
+    <div class="modal fade" id="settingModal" tabindex="-1" role="dialog" aria-labelledby="settingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                            data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+                    <h3 class="modal-title center-block" id="settingModalLabel">
+                        Setting
+                    </h3>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <tbody>
+                        <tr>
+                            <td><h4>Theme</h4></td>
+                            <td>
+                                <select id= "themeSelect" class="selectpicker">
+                                    <option>White Theme</option>
+                                    <option>Black Theme</option>
+                                </select>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">Close
+                    </button>
+                    <button id="settingSave" type="button" class="btn btn-primary">
+                        Save changes
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -81,12 +124,14 @@
         <!--</div>-->
     <!--</div>-->
     <div class="topDiv">
-        <nav class="navbar navbar-default navbar-inverse">
+        <nav id="navBar" class="navbar navbar-default navbar-inverse">
             <div class="container-fluid">
                 <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-left">
-                        <li><button id="keyboardButton" type="button" class="btn btn-default navbar-btn">Keyboard</button></li>
+                        <li><button id="settingButton" type="button" class="btn btn-primary navbar-btn">Setting</button></li>
+                        <li><span>&nbsp;&nbsp;</span></li>
+                        <li><button id="keyboardButton" type="button" class="btn btn-info navbar-btn">Keyboard</button></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <li><p id="welcome" class="navbar-text"></p></li>
@@ -126,14 +171,14 @@
                 </div>
                 <div class="col-md-6">
                     <h3><span class="glyphicon glyphicon-lamp"></span><strong>Chat</strong></h3>
-                    <textarea id="lobbyTextarea" readOnly="true" style="background-color:white;resize:none;" class="form-control" rows="25"></textarea>
+                    <textarea id="lobbyTextarea" readOnly="true" style="resize:none;" class="myTheme form-control" rows="25"></textarea>
                     <br>
                     <div class="row">
                         <div class="col-md-1">
                             <h4>Say:</h4>
                         </div>
                         <div class="col-md-11">
-                            <input id="lobbySay" type="text" class="form-control" placeholder="">
+                            <input id="lobbySay" type="text" class="myTheme form-control" placeholder="">
                         </div>
                     </div>
                 </div>
@@ -165,10 +210,19 @@
     </div>
     <div class="bottomDiv">
     </div>
-    <script src="https://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
-    <script src="https://apps.bdimg.com/libs/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="https://cdn.bootcss.com/spin.js/2.3.2/spin.min.js"></script>
-    <script src='https://cdn.bootcss.com/socket.io/1.4.6/socket.io.min.js'></script>
+    <div id="openWaiting" class="waitingDiv"></div>
+    <!--<script src="//cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>-->
+    <!--<script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>-->
+    <!--<script src="//cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.min.js"></script>-->
+    <!--<script src="//cdn.bootcss.com/spin.js/2.3.2/spin.min.js"></script>-->
+    <!--<script src='//cdn.bootcss.com/socket.io/1.4.6/socket.io.min.js'></script>-->
+
+    <script src="lib/jquery.min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
+    <script src="lib/bootstrap-select.min.js"></script>
+    <script src="lib/spin.min.js"></script>
+    <script src="lib/socket.io.min.js"></script>
+
     <script src='src/config.js'></script>
     <script src='src/GameSocket.js'></script>
     <script src='src/tetris.js'></script>
