@@ -141,7 +141,7 @@ var Game = function(){
     this.setting = {
         attackMode: "0124",
         tspinMode: "3T",
-        useBuffer: false,
+        useBuffer: true,
     }
     this.interval = 0.5;
     this.time = 0;
