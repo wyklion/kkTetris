@@ -612,7 +612,6 @@ Tetris.prototype = {
                 if(this.trashes.length > 0){
                     this.riseRow(this.trashes);
                     //console.log("tell other i got trash...");
-                    this.operate(OPERTABLE.trash, {trash:this.trashes,offY:0});
                     this.trashes = [];
                 }
             }
@@ -699,7 +698,7 @@ Tetris.prototype = {
         }
         return dead;
     },
-    //only other...
+    //only other... useBuffer = false
     trash: function(data){
         //console.log("other get trash:", data.trash, data.offY);
         this.riseRow(data.trash);
