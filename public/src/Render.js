@@ -158,28 +158,22 @@ var Render = function(game){
     this.scale = 1;
 
     this.game = game;
-    this.playData = this.game.playData;
     this.tetris = this.game.tetris;
     this.canvas = $('#gameCanvas')[0];
     this.ctx = this.canvas.getContext( '2d' );
     this.baseSize = 30;
+    this.middleSize = 25;
     this.smallSize = 20;
-    this.areaW = 300;
-    this.areaH = 600;
+    this.areaW = this.baseSize * 10;
+    this.areaH = this.baseSize * 20;
     this.myPos = {
-        x:520,y:20
-    }
-    this.nextPos = {
-        x:830,y:20
-    }
-    this.holdPos = {
-        x:390,y:20
+        x:560,y:20
     }
     this.anotherPos = {
         x:100,y:20
     }
     this.playDataPos = {
-        x:450,y:120
+        x:480,y:120
     }
     //makeSprite(this.baseSize);
     //this.drawData = {
@@ -213,37 +207,15 @@ Render.prototype = {
     baseFillText: function(txt, x, y){
         this.ctx.fillText(txt, x*this.scale, y*this.scale);
     },
-    drawBlock: function(pos, x, y, shadow){
-        this.baseFillRect(pos.x+this.baseSize * x, pos.y+this.baseSize * y, this.baseSize - 1 , this.baseSize - 1);
+    drawBlock: function(pos, x, y, size, shadow){
+        this.baseFillRect(pos.x+size*x, pos.y+size*y, size-1 , size-1);
         if(!shadow)
-            this.baseStrokeRect(pos.x+this.baseSize * x, pos.y+this.baseSize * y, this.baseSize - 1 , this.baseSize - 1 );
-    },
-    drawAnotherArea: function(){
-        //this.ctx.clearRect(this.anotherPos.x,this.anotherPos.y,this.areaW-1,this.areaH-1);
-        this.ctx.strokeStyle = 'black';
-        this.baseStrokeRect(this.anotherPos.x,this.anotherPos.y,this.areaW-1,this.areaH-1);
-        if(!this.game.otherTetris) return;
-        var tetris = this.game.otherTetris;
-        this.ctx.save();
-        //this.ctx.shadowOffsetX = 2;
-        //this.ctx.shadowOffsetY = 2;
-        //this.ctx.shadowColor = 'rgba(100,100,100,0.5)';
-        //this.ctx.shadowBlur = 5;
-        for(var i = 0; i < tetris.row; i++){
-            for(var j = 0; j < tetris.col; j++) {
-                if(tetris.board[i][j]>0) {
-                    this.ctx.fillStyle = tetris.playing ? colors[tetris.board[i][j] - 1 ] : "rgba(0,0,0,0.2)";
-                    this.drawBlock(this.anotherPos, j, tetris.row-1-i);
-                }
-            }
-        }
-
-        this.drawShape(this.anotherPos, tetris.shape);
-        this.ctx.restore();
+            this.baseStrokeRect(pos.x+size*x, pos.y+size*y, size-1 , size-1);
     },
     drawShape: function(pos, shape){
         if(!shape) return;
         var _this = this;
+        var tetris = shape.tetris;
         function drawFourBlocks(shadow){
             var px = shape.x;
             var py;
@@ -256,109 +228,76 @@ Render.prototype = {
                 color = colors[shape.shapeId-1];
                 py = shape.y;
             }
-            _this.ctx.fillStyle = _this.tetris.playing ? color : "rgba(0,0,0,1)";
+            _this.ctx.fillStyle = tetris.playing ? color : "rgba(0,0,0,1)";
             for(var i = 0; i < 4; i++){
                 var x = px + shape.shapeModel.cells[shape.rotation][i*2];
                 var y = py + shape.shapeModel.cells[shape.rotation][i*2+1];
-                if(x<0||x>=_this.tetris.col||y<0||y>=_this.tetris.row)
+                if(x<0||x>=tetris.col||y<0||y>=_this.tetris.row)
                     continue;
-                _this.drawBlock(pos, x, _this.tetris.row-1-y, shadow);
+                _this.drawBlock(pos, x, tetris.row-1-y, _this.baseSize, shadow);
             }
         }
-        if(_this.tetris.playing){
-        //shape shadow
-        drawFourBlocks(true);
+        if(tetris.playing){
+            //shape shadow
+            drawFourBlocks(true);
         }
         //current shape
         drawFourBlocks(false);
     },
-    drawMyArea: function(){
-        //this.ctx.clearRect(this.myPos.x,this.myPos.y,this.areaW-1,this.areaH-1);
-        this.ctx.strokeStyle = 'black';
-
-        this.baseStrokeRect(this.myPos.x,this.myPos.y,this.areaW-1,this.areaH-1);
-
-        this.ctx.save();
-        //this.ctx.shadowOffsetX = 2;
-        //this.ctx.shadowOffsetY = 2;
-        //this.ctx.shadowColor = 'rgba(100,100,100,0.5)';
-        //this.ctx.shadowBlur = 5;
-        for(var i = 0; i < this.tetris.row; i++){
-            for(var j = 0; j < this.tetris.col; j++) {
-                if(this.tetris.board[i][j]>0) {
-                    //this.drawTextureBlock(this.myPos, j, this.tetris.row-1-i, this.tetris.board[i][j]-1, this.baseSize);
-                    this.ctx.fillStyle = this.tetris.playing ? colors[this.tetris.board[i][j] - 1 ] : "rgba(0,0,0,0.2)";
-                    this.drawBlock(this.myPos, j, this.tetris.row-1-i);
-                    //this.drawData.colorBlock[this.tetris.board[i][j]-1].push({
-                    //    x:this.myPos.x+this.baseSize * j,
-                    //    y: this.myPos.y+this.baseSize * (this.tetris.row-1-i),
-                    //    size: this.baseSize
-                    //});
-                }
-            }
-        }
-
-        this.drawShape(this.myPos, this.tetris.shape);
-        this.drawNextShape();
-        this.drawHoldShape();
-        this.drawBufferBar();
-        this.ctx.restore();
-    },
-    drawNextShape: function(){
-        if(!this.tetris.nextShapes || this.tetris.nextShapes.length === 0) return;
+    drawNextShape: function(pos, tetris, host){
+        var nextPos;
+        if(host)
+            nextPos = {x:pos.x+300,y:pos.y};
+        else
+            nextPos = {x:pos.x-100,y:pos.y};
+        if(!tetris.nextShapes || tetris.nextShapes.length === 0) return;
         //this.ctx.clearRect(this.nextPos.x-1,this.nextPos.y-1,121,121);
-        for(var i = 0; i < this.tetris.nextShapes.length; i++){
-            var shape = this.tetris.nextShapes[i];
-            var pos = {x:this.nextPos.x,y:this.nextPos.y+i*120};
+        for(var i = 0; i < tetris.nextShapes.length; i++){
+            var shape = tetris.nextShapes[i];
+            var newPos = {x:nextPos.x,y:nextPos.y+i*120};
             if(shape.shapeId>=3)
-                pos.x += 15;
+                newPos.x += 15;
             this.ctx.fillStyle = colors[shape.shapeId-1];
-            if(!this.tetris.playing)
+            if(!tetris.playing)
                 this.ctx.fillStyle = "rgba(0,0,0,0.2)";
             for(var j = 0; j < 4; j++){
                 var x = 1+shape.shapeModel.cells[0][j*2];
                 var y = 1+shape.shapeModel.cells[0][j*2+1];
-                this.drawBlock(pos, x, 4-y);
+                this.drawBlock(newPos, x, 4-y, this.middleSize);
             }
         }
     },
-    drawHoldShape: function(){
-        this.baseStrokeRect(this.holdPos.x+20,this.holdPos.y+10,80,100);
-        if(!this.tetris.saveShape) return;
-        var pos = {x:this.holdPos.x+20,y:this.holdPos.y+20};
-        if(this.tetris.saveShape.shapeId>=3)
-            pos.x += this.smallSize/2;
-        this.ctx.fillStyle = colors[this.tetris.saveShape.shapeId-1];
-        if(!this.tetris.playing)
+    drawHoldShape: function(pos, tetris, host){
+        if(!host) return;
+        var holdPos = {x:pos.x-130,y:pos.y};
+        //this.baseStrokeRect(holdPos.x+20,holdPos.y+10,80,100);
+        if(!tetris.saveShape) return;
+        var newPos = {x:holdPos.x+20,y:holdPos.y+20};
+        if(tetris.saveShape.shapeId>=3)
+            newPos.x += this.smallSize/2;
+        this.ctx.fillStyle = colors[tetris.saveShape.shapeId-1];
+        if(!tetris.playing)
             this.ctx.fillStyle = "rgba(0,0,0,0.2)";
         for(var i = 0; i < 4; i++){
-            var x = 1+this.tetris.saveShape.shapeModel.cells[0][i*2];
-            var y = 1+this.tetris.saveShape.shapeModel.cells[0][i*2+1];
-            this.baseFillRect(pos.x+this.smallSize * x, pos.y+this.smallSize *(4-y), this.smallSize - 1 , this.smallSize - 1 );
-            this.baseStrokeRect(pos.x+this.smallSize * x, pos.y+this.smallSize *(4-y), this.smallSize - 1 , this.smallSize - 1 );
+            var x = 1+tetris.saveShape.shapeModel.cells[0][i*2];
+            var y = 1+tetris.saveShape.shapeModel.cells[0][i*2+1];
+            this.baseFillRect(newPos.x+this.smallSize * x, newPos.y+this.smallSize *(4-y), this.smallSize - 1 , this.smallSize - 1 );
+            this.baseStrokeRect(newPos.x+this.smallSize * x, newPos.y+this.smallSize *(4-y), this.smallSize - 1 , this.smallSize - 1 );
         }
     },
-    drawBufferBar: function(){
+    drawBufferBar: function(pos, tetris, host){
+        var bufferPos = host ? {x:pos.x-11, y:pos.y} :{x:pos.x+tetris.col*this.baseSize, y:pos.y};
         if(this.game.setting.useBuffer){
-            this.baseStrokeRect(this.myPos.x-11,this.myPos.y,10,this.areaH-1);
-            var trashLine = this.tetris.trashes.length;
+            this.baseStrokeRect(bufferPos.x,bufferPos.y,10,this.areaH-1);
+            var trashLine = tetris.trashes.length;
             if(trashLine > 0){
-                this.ctx.fillStyle = "rgba(255,0,0,1)";
-                this.baseFillRect(this.myPos.x-11,this.myPos.y+30*(20-trashLine),10,30*trashLine-1);
+                if(!this.game.playing)
+                    this.ctx.fillStyle = "rgba(0,0,0,1)";
+                else
+                    this.ctx.fillStyle = "rgba(255,0,0,1)";
+                this.baseFillRect(bufferPos.x,bufferPos.y+30*(20-trashLine),10,30*trashLine-1);
             }
         }
-    },
-    drawText: function(){
-        this.ctx.save();
-        this.ctx.font = "30px Arial";
-        this.ctx.textBaseline = 'middle';
-        var txt="Next:"
-        var length = this.ctx.measureText(txt).width;
-        this.baseFillText(txt, this.nextPos.x+60-length/2, this.nextPos.y+30);
-        txt="Hold:"
-        length = this.ctx.measureText(txt).width;
-        this.baseFillText(txt, this.holdPos.x+60-length/2, this.nextPos.y+30);
-        this.ctx.restore();
     },
     drawPlayData: function(){
         this.ctx.save();
@@ -378,12 +317,68 @@ Render.prototype = {
         drawtext("lines", x, y+300);
         drawtext("attack", x, y+400);
         this.ctx.font = "20px Arial";
-        drawtext(this.playData.time.toFixed(1), x, y+40);
-        drawtext(this.playData.count, x, y+140);
-        var speed = this.playData.time == 0 ? 0 : (this.playData.count/this.playData.time).toFixed(1);
-        drawtext(speed, x, y+240);
-        drawtext(this.playData.lines, x, y+340);
-        drawtext(this.playData.attack, x, y+440);
+        var hostData = this.game.tetris.playData;
+        var txtTime = this.game.playTime.toFixed(1);
+        var txtCount = hostData.count;
+        var txtSpeed = this.game.playTime == 0 ? "0.0" : (hostData.count/this.game.playTime).toFixed(1);
+        var txtLine = hostData.lines;
+        var txtAttack = hostData.attack;
+        if(!this.game.single){
+            var otherData = this.game.otherTetris.playData;
+            txtCount = otherData.count + " : " + txtCount;
+            var otherSpeed = this.game.playTime == 0 ? "0.0" : (otherData.count/this.game.playTime).toFixed(1);
+            txtSpeed = otherSpeed + " : " + txtSpeed;
+            txtLine = otherData.lines + " : " + txtLine;
+            txtAttack = otherData.attack + " : " + txtAttack;
+        }
+        drawtext(txtTime, x, y+40);
+        drawtext(txtCount, x, y+140);
+        drawtext(txtSpeed, x, y+240);
+        drawtext(txtLine, x, y+340);
+        drawtext(txtAttack, x, y+440);
+        this.ctx.restore();
+    },
+    drawTetrisArea: function(pos, tetris, host){
+        this.ctx.strokeStyle = 'black';
+        this.baseStrokeRect(pos.x,pos.y,this.areaW-1,this.areaH-1);
+
+        //this.ctx.save();
+        for(var i = 0; i < tetris.row; i++){
+            for(var j = 0; j < tetris.col; j++) {
+                if(tetris.board[i][j]>0) {
+                    //this.drawTextureBlock(pos, j, tetris.row-1-i, tetris.board[i][j]-1, this.baseSize);
+                    this.ctx.fillStyle = tetris.playing ? colors[tetris.board[i][j] - 1 ] : "rgba(0,0,0,0.2)";
+                    this.drawBlock(pos, j, tetris.row-1-i, this.baseSize);
+                    //this.drawData.colorBlock[tetris.board[i][j]-1].push({
+                    //    x:pos.x+this.baseSize * j,
+                    //    y: pos.y+this.baseSize * (tetris.row-1-i),
+                    //    size: this.baseSize
+                    //});
+                }
+            }
+        }
+
+        this.drawShape(pos, tetris.shape);
+        this.drawNextShape(pos, tetris, host);
+        this.drawHoldShape(pos, tetris, host);
+        this.drawBufferBar(pos, tetris, host);
+        //this.ctx.restore();
+    },
+    drawTetrisText: function(pos, host){
+        this.ctx.save();
+        this.ctx.fillStyle = "rgba(0,0,0,1)";
+        this.ctx.font = "30px Arial";
+        this.ctx.textBaseline = 'middle';
+        var txt="Next:"
+        var length = this.ctx.measureText(txt).width;
+        if(host){
+            this.baseFillText(txt, pos.x+350-length/2, pos.y+30);
+            txt="Hold:"
+            length = this.ctx.measureText(txt).width;
+            this.baseFillText(txt, pos.x-80-length/2, pos.y+30);
+        }
+        else
+            this.baseFillText(txt, pos.x-50-length/2, pos.y+30);
         this.ctx.restore();
     },
     render: function(){
@@ -391,9 +386,11 @@ Render.prototype = {
         //this.ctx.fillStyle = Theme[socket.data.user.setting.theme||0].bg;
         //this.ctx.fillRect(0,0,960,640);
         this.ctx.clearRect(0,0,960,640);
-        this.drawMyArea();
-        this.drawAnotherArea();
-        this.drawText();
+        this.drawTetrisArea(this.myPos, this.tetris, true);
+        this.drawTetrisArea(this.anotherPos, this.game.otherTetris, false);
+        this.drawTetrisText(this.myPos, true);
+        this.drawTetrisText(this.anotherPos, false);
+
         this.drawPlayData();
 
         //this.draw();

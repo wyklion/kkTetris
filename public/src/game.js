@@ -32,33 +32,36 @@ GameUI.prototype = {
     reset: function(){
         if(this.game.watch){
             $('#playButton').hide();
-            if(this.game.hostUser){
-                $('#hostName').text(this.game.hostUser);
-                if(socket.data.room.ready[this.game.hostUser])
-                    $('#hostStatus').text("I'm ready!");
-                else
-                    $('#hostStatus').text("Waiting...");
+            var _this = this;
+            function checkUser(user, nameId, statId){
+                if(user){
+                    $(nameId).text(user);
+                    if(_this.game.playing){
+                        $(statId).css("color", "red");
+                        $(statId).text("Is playing...");
+                    }
+                    else if(socket.data.room.ready[user]){
+                        $(statId).css("color", "orange");
+                        $(statId).text("I'm ready!");
+                    }
+                    else{
+                        $(statId).css("color", "blue");
+                        $(statId).text("Waiting...");
+                    }
+                }
+                else{
+                    $(nameId).empty();
+                    $(statId).empty();
+                }
             }
-            else{
-                $('#hostName').empty();
-                $('#hostStatus').empty();
-            }
-            if(this.game.otherUser) {
-                $('#otherName').text(this.game.otherUser);
-                if (socket.data.room.ready[this.game.otherUser])
-                    $('#otherStatus').text("I'm ready!");
-                else
-                    $('#otherStatus').text("Waiting...");
-            }
-            else{
-                $('#otherName').empty();
-                $('#otherStatus').empty();
-            }
+            checkUser(this.game.hostUser, '#hostName', '#hostStatus');
+            checkUser(this.game.otherUser, '#otherName', '#otherStatus');
         }
         else{
             if(!this.game.single){
                 $('#playButton').html("<h1>Ready(F2)</h1>");
                 $('#hostStatus').empty();
+                $('#otherStatus').css("color", "blue");
                 $('#otherStatus').text('Waiting...')
                 $('#hostName').text(this.game.hostUser);
                 $('#otherName').text(this.game.otherUser);
@@ -84,14 +87,14 @@ GameUI.prototype = {
     someoneLeft: function(userId, watch){
         if(!watch){
             $('#otherName').empty();
+            this.reset();
         }
         else{
-            if(this.game.hostUser === userId)
-                $('#hostName').empty();
-            else
-                $('#otherName').empty();
+            //if(this.game.hostUser === userId)
+            //    $('#hostName').empty();
+            //else
+            //    $('#otherName').empty();
         }
-        this.reset();
     },
     readyOrPlay: function(){
         if(this.game.single){
@@ -100,17 +103,17 @@ GameUI.prototype = {
         }
         else{
             $('#playButton').hide();
+            $('#hostStatus').css("color", "orange");
             $('#hostStatus').text("I'm ready!");
         }
-    },
-    otherReady: function(){
-        $('#otherStatus').text("Is ready!");
     },
     userReady: function(userId){
         if(userId === this.game.hostUser){
+            $('#hostStatus').css("color", "orange");
             $('#hostStatus').text("I'm ready!");
         }
         else{
+            $('#otherStatus').css("color", "orange");
             $('#otherStatus').text("Is ready!");
         }
     },
@@ -118,13 +121,17 @@ GameUI.prototype = {
         $('#hostStatus').empty();
         $('#otherStatus').empty();
     },
-    gameOver: function(win){
-        if(win){
+    gameOver: function(winUser){
+        if(this.game.hostUser === winUser){
+            $('#hostStatus').css("color", "green");
             $('#hostStatus').text("Win!");
+            $('#otherStatus').css("color", "purple");
             $('#otherStatus').text("Lose!");
         }
         else{
+            $('#hostStatus').css("color", "purple");
             $('#hostStatus').text("Lose!");
+            $('#otherStatus').css("color", "green");
             $('#otherStatus').text("Win!");
         }
     },
@@ -134,10 +141,11 @@ var Game = function(){
     this.setting = {
         attackMode: "0124",
         tspinMode: "3T",
-        useBuffer: true,
+        useBuffer: false,
     }
     this.interval = 0.5;
     this.time = 0;
+    this.playTime = 0;
     this.single = true;
     this.watch = false;
     this.playing = false;
@@ -159,9 +167,9 @@ Game.prototype = {
             this.hostUser = socket.data.room.playUsers[0];
             this.otherUser = socket.data.room.playUsers[1];
             this.tetris = new Tetris(this, false);
+            this.playing = socket.data.room.playing;
         }
         this.otherTetris = new Tetris(this, false);
-        this.playData = new PlayData();
         this.renderer = new Render(this);
         this.mainLoop();
 
@@ -211,12 +219,13 @@ Game.prototype = {
     readyOrPlay: function(){
         if(this.single){
             this.ui.readyOrPlay();
+            this.playTime = 0;
+            this.tetris.playData.reset();
             if(this.firstGame){
                 this.firstGame = false;
                 this.tetris.start();
             }
             else{
-                this.playData.reset();
                 this.tetris.restart();
             }
         }
@@ -225,7 +234,6 @@ Game.prototype = {
                 console.log("ready...");
                 this.ui.readyOrPlay();
                 this.ready = true;
-                this.playData.reset();
                 this.tetris.init();
                 socket.operate(OPERTABLE.ready);
             }
@@ -240,26 +248,21 @@ Game.prototype = {
             this.otherTetris.init();
         this.ui.userReady(userId);
     },
-    otherReady: function(){
-        console.log("other is ready...");
-        this.ui.otherReady();
-        this.otherTetris.init();
-    },
     startVS: function(shapes){
         console.log("start vs...");
         this.ui.startVS();
         this.playing = true;
         this.ready = false;
-        this.otherTetris.restart(shapes);
+        this.playTime = 0;
+        this.tetris.playData.reset();
+        this.otherTetris.playData.reset();
         this.tetris.restart(shapes);
+        this.otherTetris.restart(shapes);
     },
     gameOver: function(result){
         console.log(result);
         this.reset();
-        if(result.win === socket.data.user.id)
-            this.ui.gameOver(true);
-        else
-            this.ui.gameOver(false);
+        this.ui.gameOver(result.win);
     },
     lose: function(){
         if(this.single){
@@ -283,9 +286,11 @@ Game.prototype = {
         if(!watch){
             this.single = false;
             this.ready = false;
-            this.playData.reset();
             this.tetris.init();
             this.otherTetris.init();
+            this.playTime = 0;
+            this.tetris.playData.reset();
+            this.otherTetris.playData.reset();
         }
         this.ui.someoneJoined(userId, watch);
     },
@@ -296,6 +301,7 @@ Game.prototype = {
             this.ready = false;
             if(!this.watch || userId === this.otherUser){
                 this.otherUser = null;
+                this.otherTetris.playData.reset();
                 this.otherTetris.init();
                 if(this.playing){
                     this.playing = false;
@@ -304,6 +310,7 @@ Game.prototype = {
             }
             else{
                 this.hostUser = null;
+                this.tetris.playData.reset();
                 this.tetris.init();
                 if(this.playing){
                     this.playing = false;
@@ -337,12 +344,14 @@ Game.prototype = {
     update: function(dt){
         if(this.isPaused) return;
         if(this.tetris.playing){
-            this.playData.time += dt;
+            this.playTime += dt;
+            //this.tetris.playData.time += dt;
             this.time += dt;
             if(this.single){
-                if(this.playData.lines >= 40){
+                if(this.tetris.playData.lines >= 40){
                     this.tetris.gameOver();
-                    socket.single(this.playData.time);
+                    //socket.single(this.tetris.playData.time);
+                    socket.single(this.playTime);
                     return;
                 }
             }

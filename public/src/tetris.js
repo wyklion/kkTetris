@@ -286,6 +286,7 @@ var Tetris = function(game, me){
     this.me = me;
     this.row = ROW;
     this.col = COL;
+    this.playData = new PlayData();
     this.init();
 };
 
@@ -341,12 +342,11 @@ Tetris.prototype = {
             this.gameOver();
     },
     freeze: function(){
-        if(this.me)
-            this.game.playData.count++;
+        this.playData.count++;
         this.attackLines = 0;
         this.shape.freeze();
         this.clearLines();
-        if(this.me && !this.game.single)
+        if(!this.game.single)
             this.checkAttack();
         this.newShape();
     },
@@ -428,14 +428,12 @@ Tetris.prototype = {
         else
             this.attackLines = attackLine;
 
-        if(this.me)
-            this.game.playData.attack += this.attackLines;
+        this.playData.attack += this.attackLines;
     },
-    //only me...
+    //both ...
     checkClear: function(lines){
-        if(!this.me) return;
         this.combo++;
-        this.game.playData.lines += lines;
+        this.playData.lines += lines;
         var attackLine;
         if(this.checkTspin()){
             if(this.lastClear)
@@ -607,7 +605,7 @@ Tetris.prototype = {
         if(!this.game.single)
             socket.operate(oper, data);
     },
-    //only me
+    //both, but only me send operate
     checkAttack: function(){
         if(this.game.setting.useBuffer){
             if(this.clearRowCount === 0){
@@ -629,22 +627,29 @@ Tetris.prototype = {
         else{
             this.attack(this.attackLines);
         }
+        if(!this.me)
+            console.log("other trash:", this.trashes);
     },
     //only me...
     attack: function(lines){
+        if(!this.me) return;
         var trash = [];
         var hole = Math.floor(Math.random()*COL);
         for(var i = 0; i < lines; i++)
             trash.push(hole);
         this.operate(OPERTABLE.attack, trash);
     },
-    //only me...
+    //both...
     hurt: function(trash) {
         if (this.game.setting.useBuffer) {
             this.trashes = this.trashes.concat(trash);
+            this.operate(OPERTABLE.hurt, trash);
+            //if(!this.me)
+            //    console.log("other trash:", this.trashes);
         }
         else {
-            this.realHurt(trash);
+            if(this.me)
+                this.realHurt(trash);
         }
     },
     //only me... useBuffer = false

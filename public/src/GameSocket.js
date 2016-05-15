@@ -22,6 +22,7 @@ var OPERTABLE = {
 
     attack:     30,
     trash:      31,
+    hurt:       32,
 
     start:      100,
     gameover:   200,
@@ -217,10 +218,7 @@ GameSocket.prototype = {
                 }
                 switch(data.oper){
                     case OPERTABLE.ready:
-                        if(main.game.watch)
-                            main.game.userReady(data.userId);
-                        else
-                            main.game.otherReady();
+                        main.game.userReady(data.userId);
                         break;
                     case OPERTABLE.start:
                         main.game.startVS(data.shapes);
@@ -257,6 +255,9 @@ GameSocket.prototype = {
                     case OPERTABLE.attack:
                         if(!main.game.watch)
                             hostTetris.hurt(data.data);
+                        break;
+                    case OPERTABLE.hurt:
+                        imitateTetris.hurt(data.data);
                         break;
                     case OPERTABLE.trash:
                         imitateTetris.trash(data.data);

@@ -23,6 +23,7 @@ var OPERTABLE = {
 
     attack:     30,
     trash:      31,
+    hurt:       32,
 
     start:      100,
     gameover:   200,
@@ -132,9 +133,9 @@ RoomManager.prototype = {
             if(idx > -1){
                 this.rooms[i].playUsers.splice(idx, 1);
                 this.rooms[i].ready = {};
+                socket.broadcast.to("room"+socket.roomId).emit('roomInfo', {room:this.rooms[i], userId:socket.userId, join:false, watch:false});
                 if(this.rooms[i].playing){
                     this.rooms[i].playing = false;
-                    socket.broadcast.to("room"+socket.roomId).emit('roomInfo', {room:this.rooms[i], userId:socket.userId, join:false, watch:false});
                     mongo.updateAddValue("users", {id:socket.userId}, {disconnect: 1});
                 }
                 if(this.rooms[i].playUsers.length === 0){
