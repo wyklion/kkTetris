@@ -115,4 +115,14 @@ router.route("/admin").get(function(req,res){
     });
 });
 
+//normal query
+router.route("/rank").post(function(req, res){
+    mongo.findOption("users", {}, {
+        fields: ["id", "single40Best"], limit: 100, sort: {"single40Best": 1}
+    }, function(result){
+        res.send(result);
+        res.status(200);
+    });
+});
+
 module.exports = router;

@@ -19,6 +19,18 @@ Mongo.prototype = {
     onOpen: function(){
 
     },
+    findOption: function(collection, query, options, callback){
+        var c = this.db.collection(collection);
+        c.find(query,options).toArray(function(err, result) {
+            if(err)
+            {
+                console.log('Error:'+ err);
+                return;
+            }
+            else
+                callback(result);
+        });
+    },
     find: function(collection, query, callback){
         var c = this.db.collection(collection);
         var sort;
@@ -28,7 +40,6 @@ Mongo.prototype = {
         }
         else
             sort = {sort:{}};
-        console.log("queyr,sort:", query,sort);
         c.find(query,sort).toArray(function(err, result) {
             if(err)
             {

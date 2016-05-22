@@ -202,7 +202,8 @@ Game.prototype = {
             holdFunc:function(){_this.tetris.holdShape();},
         });
 
-        document.body.onkeydown = function( e ) {
+        this.onKeyDown = function( e ) {
+            console.log("down>.");
             if(e.keyCode === 113){ // F2
                 _this.readyOrPlay();
             }
@@ -211,10 +212,31 @@ Game.prototype = {
             if(!_this.isPaused && _this.tetris.playing){
                 _this.keyManager.onKeyDown(e.keyCode);
             }
+            if(e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 32)
+                e.preventDefault();
         }
-        document.body.onkeyup = function( e ) {
+        this.onKeyUp = function( e ) {
             _this.keyManager.onKeyUp(e.keyCode);
         }
+
+        document.body.addEventListener("keydown", this.onKeyDown, false);
+        document.body.addEventListener("keyup", this.onKeyUp, false);
+        //document.body.onkeydown = function( e ) {
+        //    console.log("down>.");
+        //    if(e.keyCode === 113){ // F2
+        //        _this.readyOrPlay();
+        //    }
+        //    //else if(e.keyCode === 80) // P
+        //    //    _this.pause();
+        //    if(!_this.isPaused && _this.tetris.playing){
+        //        _this.keyManager.onKeyDown(e.keyCode);
+        //    }
+        //    if(e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 32)
+        //        e.preventDefault();
+        //}
+        //document.body.onkeyup = function( e ) {
+        //    _this.keyManager.onKeyUp(e.keyCode);
+        //}
     },
     readyOrPlay: function(){
         if(this.single){
@@ -368,6 +390,8 @@ Game.prototype = {
         this.isPaused = !this.isPaused;
     },
     dispose: function(){
+        document.body.removeEventListener("keydown", this.onKeyDown, false);
+        document.body.removeEventListener("keyup", this.onKeyUp, false);
         cancelAnimationFrame(this.aniHandle);
         this.renderer.clear();
         delete this;

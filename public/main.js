@@ -65,7 +65,6 @@ Main.prototype = {
             //$("body").css("color","#FFF");
             //$('#userList').css('background-color','#999999');
         }
-        this.updateUserList();
     },
     initKeyboardSetting: function(){
         for(var i in socket.data.user.keyboard){
@@ -182,6 +181,7 @@ Main.prototype = {
 
         this.updateRoomList();
         this.updateUserList();
+        this.updateRankList();
     },
     updateRoomList: function(){
         $('#roomList').empty();
@@ -210,6 +210,22 @@ Main.prototype = {
             $('#userList').append(user);
         }
     },
+    updateRankList: function(){
+        $.ajax({
+            url: '/rank',
+            type: 'post',
+            data: {},
+            success: function (data, status) {
+                $('#rankList').empty();
+                var tbody = "";
+                for(var i = 0; i < data.length; i++){
+                    var tdStr = "<td>"+(i+1)+"</td><td>"+data[i].id+"</td><td>"+data[i].single40Best.toFixed(1)+"</td>";
+                    tbody += "<tr>"+tdStr+"</tr>";
+                }
+                $('#rankList').append(tbody);
+            }
+        });
+    },
     goRoom: function(watch){
         $('#mainDiv').hide();
         $('#gameDiv').show();
@@ -225,6 +241,7 @@ Main.prototype = {
         $('#gameDiv').hide();
         this.updateRoomList();
         this.updateUserList();
+        this.updateRankList();
         this.game.dispose();
         this.game = null;
     },
