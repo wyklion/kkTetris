@@ -150,8 +150,9 @@ Main.prototype = {
         $('#lobbySay').bind('keypress',function(event){
             if(event.keyCode == "13")
             {
-                socket.sendMsg({type:MSG_TYPE.lobby, msg:$('#lobbySay').val()});
-                _this.putMsg(socket.data.user.id, $('#lobbySay').val(), true);
+                var val = $('#lobbySay').val();
+                socket.sendMsg({type:MSG_TYPE.lobby, msg:val});
+                _this.putMsg(socket.data.user.id, val, true);
                 $('#lobbySay').val("");
             }
         });
@@ -163,6 +164,8 @@ Main.prototype = {
         //else
         //    txt = "<font color=#1e90ff>"+user+": "+msg+"</font><br>";
         //$('#lobbyTextarea').append(txt);
+        msg = msg.replace('<', '&lt');
+        msg = msg.replace('>', '&gt');
         $('#lobbyTextarea').append(user+": "+msg+"\n");
     },
     spin: function(){
