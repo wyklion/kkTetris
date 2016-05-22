@@ -203,7 +203,6 @@ Game.prototype = {
         });
 
         this.onKeyDown = function( e ) {
-            console.log("down>.");
             if(e.keyCode === 113){ // F2
                 _this.readyOrPlay();
             }
@@ -221,22 +220,6 @@ Game.prototype = {
 
         document.body.addEventListener("keydown", this.onKeyDown, false);
         document.body.addEventListener("keyup", this.onKeyUp, false);
-        //document.body.onkeydown = function( e ) {
-        //    console.log("down>.");
-        //    if(e.keyCode === 113){ // F2
-        //        _this.readyOrPlay();
-        //    }
-        //    //else if(e.keyCode === 80) // P
-        //    //    _this.pause();
-        //    if(!_this.isPaused && _this.tetris.playing){
-        //        _this.keyManager.onKeyDown(e.keyCode);
-        //    }
-        //    if(e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 32)
-        //        e.preventDefault();
-        //}
-        //document.body.onkeyup = function( e ) {
-        //    _this.keyManager.onKeyUp(e.keyCode);
-        //}
     },
     readyOrPlay: function(){
         if(this.single){

@@ -626,8 +626,8 @@ Tetris.prototype = {
         else{
             this.attack(this.attackLines);
         }
-        if(!this.me)
-            console.log("other trash:", this.trashes);
+        //if(!this.me)
+        //    console.log("other trash:", this.trashes);
     },
     //only me...
     attack: function(lines){
