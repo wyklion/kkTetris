@@ -21,7 +21,15 @@ Mongo.prototype = {
     },
     find: function(collection, query, callback){
         var c = this.db.collection(collection);
-        c.find(query).toArray(function(err, result) {
+        var sort;
+        if(query.sort){
+            sort = {sort:query.sort};
+            delete query.sort;
+        }
+        else
+            sort = {sort:{}};
+        console.log("queyr,sort:", query,sort);
+        c.find(query,sort).toArray(function(err, result) {
             if(err)
             {
                 console.log('Error:'+ err);

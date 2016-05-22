@@ -108,7 +108,7 @@ router.route("/admin").get(function(req,res){
     }
     var type = req.body.type;
     var collection = req.body.collection;
-    var query = req.body.query;
+    var query = JSON.parse(req.body.query);
     mongo.find(collection, query, function(result){
         res.send(result);
         res.status(200);

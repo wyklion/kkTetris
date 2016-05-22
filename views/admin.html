@@ -16,6 +16,12 @@
                 <ul class="nav navbar-nav navbar-left">
                     <li><button id="gameinfoButton" type="button" class="btn btn-default navbar-btn">GameInfo</button></li>
                 </ul>
+                <ul class="nav navbar-nav navbar-left">
+                    <li><button id="gameinfo3Button" type="button" class="btn btn-default navbar-btn">GameInfo3</button></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-left">
+                    <li><button id="gameinfo7Button" type="button" class="btn btn-default navbar-btn">GameInfo7</button></li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -38,10 +44,12 @@
     <script src='src/config.js'></script>
 <script type="text/javascript">
     var getUsers = function(){
+        var query = {};//{sort:{id:1}};
+        var queryStr = JSON.stringify(query);
         $.ajax({
             url: '/admin',
             type: 'post',
-            data: {type:0, collection:"users", query:{}},
+            data: {type:0, collection:"users", query:queryStr},
             success: function(data,status){
                 if(status == 'success'){
                     $('#resultHead').empty();
@@ -91,11 +99,19 @@
             }
         });
     };
-    var getGameInfo = function(){
+    var getGameInfo = function(day){
+        var date = new Date();
+        if(day)
+            date.setDate(date.getDate()-day);
+        date.setHours(0);date.setMinutes(0);date.setSeconds(0);
+        console.log(date.toLocaleString())
+        var query = {time: { $gte: date.getTime() }};
+        var queryStr = JSON.stringify(query);
+        var head = ["id","id2","type","roomId","time"];
         $.ajax({
             url: '/admin',
             type: 'post',
-            data: {type: 0, collection: "gameinfo", query: {}},
+            data: {type: 0, collection: "gameinfo", query: queryStr},
             success: function(data, status){
                 if(status == 'success'){
                     $('#resultHead').empty();
@@ -103,16 +119,19 @@
                     var thStr = "";
                     for(var i = 0; i < data.length; i++){
                         var tdStr = "";
-                        for(var item in data[i]){
-                            if(item === "_id") continue;
+                        for(var j = 0; j < head.length; j++){
+                            var item = head[j];
                             if(i === 0)
                                 thStr += "<td>"+item+"</td>";
                             var str;
                             if(item === "time"){
                                 str = new Date(data[i][item]).toLocaleString();
                             }
-                            else
+                            else{
                                 str = data[i][item];
+                                if(str===undefined)
+                                    str = "";
+                            }
                             tdStr+="<td>"+str+"</td>";
                         }
                         $('#resultBody').append("<tr>"+tdStr+"</tr>");
@@ -131,6 +150,12 @@
     })
     $('#gameinfoButton').on('click', function () {
         getGameInfo();
+    })
+    $('#gameinfo3Button').on('click', function () {
+        getGameInfo(3);
+    })
+    $('#gameinfo7Button').on('click', function () {
+        getGameInfo(7);
     })
     getUsers();
 </script>
