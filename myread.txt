@@ -1,5 +1,32 @@
+******************centos******************************
+=================nodejs===================
+https://nodejs.org/en/download/
+wget https://nodejs.org/dist/v8.11.1/node-v8.11.1-linux-x64.tar.xz
+yum search xz
+yum install xz.x86_64
+xz -d node-v8.11.1-linux-x64.tar.xz
+tar -xf node-v8.11.1-linux-x64.tar
+mv node-v8.11.1-linux-x64 node
+ln -s /root/node/bin/node /usr/local/bin/node  
+ln -s /root/node/bin/npm /usr/local/bin/npm
+
+================mongodb======================
+vi /etc/yum.repos.d/mongodb-org-3.4.repo
+[mongodb-org-3.4]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.4/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc
+----------------------------------------------
+yum install -y mongodb-org
+vi /etc/mongod.conf
+
 安装mongodb(加path)。创建目录data/db。
-安装nodejs。npm install
+
+
+
+******************windows******************************
 mongochef免费可选。
 
 运行：
