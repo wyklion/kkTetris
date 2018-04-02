@@ -61,6 +61,7 @@ git push origin master
 
 ## 启动
 ```
+vi public/src/config.js //修改SERVER_NAME
 ./startdb.sh
 ./startnode.sh
 ```
