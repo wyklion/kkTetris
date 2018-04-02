@@ -21,30 +21,13 @@ gpgkey=https://www.mongodb.org/static/pgp/server-3.4.asc
 ----------------------------------------------
 yum install -y mongodb-org
 vi /etc/mongod.conf
+创建目录data/db。
 
-安装mongodb(加path)。创建目录data/db。
-
-
-
-******************windows******************************
-mongochef免费可选。
-
-运行：
-startDatabase.bat
-startWeb.bat
-
-linux:
-安全组。开80端口。
-sudo /sbin/iptables -I INPUT -p tcp --dport 80 -j ACCEPT
-sudo /sbin/iptables -I INPUT -p tcp --dport 21 -j ACCEPT
-sudo /sbin/iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 27017 -j ACCEPT
-sudo /etc/rc.d/init.d/iptables save
-sudo /etc/rc.d/init.d/iptables restart
-sudo /etc/init.d/iptables status
-
-
-
-安装git
+================git======================
+ssh-keygen -t rsa -C "wyklion@qq.com"
+github上加ssh key。
+测试ssh -T git@github.com
+git config --global credential.helper store
 git config --global user.name "KK"
 git config --global user.email wyklion@qq.com
 git clone https://github.com/wyklion/kkTetris
@@ -66,9 +49,26 @@ git remote
 git fetch [remote-name]
 git push origin master
 
-vi .gitignore
-*~
-.idea/
+
+
+
+
+******************windows******************************
+mongochef免费可选。
+
+运行：
+startDatabase.bat
+startWeb.bat
+
+linux:
+安全组。开80端口。
+sudo /sbin/iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+sudo /sbin/iptables -I INPUT -p tcp --dport 21 -j ACCEPT
+sudo /sbin/iptables -A INPUT -p tcp -m state --state NEW -m tcp --dport 27017 -j ACCEPT
+sudo /etc/rc.d/init.d/iptables save
+sudo /etc/rc.d/init.d/iptables restart
+sudo /etc/init.d/iptables status
+
 
 linux:
 sudo /sbin/iptables -I INPUT -p tcp --dport 80 -j ACCEPT
