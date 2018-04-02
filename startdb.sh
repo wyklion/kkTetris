@@ -1,1 +1,1 @@
-sudo nohup /home/ec2-user/tool/mongodb-linux-x86_64-amazon-3.2.6/bin/mongod --dbpath /home/ec2-user/work/kkTetris/data/db
+nohup mongod --dbpath data/db --logpath data/mongod.log >/dev/null 2>dblog.out &
