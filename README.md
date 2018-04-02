@@ -1,5 +1,5 @@
-#centos
-###nodejs
+# centos
+### nodejs
 ```
 https://nodejs.org/en/download/
 wget https://nodejs.org/dist/v8.11.1/node-v8.11.1-linux-x64.tar.xz
@@ -11,7 +11,7 @@ mv node-v8.11.1-linux-x64 node
 ln -s /root/node/bin/node /usr/local/bin/node  
 ln -s /root/node/bin/npm /usr/local/bin/npm
 ```
-###mongodb
+### mongodb
 ```
 vi /etc/yum.repos.d/mongodb-org-3.4.repo
 ```
@@ -29,7 +29,7 @@ vi /etc/mongod.conf
 创建目录data/db。
 ```
 
-###git
+### git
 ```
 ssh-keygen -t rsa -C "wyklion@qq.com"
 github上加ssh key。
@@ -59,13 +59,13 @@ git fetch [remote-name]
 git push origin master
 ```
 
-##启动
+## 启动
 ```
 ./startdb.sh
 ./startnode.sh
 ```
 
-#windows
+# windows
 mongochef免费可选。
 
 ```
