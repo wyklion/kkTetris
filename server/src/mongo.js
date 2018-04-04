@@ -8,7 +8,7 @@ var url = 'mongodb://localhost:27017/tetris';
 var Mongo = function(callback){
     var _this = this;
     MongoClient.connect(url, function(err, db) {
-        console.log("Á¬½Ó³É¹¦£¡");
+        console.log("è¿æ¥æˆåŠŸï¼");
         _this.db = db;
         if(callback)
             callback();
