@@ -3,24 +3,39 @@ import logo from './logo.svg';
 import './App.css';
 
 import Button from 'material-ui/Button';
+import HeadBar from './ui/HeadBar';
+import Login from './ui/Login';
 
+import teal from 'material-ui/colors/teal';
+var color = teal;
+
+const classes = {
+   bg: {
+      // backgroundColor: color[900],
+      width: '100%',
+      height: '100%',
+   }
+}
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to KK2</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-        <Button variant="raised" color="primary">
-          Hello World
-        </Button>
-      </div>
-    );
-  }
+   state = {
+      logined: false
+   }
+   render() {
+      var state = this.state;
+      var logined = state.logined;
+      if (!logined) {
+         return (
+            <div style={classes.bg}>
+               <Login />
+            </div>
+         )
+      }
+      return (
+         <div style={classes.bg} className="App">
+            <HeadBar />
+         </div>
+      );
+   }
 }
 
 export default App;
