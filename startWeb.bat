@@ -1,1 +1,1 @@
-npm start
+node server/bin/www

@@ -33,7 +33,7 @@ app.set('view engine', 'html');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../web')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -41,10 +41,10 @@ app.use(cookieParser());
 app.use(sessionMidleware);
 
 app.use(function(req,res,next){
-    res.locals.user = req.session.user;   // ´Ósession »ñÈ¡ user¶ÔÏó
-    var err = req.session.error;   //»ñÈ¡´íÎóĞÅÏ¢
+    res.locals.user = req.session.user;   // ä»session è·å– userå¯¹è±¡
+    var err = req.session.error;   // è·å–é”™è¯¯ä¿¡æ¯
     delete req.session.error;
-    res.locals.message = "";   // Õ¹Ê¾µÄĞÅÏ¢ message
+    res.locals.message = "";   // å±•ç¤ºçš„ä¿¡æ¯ message
     if(err){
         res.locals.message = '<div class="alert alert-danger" style="margin-bottom:20px;color:red;">'+err+'</div>';
     }
@@ -54,7 +54,7 @@ app.use(function(req,res,next){
     //res.header("X-Powered-By",' 3.2.1')
     //res.header("Content-Type", "application/json;charset=utf-8");
 
-    next();  //ÖĞ¼ä¼ş´«µİ
+    next();  // ä¸­é—´ä»¶ä¼ é€’
 });
 
 

@@ -1,1 +1,1 @@
-nohup node bin/www > /dev/null 2>nodelog.out &
+nohup node server/bin/www > /dev/null 2>nodelog.out &
