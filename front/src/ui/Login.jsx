@@ -70,8 +70,8 @@ class Login extends React.Component {
 
    onLoginClick = () => {
       var id = this.name.value;
-      var pwd = this.password.value;
-      http.post({ url: 'login', data: { uname: id, upwd: pwd } }, (err, result) => {
+      var pswd = this.password.value;
+      http.post({ url: 'login', data: { id: id, pswd: pswd } }, (err, result) => {
          if (err) {
             alert(err);
          } else {

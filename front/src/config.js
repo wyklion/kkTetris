@@ -1,6 +1,7 @@
 
 var config = {
-   server: 'localhost'
+   server: 'localhost',
+   port: '807'
 }
 
 export default config;

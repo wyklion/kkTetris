@@ -2,9 +2,10 @@
 import config from '../config.js';
 
 var http = {};
+var server = 'http://' + config.server + ':' + config.port + '/';
 
 http.quest = function (option, callback) {
-   var url = config.server + '/' + option.url;
+   var url = server + option.url;
    var method = option.method;
    var data = option.data;
    var timeout = option.timeout || 0;
@@ -16,14 +17,15 @@ http.quest = function (option, callback) {
          if (xhr.status >= 200 && xhr.status < 400) {
             var result = xhr.responseText;
             try { result = JSON.parse(xhr.responseText); } catch (e) { }
-            callback && callback(null, result);
+            callback && callback(result.err, result.result);
          } else {
-            callback && callback('status: ' + xhr.status);
+            callback && callback('status:' + xhr.status);
          }
       }
    }.bind(this);
    xhr.open(method, url, true);
    if (typeof data === 'object') {
+      xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
       try {
          data = JSON.stringify(data);
       } catch (e) { }
