@@ -1,1 +1,1 @@
-node server/bin/www
+node web/bin/www

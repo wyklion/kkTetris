@@ -15,6 +15,8 @@ import teal from 'material-ui/colors/teal';
 import purple from 'material-ui/colors/purple';
 import { withStyles } from 'material-ui/styles';
 
+import http from '../util/http.js';
+
 var color = purple;
 
 const styles = theme => ({
@@ -66,6 +68,17 @@ class Login extends React.Component {
       this.setState({ [name]: event.target.checked });
    };
 
+   onLoginClick = () => {
+      var id = this.name.value;
+      var pwd = this.password.value;
+      http.post({ url: 'login', data: { uname: id, upwd: pwd } }, (err, result) => {
+         if (err) {
+            alert(err);
+         } else {
+            console.log(result);
+         }
+      })
+   }
    render() {
       const { classes } = this.props;
       return (
@@ -76,6 +89,7 @@ class Login extends React.Component {
                   <FormControlLabel
                      control={
                         <Input
+                           inputRef={(instance) => this.name = instance}
                            placeholder="帐号"
                            className={classes.input}
                            inputProps={{
@@ -87,7 +101,9 @@ class Login extends React.Component {
                   <FormControlLabel
                      control={
                         <Input
+                           inputRef={(instance) => this.password = instance}
                            placeholder="密码"
+                           type="password"
                            className={classes.input}
                            inputProps={{
                               'aria-label': 'Description',
@@ -96,7 +112,11 @@ class Login extends React.Component {
                      }
                   />
                </FormGroup>
-               <Button className={classes.button} variant="raised" color="primary">
+               <Button
+                  className={classes.button}
+                  onClick={this.onLoginClick}
+                  variant="raised"
+                  color="primary">
                   登录
                </Button>
             </FormControl>
