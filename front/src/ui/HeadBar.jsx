@@ -12,6 +12,8 @@ import { FormControlLabel, FormGroup } from 'material-ui/Form';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import Button from 'material-ui/Button';
 
+import http from '../util/http.js';
+
 const styles = {
    root: {
       flexGrow: 1,
@@ -38,6 +40,13 @@ class HeadBar extends React.Component {
    handleClose = () => {
       this.setState({ anchorEl: null });
    };
+
+   handleLogout = () => {
+      this.setState({ anchorEl: null });
+      http.get({ url: 'logout' }, (err, result) => {
+         this.props.onLogout();
+      })
+   }
 
    render() {
       const { classes } = this.props;
@@ -78,8 +87,8 @@ class HeadBar extends React.Component {
                            open={open}
                            onClose={this.handleClose}
                         >
-                           <MenuItem onClick={this.handleClose}>Profile</MenuItem>
-                           <MenuItem onClick={this.handleClose}>My account</MenuItem>
+                           <MenuItem onClick={this.handleClose}>个人</MenuItem>
+                           <MenuItem onClick={this.handleLogout}>退出</MenuItem>
                         </Menu>
                      </div>
                   )}

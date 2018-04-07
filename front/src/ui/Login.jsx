@@ -64,9 +64,12 @@ class Login extends React.Component {
       antoine: true,
    };
 
-   handleChange = name => event => {
-      this.setState({ [name]: event.target.checked });
-   };
+   onKeyDown = (event) => {
+      // 回车
+      if (event.keyCode === 13) {
+         this.onLoginClick();
+      }
+   }
 
    onLoginClick = () => {
       var id = this.name.value;
@@ -75,10 +78,11 @@ class Login extends React.Component {
          if (err) {
             alert(err);
          } else {
-            console.log(result);
+            this.props.onLogin(result);
          }
       })
    }
+
    render() {
       const { classes } = this.props;
       return (
@@ -89,6 +93,7 @@ class Login extends React.Component {
                   <FormControlLabel
                      control={
                         <Input
+                           onKeyDown={this.onKeyDown}
                            inputRef={(instance) => this.name = instance}
                            placeholder="帐号"
                            className={classes.input}
@@ -101,6 +106,7 @@ class Login extends React.Component {
                   <FormControlLabel
                      control={
                         <Input
+                           onKeyDown={this.onKeyDown}
                            inputRef={(instance) => this.password = instance}
                            placeholder="密码"
                            type="password"

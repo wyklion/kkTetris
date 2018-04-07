@@ -24,6 +24,7 @@ http.quest = function (option, callback) {
       }
    }.bind(this);
    xhr.open(method, url, true);
+   xhr.withCredentials = true;
    if (typeof data === 'object') {
       xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
       try {

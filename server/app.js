@@ -21,15 +21,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
+var router = require('./routes/router');
 
 var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.engine("html", require("ejs").__express); // or   app.engine("html",require("ejs").renderFile);
-//app.set("view engine","ejs");
-app.set('view engine', 'html');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -47,48 +41,19 @@ app.use(function (req, res, next) {
    if (err) {
       res.locals.message = '<div class="alert alert-danger" style="margin-bottom:20px;color:red;">' + err + '</div>';
    }
-   res.header("Access-Control-Allow-Origin", "*");
-   res.header("Access-Control-Allow-Headers", "X-Requested-With,Content-Type");
-   //res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
-   //res.header("X-Powered-By",' 3.2.1')
-   //res.header("Content-Type", "application/json;charset=utf-8");
+   if (req.headers.origin == 'http://www.kktetris.top' || req.headers.origin == 'http://localhost') {
+      res.header("Access-Control-Allow-Origin", req.headers.origin);
+   }
+   res.header('Access-Control-Allow-Credentials', true);
+   res.header("Access-Control-Allow-Headers", "X-Requested-With,Cookie,Content-Type");
+   res.header("Access-Control-Allow-Methods", "POST,GET,OPTIONS");
+   res.header("X-Powered-By", 'kk')
+   res.header("Content-Type", "application/json;charset=utf-8");
 
    next();  // 中间件传递
 });
 
-app.use('/', routes);
-app.use('/login', routes);
-app.use('/register', routes);
-app.use("/logout", routes);
-app.use("/admin", routes);
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-   var err = new Error('Not Found');
-   err.status = 404;
-   next(err);
-});
-// production error handler
-// no stacktraces leaked to user
-app.use(function (err, req, res, next) {
-   res.status(err.status || 500);
-   res.render('error', {
-      message: err.message,
-      error: {}
-   });
-});
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-   app.use(function (err, req, res, next) {
-      res.status(err.status || 500);
-      res.render('error', {
-         message: err.message,
-         error: err
-      });
-   });
-}
+app.use('/', router);
 
 exports = module.exports = app;
 exports.mongoStore = mongoStore;
