@@ -8,7 +8,7 @@ import Login from './ui/Login';
 
 import teal from 'material-ui/colors/teal';
 var color = teal;
-import http from './util/http.js';
+import http from './util/http';
 import UserManager from './UserManager';
 
 const classes = {

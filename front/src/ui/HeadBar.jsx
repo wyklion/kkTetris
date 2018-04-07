@@ -12,7 +12,9 @@ import { FormControlLabel, FormGroup } from 'material-ui/Form';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import Button from 'material-ui/Button';
 
-import http from '../util/http.js';
+import KeyboardSetting from './KeyboardSetting';
+import http from '../util/http';
+import UserManager from '../UserManager';
 
 const styles = {
    root: {
@@ -29,17 +31,36 @@ const styles = {
 
 class HeadBar extends React.Component {
    state = {
-      auth: true,
-      anchorEl: null,
+      anchorElSetting: null,
+      anchorElUser: null,
+      openKeyboard: false
    };
 
-   handleMenu = event => {
-      this.setState({ anchorEl: event.currentTarget });
+   handleMenuSetting = event => {
+      this.setState({ anchorElSetting: event.currentTarget });
+   }
+
+   handleMenuUser = event => {
+      this.setState({ anchorElUser: event.currentTarget });
    };
 
-   handleClose = () => {
-      this.setState({ anchorEl: null });
+   handleCloseSetting = () => {
+      this.setState({ anchorElSetting: null });
+   }
+
+   handleCloseUser = () => {
+      this.setState({ anchorElUser: null });
    };
+
+   /**
+    * 键盘设置
+    */
+   handleKeyboardSetting = () => {
+      this.setState({ anchorElSetting: null, openKeyboard: true })
+   }
+   handleCloseKeyboardSetting = () => {
+      this.setState({ openKeyboard: false })
+   }
 
    handleLogout = () => {
       this.setState({ anchorEl: null });
@@ -50,48 +71,71 @@ class HeadBar extends React.Component {
 
    render() {
       const { classes } = this.props;
-      const { auth, anchorEl } = this.state;
-      const open = Boolean(anchorEl);
+      const { anchorElSetting, anchorElUser } = this.state;
 
       return (
          <div className={classes.root}>
+            <KeyboardSetting
+               open={this.state.openKeyboard}
+               close={this.handleCloseKeyboardSetting}
+            />
             <AppBar position="static">
                <Toolbar>
-                  <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                  <IconButton className={classes.menuButton}
+                     color="inherit"
+                     aria-label="Menu"
+                     onClick={this.handleMenuSetting}
+                  >
                      <MenuIcon />
                   </IconButton>
+                  <Menu
+                     id="menu-appbar"
+                     anchorEl={anchorElSetting}
+                     anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                     }}
+                     transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                     }}
+                     open={Boolean(anchorElSetting)}
+                     onClose={this.handleCloseSetting}
+                  >
+                     <MenuItem onClick={this.handleCloseSetting}>设置</MenuItem>
+                     <MenuItem onClick={this.handleKeyboardSetting}>键盘</MenuItem>
+                  </Menu>
                   <Typography variant="title" color="inherit" className={classes.flex}>
                      KK俄罗斯方块
                   </Typography>
-                  {auth && (
-                     <div>
-                        <IconButton
-                           aria-owns={open ? 'menu-appbar' : null}
-                           aria-haspopup="true"
-                           onClick={this.handleMenu}
-                           color="inherit"
-                        >
-                           <AccountCircle />
-                        </IconButton>
-                        <Menu
-                           id="menu-appbar"
-                           anchorEl={anchorEl}
-                           anchorOrigin={{
-                              vertical: 'top',
-                              horizontal: 'right',
-                           }}
-                           transformOrigin={{
-                              vertical: 'top',
-                              horizontal: 'right',
-                           }}
-                           open={open}
-                           onClose={this.handleClose}
-                        >
-                           <MenuItem onClick={this.handleClose}>个人</MenuItem>
-                           <MenuItem onClick={this.handleLogout}>退出</MenuItem>
-                        </Menu>
-                     </div>
-                  )}
+                  <div>
+                     <span>{UserManager.user.nick}</span>
+                     <IconButton
+                        aria-owns={open ? 'menu-appbar' : null}
+                        aria-haspopup="true"
+                        onClick={this.handleMenuUser}
+                        color="inherit"
+                     >
+                        <AccountCircle />
+                     </IconButton>
+                     <Menu
+                        id="menu-appbar"
+                        anchorEl={anchorElUser}
+                        anchorOrigin={{
+                           vertical: 'top',
+                           horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                           vertical: 'top',
+                           horizontal: 'right',
+                        }}
+                        open={Boolean(anchorElUser)}
+                        onClose={this.handleCloseUser}
+                     >
+                        <MenuItem onClick={this.handleCloseUser}>个人信息</MenuItem>
+                        <MenuItem onClick={this.handleLogout}>退出登录</MenuItem>
+                     </Menu>
+                  </div>
                </Toolbar>
             </AppBar>
          </div>
