@@ -1,0 +1,314 @@
+/**
+ * Created by kk on 2018/4/8.
+ */
+import io from 'socket.io-client';
+import config from '../config';
+
+var OPERTABLE = {
+   ready: 0,
+   dead: 1,
+
+   left: 10,
+   right: 11,
+   down: 12,
+   drop: 13,
+   rotateL: 14,
+   rotateR: 15,
+   rotate180: 16,
+   hold: 17,
+
+   downNature: 18,
+   leftEnd: 19,
+   rightEnd: 20,
+   downEnd: 21,
+
+   attack: 30,
+   trash: 31,
+   hurt: 32,
+
+   start: 100,
+   gameover: 200,
+};
+
+var MSG_TYPE = {
+   lobby: 0,
+   room: 1,
+};
+
+class GameSocket {
+   constructor() {
+      // main.spin();
+      // $('#openWaiting').remove();
+      this.connected = false;
+      this.socket = io(config.server);
+      this.data = {
+         user: null,
+         users: [],
+         rooms: {},
+      };
+      this._onConnection();
+      this._onDisconnect();
+      this._onReconnect();
+      this._onMsg();
+      this._onLobbyInfo();
+      this._onRoomInfo();
+      this._onCreateRoom();
+      this._onJoinRoom();
+      this._onExitRoom();
+      this._onOperate();
+   }
+   static _instance = null;
+   static getInstance() {
+      if (!GameSocket._instance) {
+         GameSocket._instance = new GameSocket();
+      }
+      return GameSocket._instance;
+   }
+   connect() {
+      this.socket.connect();
+   }
+   disconnect() {
+      this.connected = false;
+      this.socket.disconnect();
+   }
+   _onConnection() {
+      var _this = this;
+      this.socket.on('onConnection', function (data) {
+         if (!data.err) {
+            _this.data.user = data.user;
+            _this.data.users = data.users;
+            _this.data.rooms = data.rooms;
+            console.log("login:", data);
+            _this.connected = true;
+            // main.onLogin();
+         }
+         else
+            console.log(data.err);
+         // main.stopSpin();
+      });
+   }
+   _onDisconnect() {
+      var _this = this;
+      this.socket.on('disconnect', function () {
+         console.log('disconnect...');
+         //_this.socket.reconnect();
+      });
+   }
+   _onReconnect() {
+      this.socket.on('reconnect', function (transport_type, reconnectionAttempts) {
+         console.log('reconnect...', transport_type, reconnectionAttempts);
+      });
+   }
+   sendMsg(data) {
+      this.socket.emit("chat", data);
+   }
+   _onMsg() {
+      this.socket.on('chat', function (data) {
+         // main.putMsg(data.user, data.msg);
+      });
+   }
+   _onLobbyInfo() {
+      var _this = this;
+      this.socket.on('lobbyInfo', function (data) {
+         if (!data.err) {
+            console.log("============== lobbyInfo ===============");
+            if (data.rooms) {
+               _this.data.rooms = data.rooms;
+               // main.updateRoomList();
+               console.log("rooms:", _this.data.rooms);
+            }
+            if (data.users) {
+               _this.data.users = data.users;
+               // main.updateUserList();
+               console.log("userInfo", _this.data.users);
+            }
+         }
+         else
+            console.log(data.err);
+      });
+   }
+   getRoomOtherUser() {
+      if (!this.data.room) return null;
+      if (this.data.room.playUsers.length < 2) return null;
+      var otherUser = this.data.user.id === this.data.room.playUsers[0] ? this.data.room.playUsers[1] : this.data.room.playUsers[0];
+      return otherUser;
+   }
+   _onRoomInfo() {
+      var _this = this;
+      this.socket.on('roomInfo', function (data) {
+         _this.data.room = data.room;
+         console.log("roomInfo:", _this.data.room);
+         if (data.join) {
+            // main.game.someoneJoined(data.userId, data.watch);
+         }
+         else {
+            // main.game.someoneLeft(data.userId, data.watch);
+         }
+         //if(main.game.single && _this.data.room.playUsers.length == 2){
+         //    main.game.someoneJoined();
+         //}
+         //else if(!main.game.single && _this.data.room.playUsers.length == 1)
+         //    main.game.someoneLeft();
+      });
+   }
+   createRoom() {
+      // main.spin();
+      this.socket.emit("createRoom");
+   }
+   _onCreateRoom() {
+      var _this = this;
+      this.socket.on("onCreateRoom", function (data) {
+         if (!data.err) {
+            _this.data.room = data.room;
+            console.log("onCreateRoom", _this.data.room);
+            // main.goRoom();
+         }
+         else
+            console.log(data.err);
+         // main.stopSpin();
+      });
+   }
+   joinRoom(roomId, watch) {
+      // main.spin();
+      this.socket.emit("joinRoom", { roomId: roomId, watch: watch });
+   }
+   _onJoinRoom() {
+      var _this = this;
+      this.socket.on("onJoinRoom", function (data) {
+         if (!data.err) {
+            _this.data.room = data.room;
+            if (data.watch) {
+               // main.goRoom(true);
+               console.log("watch room:", _this.data.room);
+            }
+            else {
+               // main.goRoom();
+               console.log("onJoinRoom", _this.data.room);
+            }
+         }
+         else
+            console.log(data.err);
+         // main.stopSpin();
+      });
+   }
+   exitRoom() {
+      // main.spin();
+      // this.socket.emit("exitRoom", { watch: main.game.watch });
+   }
+   _onExitRoom() {
+      var _this = this;
+      this.socket.on("onExitRoom", function (data) {
+         if (!data.err) {
+            console.log("onExitRoom", _this.data.roomId);
+            _this.data.roomId = null;
+            _this.data.room = null;
+            // main.exitRoom();
+         }
+         else
+            console.log(data.err);
+         // main.stopSpin();
+      });
+   }
+   operate(oper, data) {
+      var info = { oper: oper };
+      if (data) {
+         info.data = data;
+      }
+      this.socket.emit("operation", info);
+   }
+   _onOperate() {
+      var _this = this;
+      this.socket.on("onOperation", function (data) {
+         console.log("other operate:", data.oper);
+         // if (main.game) {
+         //    var hostTetris, imitateTetris;
+         //    if (main.game.watch) {
+         //       if (main.game.hostUser === data.userId) {
+         //          imitateTetris = main.game.tetris;
+         //       }
+         //       else
+         //          imitateTetris = main.game.otherTetris;
+         //    }
+         //    else {
+         //       hostTetris = main.game.tetris;
+         //       imitateTetris = main.game.otherTetris;
+         //    }
+         //    switch (data.oper) {
+         //       case OPERTABLE.ready:
+         //          main.game.userReady(data.userId);
+         //          break;
+         //       case OPERTABLE.start:
+         //          main.game.startVS(data.shapes);
+         //          break;
+         //       case OPERTABLE.gameover:
+         //          main.game.gameOver(data.result);
+         //          break;
+         //       case OPERTABLE.dead:
+         //          break;
+         //       case OPERTABLE.left:
+         //          imitateTetris.moveLeft();
+         //          break;
+         //       case OPERTABLE.leftEnd:
+         //          imitateTetris.moveLeftToEnd();
+         //          break;
+         //       case OPERTABLE.right:
+         //          imitateTetris.moveRight();
+         //          break;
+         //       case OPERTABLE.rightEnd:
+         //          imitateTetris.moveRightToEnd();
+         //          break;
+         //       case OPERTABLE.down:
+         //          imitateTetris.moveDown();
+         //          break;
+         //       case OPERTABLE.downEnd:
+         //          imitateTetris.moveDownToEnd();
+         //          break;
+         //       case OPERTABLE.downNature:
+         //          imitateTetris.moveDownNature();
+         //          break;
+         //       case OPERTABLE.drop:
+         //          imitateTetris.drop();
+         //          break;
+         //       case OPERTABLE.attack:
+         //          if (!main.game.watch)
+         //             hostTetris.hurt(data.data);
+         //          break;
+         //       case OPERTABLE.hurt:
+         //          imitateTetris.hurt(data.data);
+         //          break;
+         //       case OPERTABLE.trash:
+         //          imitateTetris.trash(data.data);
+         //          break;
+         //       case OPERTABLE.rotateL:
+         //          imitateTetris.rotate(true);
+         //          break;
+         //       case OPERTABLE.rotateR:
+         //          imitateTetris.rotate(false);
+         //          break;
+         //       case OPERTABLE.hold:
+         //          imitateTetris.holdShape();
+         //          break;
+         //    }
+         // }
+      });
+   }
+   single(time) {
+      this.socket.emit("single40", {
+         time: time,
+      });
+   }
+   setSetting(setting) {
+      this.data.user.setting = setting;
+      this.socket.emit("setting", { type: "setting", setting: setting });
+   }
+   setKeyboard(keyboard) {
+      this.data.user.keyboard = keyboard;
+      // if (main.game) {
+      //    main.game.updateInput();
+      // }
+      this.socket.emit("setting", { type: "keyboard", keyboard: keyboard });
+   }
+}
+
+var socket = GameSocket.getInstance();
+export default socket;

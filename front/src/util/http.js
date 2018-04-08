@@ -2,7 +2,7 @@
 import config from '../config.js';
 
 var http = {};
-var server = 'http://' + config.server + ':' + config.port + '/';
+var server = 'http://' + config.server + '/';
 
 http.quest = function (option, callback) {
    var url = server + option.url;
@@ -13,7 +13,7 @@ http.quest = function (option, callback) {
    var xhr = new XMLHttpRequest();
    (timeout > 0) && (xhr.timeout = timeout);
    xhr.onreadystatechange = function () {
-      if (xhr.readyState == 4) {
+      if (xhr.readyState === 4) {
          if (xhr.status >= 200 && xhr.status < 400) {
             var result = xhr.responseText;
             try { result = JSON.parse(xhr.responseText); } catch (e) { }
@@ -22,7 +22,7 @@ http.quest = function (option, callback) {
             callback && callback('status:' + xhr.status);
          }
       }
-   }.bind(this);
+   };
    xhr.open(method, url, true);
    xhr.withCredentials = true;
    if (typeof data === 'object') {

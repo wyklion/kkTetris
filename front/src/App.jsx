@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+// import Button from 'material-ui/Button';
+// import teal from 'material-ui/colors/teal';
+// var color = teal;
+// import logo from './logo.svg';
 import './App.css';
-
-import Button from 'material-ui/Button';
 import HeadBar from './ui/HeadBar';
 import Login from './ui/Login';
-
-import teal from 'material-ui/colors/teal';
-var color = teal;
 import http from './util/http';
 import UserManager from './UserManager';
+import socket from './socket/GameSocket';
 
 const classes = {
    bg: {
@@ -42,10 +41,12 @@ class App extends Component {
    onLogin = (result) => {
       UserManager.user = result;
       this.setState({ checked: true, logined: true });
+      socket.connect();
    }
 
    onLogout = () => {
       this.setState({ logined: false });
+      socket.disconnect();
    }
 
    render() {

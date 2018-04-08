@@ -2,16 +2,16 @@ import {
    FormControl,
    FormControlLabel,
    FormGroup,
-   FormHelperText,
+   // FormHelperText,
    FormLabel,
 } from 'material-ui/Form';
-import Input, { InputLabel } from 'material-ui/Input';
+import Input from 'material-ui/Input';
 
 import Button from 'material-ui/Button';
-import Checkbox from 'material-ui/Checkbox';
+// import Checkbox from 'material-ui/Checkbox';
 import PropTypes from 'prop-types';
 import React from 'react';
-import teal from 'material-ui/colors/teal';
+// import teal from 'material-ui/colors/teal';
 import purple from 'material-ui/colors/purple';
 import { withStyles } from 'material-ui/styles';
 

@@ -1,20 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import Typography from 'material-ui/Typography';
+// import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
-import TextField from 'material-ui/TextField';
+// import TextField from 'material-ui/TextField';
 import Input from 'material-ui/Input';
 import Dialog, {
    DialogActions,
    DialogContent,
-   DialogContentText,
+   // DialogContentText,
    DialogTitle,
 } from 'material-ui/Dialog';
-import Divider from 'material-ui/Divider';
+// import Divider from 'material-ui/Divider';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 
 import UserManager from '../UserManager';
+import socket from '../socket/GameSocket';
 
 var keyName = {
    8: 'Backspace',
@@ -126,21 +125,26 @@ var keys = [
 ];
 
 class KeyboardSetting extends React.Component {
-   state = {
-      settingKey: null,
-   }
    constructor(props) {
       super(props);
-      this.settingKey = null;
       this.open = false;
       this.initKeys();
+      this.state = {
+         settingKey: null,
+         dasDelay: this.keyboard.dasDelay,
+         moveDelay: this.keyboard.moveDelay,
+      }
    }
 
    componentWillUpdate(props) {
-      if (props.open != this.open) {
+      if (props.open !== this.open) {
          if (props.open) {
-            this.state.settingKey = null;
             this.initKeys();
+            this.setState({
+               settingKey: null,
+               dasDelay: this.keyboard.dasDelay,
+               moveDelay: this.keyboard.moveDelay,
+            });
          }
          this.open = props.open;
       }
@@ -152,8 +156,8 @@ class KeyboardSetting extends React.Component {
       for (var i = 0; i < keys.length; i++) {
          this.keyboard[keys[i].key] = keyboard[keys[i].key];
       }
-      this.state.dasDelay = keyboard.dasDelay;
-      this.state.moveDelay = keyboard.moveDelay;
+      this.keyboard.dasDelay = keyboard.dasDelay;
+      this.keyboard.moveDelay = keyboard.moveDelay;
    }
 
    handleClose = () => {
@@ -170,7 +174,7 @@ class KeyboardSetting extends React.Component {
          return;
       }
       // ESC
-      if (event.keyCode == 27) {
+      if (event.keyCode === 27) {
          this.setState({ settingKey: null });
          return;
       }
@@ -200,7 +204,7 @@ class KeyboardSetting extends React.Component {
          cells.push(
             <TableRow key={'row' + i}>
                <TableCell>{keys[i].name}</TableCell>
-               <TableCell onClick={this.onClickKey(keys[i].key)}>{this.state.settingKey == key ? '' : keyName[code]}</TableCell>
+               <TableCell onClick={this.onClickKey(keys[i].key)}>{this.state.settingKey === key ? '' : keyName[code]}</TableCell>
             </TableRow>
          );
       }
@@ -252,7 +256,7 @@ class KeyboardSetting extends React.Component {
    }
 
    render() {
-      const { classes } = this.props;
+      // const { classes } = this.props;
       var keyTable = this.makeKeyTable();
 
       return (
