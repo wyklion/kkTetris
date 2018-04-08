@@ -9,6 +9,7 @@ import Login from './ui/Login';
 import http from './util/http';
 import UserManager from './UserManager';
 import socket from './socket/GameSocket';
+import Lobby from './ui/Lobby';
 
 const classes = {
    bg: {
@@ -69,6 +70,7 @@ class App extends Component {
       return (
          <div style={classes.bg} className="App">
             <HeadBar onLogout={this.onLogout} />
+            <Lobby />
          </div>
       );
    }
