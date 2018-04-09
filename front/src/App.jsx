@@ -9,7 +9,7 @@ import Login from './ui/Login';
 import http from './util/http';
 import UserManager from './UserManager';
 import socket from './socket/GameSocket';
-import Lobby from './ui/Lobby';
+import Main from './ui/Main';
 
 const classes = {
    bg: {
@@ -41,7 +41,10 @@ class App extends Component {
 
    onLogin = (result) => {
       UserManager.user = result;
-      this.setState({ checked: true, logined: true });
+      socket.onConnect = () => {
+         this.setState({ checked: true, logined: true });
+         socket.onConnect = null;
+      }
       socket.connect();
    }
 
@@ -70,7 +73,7 @@ class App extends Component {
       return (
          <div style={classes.bg} className="App">
             <HeadBar onLogout={this.onLogout} />
-            <Lobby />
+            <Main />
          </div>
       );
    }
