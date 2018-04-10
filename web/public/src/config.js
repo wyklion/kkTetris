@@ -3,7 +3,8 @@
  */
 
 //var SERVER_NAME = "www.kktetris.com";
-var SERVER_NAME = "localhost:8700";
+//var SERVER_NAME = "localhost:8700";
+var SERVER_NAME = "140.143.128.60:8700";
 
 var key = {
    8: 'Backspace',
