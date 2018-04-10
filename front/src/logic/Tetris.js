@@ -32,6 +32,9 @@ export default class Tetris {
       this.row = ROW;
       this.col = COL;
       this.playData = new PlayData();
+      this.renderer = null;
+      this.operateCount = 0;
+      this.renderCount = 0;
       this.init();
    }
 
@@ -56,7 +59,11 @@ export default class Tetris {
       //when setting.buffer == ture;
       this.trashes = [];
    }
+   render() {
+      this.renderer.renderAll();
+   }
    start(shapes) {
+      this.playing = true;
       if (shapes) {
          for (var i = 0; i < shapes.length; i++)
             this.shapes.push(shapes[i]);
@@ -69,7 +76,6 @@ export default class Tetris {
       }
 
       this.newShape();
-      this.playing = true;
    }
    newShape() {
       this.holded = false;
@@ -83,6 +89,7 @@ export default class Tetris {
       this.nextShapes.push(new Shape(this, shapeId));
       if (!this.shape.checkSelf())
          this.gameOver();
+      this.render();
    }
    freeze() {
       this.playData.count++;
@@ -92,6 +99,7 @@ export default class Tetris {
       if (!this.game.single)
          this.checkAttack();
       this.newShape();
+      this.render();
    }
    checkOver() {
       for (var i = 0; i < this.col; i++) {
@@ -108,6 +116,7 @@ export default class Tetris {
          this.operate(OPERTABLE.dead);
          this.game.lose();
       }
+      this.render();
    }
    restart(shapes) {
       this.init();
@@ -248,6 +257,7 @@ export default class Tetris {
       }
       this.holded = true;
       this.operate(OPERTABLE.hold);
+      this.render();
    }
    rotate(anti) {
       var ok = this.shape.rotate(anti);
@@ -258,6 +268,7 @@ export default class Tetris {
             this.operate(OPERTABLE.rotateR);
          this.lastRotate = true;
          this.checkFloor();
+         this.render();
       }
    }
    rotate180() {
@@ -266,10 +277,13 @@ export default class Tetris {
          this.operate(OPERTABLE.rotate180);
          this.lastRotate = true;
          this.checkFloor();
+         this.render();
       }
    }
    move(offX, offY) {
-      return this.shape.move(offX, offY);
+      // console.log(offX, offY);
+      var ok = this.shape.move(offX, offY);
+      return ok;
    }
    moveLeft() {
       var ok = this.move(-1, 0);
@@ -277,14 +291,20 @@ export default class Tetris {
          this.lastRotate = false;
          this.checkFloor();
          this.operate(OPERTABLE.left);
+         this.render();
       }
       return ok;
    }
    moveLeftToEnd() {
       this.operate(OPERTABLE.leftEnd);
+      var ok = false;
       while (this.move(-1, 0)) {
+         ok = true;
          this.lastRotate = false;
          this.checkFloor();
+      }
+      if (ok) {
+         this.render();
       }
    }
    moveRight() {
@@ -293,14 +313,20 @@ export default class Tetris {
          this.lastRotate = false;
          this.checkFloor();
          this.operate(OPERTABLE.right);
+         this.render();
       }
       return ok;
    }
    moveRightToEnd() {
       this.operate(OPERTABLE.rightEnd);
+      var ok = false;
       while (this.move(1, 0)) {
+         ok = true;
          this.lastRotate = false;
          this.checkFloor();
+      }
+      if (ok) {
+         this.render();
       }
    }
    moveDown() {
@@ -310,23 +336,31 @@ export default class Tetris {
       this.move(0, -1);
       this.lastRotate = false;
       this.checkFloor();
+      this.render();
    }
    moveDownToEnd() {
       this.operate(OPERTABLE.downEnd);
+      var ok = false;
       while (this.shape.checkDown()) {
+         ok = true;
          this.move(0, -1);
          this.lastRotate = false;
          this.checkFloor();
+      }
+      if (ok) {
+         this.render();
       }
    }
    moveDownNature() {
       this.operate(OPERTABLE.downNature);
       this.move(0, -1);
+      this.render();
    }
    drop() {
       this.attackLines = 0;
       this.operate(OPERTABLE.drop);
       this.shape.drop();
+      this.render();
    }
    checkFloor() {
       if (this.shape.floor) {
@@ -344,6 +378,7 @@ export default class Tetris {
    //=============== for vs game =================
    //only me
    operate(oper, data) {
+      this.operateCount++;
       if (!this.me) return;
       if (!this.game.single)
          socket.operate(oper, data);
@@ -450,5 +485,10 @@ export default class Tetris {
    }
    print() {
       console.log(this.board);
+   }
+   dispose() {
+      this.renderer.setTetris(null);
+      this.renderer.reset();
+      this.renderer = null;
    }
 };

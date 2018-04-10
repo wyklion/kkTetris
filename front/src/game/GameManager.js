@@ -23,6 +23,8 @@ class GameManager {
       // 更新函数
       this.updateFuncs = [];
       // this.updateLasts = {};
+      // 主界面
+      this.main = null;
    }
    static _instance = null;
    static getInstance() {
@@ -66,6 +68,7 @@ class GameManager {
    reset() {
       if (this.game) {
          this.game.dispose();
+         this.game = null;
       }
    }
    /**
@@ -73,9 +76,15 @@ class GameManager {
     */
    startSpeedGame() {
       this.reset();
-      var game = this.game = new SpeedGame();
-      game.init();
-      this.render.setMain(game.tetris);
+      var game = this.game = new SpeedGame(40);
+      this.render.main.setTetris(game.tetris);
+      game.start();
+   }
+
+   restart() {
+      if (this.game) {
+         this.game.restart();
+      }
    }
 }
 

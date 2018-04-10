@@ -4,19 +4,6 @@ import { OPERTABLE } from '../socket/OperTable';
 import gameManager from './GameManager';
 import KeyManager from '../logic/KeyManager';
 import Tetris from '../logic/Tetris';
-var PlayData = function () {
-   this.reset();
-};
-PlayData.prototype = {
-   constructor: PlayData,
-   reset: function () {
-      this.time = 0;
-      this.count = 0;
-      this.score = 0;
-      this.lines = 0;
-      this.attack = 0;
-   },
-};
 
 export default class Game {
    constructor() {
@@ -25,7 +12,7 @@ export default class Game {
          tspinMode: "3T",
          useBuffer: true,
       }
-      this.interval = 0.5;
+      this.interval = 1;
       this.time = 0;
       this.playTime = 0;
       this.watch = false;
@@ -36,14 +23,12 @@ export default class Game {
       this.firstGame = true;
       this.tetris = new Tetris(this, true);
       this.hostUser = gameManager.user.id;
+      this.init();
       gameManager.addUpdate(this);
    }
    init() {
       if (!this.watch)
          this.input();
-   }
-   attachRender(renderer) {
-      this.renderer = renderer;
    }
    updateInput() {
       this.keyManager.updateInput();
@@ -71,9 +56,9 @@ export default class Game {
       });
 
       this.onKeyDown = function (e) {
-         if (e.keyCode === 113) { // F2
-            _this.readyOrPlay();
-         }
+         // if (e.keyCode === 113) { // F2
+         //    _this.start();
+         // }
          //else if(e.keyCode === 80) // P
          //    _this.pause();
          if (!_this.isPaused && _this.tetris.playing) {
@@ -89,8 +74,7 @@ export default class Game {
       document.body.addEventListener("keydown", this.onKeyDown, false);
       document.body.addEventListener("keyup", this.onKeyUp, false);
    }
-   readyOrPlay() {
-      // this.ui.readyOrPlay();
+   start() {
       this.playTime = 0;
       this.tetris.playData.reset();
       if (this.firstGame) {
@@ -100,6 +84,9 @@ export default class Game {
       else {
          this.tetris.restart();
       }
+   }
+   restart() {
+      this.start();
    }
    //for watch
    userReady(userId) {
@@ -155,7 +142,6 @@ export default class Game {
             }
          }
       }
-      // this.renderer.render();
    }
    pause() {
       this.isPaused = !this.isPaused;
@@ -164,7 +150,7 @@ export default class Game {
       document.body.removeEventListener("keydown", this.onKeyDown, false);
       document.body.removeEventListener("keyup", this.onKeyUp, false);
       gameManager.removeUpdate(this);
-      this.renderer.clear();
-      delete this;
+      this.tetris.dispose();
+      this.tetris = null;
    }
 }

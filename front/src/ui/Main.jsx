@@ -3,8 +3,11 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Grid from 'material-ui/Grid';
+import Button from 'material-ui/Button';
 // import Tetris from '../logic/Tetris';
 import gameManager from '../game/GameManager';
+import config from '../config';
+import SingleMenu from './SingleMenu';
 
 const styles = theme => ({
    root: {
@@ -25,7 +28,14 @@ const styles = theme => ({
       margin: '0 auto',
    },
    ui: {
-      padding: '12px'
+      padding: '12px',
+      height: '100%'
+   },
+   singleMenu: {
+      left: '65%',
+      position: 'relative',
+      top: '70%',
+      width: '30%',
    }
 });
 
@@ -33,7 +43,8 @@ class Main extends React.Component {
    state = {
       anchorElSetting: null,
       anchorElUser: null,
-      openKeyboard: false
+      openKeyboard: false,
+      singlePlaying: false,
    };
 
    constructor(props) {
@@ -44,23 +55,47 @@ class Main extends React.Component {
       window.addEventListener('resize', this.onResize);
       this.onResize();
       gameManager.setRenderDiv(this.refs.canvasDiv);
-      gameManager.startSpeedGame();
+      gameManager.main = this;
    }
 
    /**
-    * 800*600比例的canvasDiv
+    * 显示比例的canvasDiv
     */
    onResize = () => {
       var mainDiv = this.refs.mainDiv;
       var w = mainDiv.clientWidth;
       var h = mainDiv.clientHeight;
       // console.log(w, h);
-      var scale = h / w > 3 / 4 ? w / 800 : h / 600;
+      var renderWidth = config.render.width;
+      var renderHeight = config.render.height;
+      var scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
       var div = this.refs.canvasDiv;
-      var width = Math.round(800 * scale);
-      var height = Math.round(600 * scale);
+      var width = Math.round(renderWidth * scale);
+      var height = Math.round(renderHeight * scale);
       div.style.width = width + 'px';
       div.style.height = height + 'px';
+   }
+
+   onSpeedGame = () => {
+      console.log('single40');
+      this.setState({ singlePlaying: true });
+      gameManager.startSpeedGame();
+   }
+
+   onDigGame = () => {
+      console.log('dig20');
+      this.setState({ singlePlaying: true });
+   }
+
+   onRestartGame = () => {
+      console.log('onRestartGame');
+      gameManager.restart();
+   }
+
+   onEndGame = () => {
+      console.log('onEndGame');
+      gameManager.reset();
+      this.setState({ singlePlaying: false });
    }
 
    render() {
@@ -69,11 +104,21 @@ class Main extends React.Component {
          <div ref='mainDiv' className={classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
                <div className={classes.ui}>
-                  <Grid container spacing={24}>
+                  <Grid style={{ height: '100%' }} container spacing={24}>
                      <Grid item xs={12} sm={6}>
                         <Paper className={classes.paper}>xs=12 sm=6</Paper>
                      </Grid>
-                     <Grid item xs={12} sm={6}>
+                     <Grid style={{ height: '100%' }} item xs={12} sm={6}>
+                        <div className={classes.singleMenu}>
+                           <SingleMenu
+                              single={true}
+                              playing={this.state.singlePlaying}
+                              onSpeedGame={this.onSpeedGame}
+                              onDigGame={this.onDigGame}
+                              onRestartGame={this.onRestartGame}
+                              onEndGame={this.onEndGame}
+                           />
+                        </div>
                      </Grid>
                   </Grid>
                </div>
