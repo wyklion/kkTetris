@@ -62,15 +62,16 @@ git push origin master
 ## 启动
 旧
 ```
-vi public/src/config.js //修改SERVER_NAME
+vi web/public/src/config.js //修改SERVER_NAME
 ./startdb.sh
-./startnode.sh
+./startweb.sh
 ```
 新
 ```
-vi public/src/config.js //修改SERVER_NAME
+vi front/src/config.js //修改SERVER_NAME
 ./startdb.sh
-./startnode.sh
+./startserver.sh
+./startfront.sh
 ```
 
 # windows
