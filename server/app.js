@@ -33,6 +33,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(sessionMidleware);
 
+var allowOrigins = [
+   'http://kktetris.top',
+   'http://www.kktetris.top',
+   'http://140.143.128.60',
+   'http://localhost',
+];
+
 app.use(function (req, res, next) {
    res.locals.user = req.session.user;   // 从session 获取 user对象
    var err = req.session.error;   // 获取错误信息
@@ -41,7 +48,7 @@ app.use(function (req, res, next) {
    if (err) {
       res.locals.message = '<div class="alert alert-danger" style="margin-bottom:20px;color:red;">' + err + '</div>';
    }
-   if (req.headers.origin == 'http://www.kktetris.top' || req.headers.origin == 'http://localhost') {
+   if (allowOrigins.indexOf(req.headers.origin) > -1) {
       res.header("Access-Control-Allow-Origin", req.headers.origin);
    }
    res.header('Access-Control-Allow-Credentials', true);
