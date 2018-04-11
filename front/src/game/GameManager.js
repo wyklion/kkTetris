@@ -80,7 +80,12 @@ class GameManager {
       this.render.main.setTetris(game.tetris);
       game.start();
    }
-
+   onGameOver(win, data) {
+      this.main.onGameOver(win, data);
+   }
+   endGame() {
+      this.reset();
+   }
    restart() {
       if (this.game) {
          this.game.restart();

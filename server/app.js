@@ -37,6 +37,7 @@ var allowOrigins = [
    'http://kktetris.top',
    'http://www.kktetris.top',
    'http://140.143.128.60',
+   'http://192.168.1.112',
    'http://localhost',
 ];
 

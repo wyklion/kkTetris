@@ -22,11 +22,11 @@ var color = purple;
 const styles = theme => ({
    form: {
       position: 'fixed',
-      width: '400px',
+      width: '300px',
       height: '300px',
       left: '50%',
       top: '50%',
-      marginLeft: '-200px',
+      marginLeft: '-150px',
       marginTop: '-150px'
    },
    formLabel: {
@@ -41,6 +41,10 @@ const styles = theme => ({
       display: 'flex',
       flexWrap: 'wrap',
    },
+   controlLabel: {
+      marginLeft: 0,
+      marginRight: 0,
+   },
    input: {
       width: '400px',
       // color: color[500],
@@ -53,15 +57,13 @@ const styles = theme => ({
       width: '200px',
       left: '50%',
       marginLeft: '-100px',
-      marginTop: '30px'
+      marginTop: '20px'
    }
 });
 
 class Login extends React.Component {
    state = {
-      gilad: true,
-      jason: false,
-      antoine: true,
+      register: false,
    };
 
    onKeyDown = (event) => {
@@ -83,49 +85,153 @@ class Login extends React.Component {
       })
    }
 
-   render() {
+   onRegisterUIClick = () => {
+      this.setState({ register: true })
+   }
+
+   onRegisterClick = () => {
+      var id = this.name.value;
+      var pswd = this.password.value;
+      var pswd2 = this.password2.value;
+      if (pswd != pswd2) {
+         alert('两次密码不一致！')
+         return;
+      }
+      http.post({ url: 'register', data: { id: id, pswd: pswd } }, (err, result) => {
+         if (err) {
+            alert(err);
+         } else {
+            this.setState({ register: false });
+         }
+      })
+   }
+
+   makeLoginForm() {
       const { classes } = this.props;
       return (
+         <FormControl fullWidth={true} component="fieldset">
+            <FormLabel className={classes.formLabel} component="legend">KK Tetris</FormLabel>
+            <FormControlLabel
+               key="loginId"
+               className={classes.controlLabel}
+               control={
+                  <Input
+                     onKeyDown={this.onKeyDown}
+                     inputRef={(instance) => this.name = instance}
+                     placeholder="帐号"
+                     className={classes.input}
+                     inputProps={{
+                        'aria-label': 'Description',
+                     }}
+                  />
+               }
+            />
+            <FormControlLabel
+               key="loginPswd"
+               className={classes.controlLabel}
+               control={
+                  <Input
+                     onKeyDown={this.onKeyDown}
+                     inputRef={(instance) => this.password = instance}
+                     placeholder="密码"
+                     type="password"
+                     className={classes.input}
+                     inputProps={{
+                        'aria-label': 'Description',
+                     }}
+                  />
+               }
+            />
+            <Button
+               key="loginButton"
+               className={classes.button}
+               onClick={this.onLoginClick}
+               variant="raised"
+               color="primary">
+               登录
+            </Button>
+            <Button
+               key="registerUIButton"
+               color="primary"
+               className={classes.button}
+               onClick={this.onRegisterUIClick}
+            >
+               注册
+            </Button>
+         </FormControl>
+      )
+   }
+
+   makeRegisterForm() {
+      const { classes } = this.props;
+      return (
+         <FormControl fullWidth={true} component="fieldset">
+            <FormLabel className={classes.formLabel} component="legend">KK Tetris</FormLabel>
+            <FormControlLabel
+               key="regesterId"
+               className={classes.controlLabel}
+               control={
+                  <Input
+                     onKeyDown={this.onKeyDown}
+                     inputRef={(instance) => this.name = instance}
+                     placeholder="帐号"
+                     className={classes.input}
+                     inputProps={{
+                        'aria-label': 'Description',
+                     }}
+                  />
+               }
+            />
+            <FormControlLabel
+               key="regesterPswd"
+               className={classes.controlLabel}
+               control={
+                  <Input
+                     onKeyDown={this.onKeyDown}
+                     inputRef={(instance) => this.password = instance}
+                     placeholder="密码"
+                     type="password"
+                     className={classes.input}
+                     inputProps={{
+                        'aria-label': 'Description',
+                     }}
+                  />
+               }
+            />
+            <FormControlLabel
+               key="regesterPswd2"
+               className={classes.controlLabel}
+               control={
+                  <Input
+                     onKeyDown={this.onKeyDown}
+                     inputRef={(instance) => this.password2 = instance}
+                     placeholder="重复密码"
+                     type="password"
+                     className={classes.input}
+                     inputProps={{
+                        'aria-label': 'Description',
+                     }}
+                  />
+               }
+            />
+            <Button
+               key="registerButton"
+               className={classes.button}
+               onClick={this.onRegisterClick}
+               variant="raised"
+               color="primary">
+               注册
+            </Button>
+         </FormControl>
+      )
+   }
+
+   render() {
+      const { classes } = this.props;
+      var form = this.state.register ? this.makeRegisterForm() : this.makeLoginForm();
+      return (
          <div className={classes.form} >
-            <FormControl fullWidth={true} component="fieldset">
-               <FormLabel className={classes.formLabel} component="legend">KK Tetris</FormLabel>
-               <FormGroup>
-                  <FormControlLabel
-                     control={
-                        <Input
-                           onKeyDown={this.onKeyDown}
-                           inputRef={(instance) => this.name = instance}
-                           placeholder="帐号"
-                           className={classes.input}
-                           inputProps={{
-                              'aria-label': 'Description',
-                           }}
-                        />
-                     }
-                  />
-                  <FormControlLabel
-                     control={
-                        <Input
-                           onKeyDown={this.onKeyDown}
-                           inputRef={(instance) => this.password = instance}
-                           placeholder="密码"
-                           type="password"
-                           className={classes.input}
-                           inputProps={{
-                              'aria-label': 'Description',
-                           }}
-                        />
-                     }
-                  />
-               </FormGroup>
-               <Button
-                  className={classes.button}
-                  onClick={this.onLoginClick}
-                  variant="raised"
-                  color="primary">
-                  登录
-               </Button>
-            </FormControl>
+            {form}
          </div>
       );
    }

@@ -8,6 +8,7 @@ import Button from 'material-ui/Button';
 import gameManager from '../game/GameManager';
 import config from '../config';
 import SingleMenu from './SingleMenu';
+import Result from './Result';
 
 const styles = theme => ({
    root: {
@@ -25,19 +26,28 @@ const styles = theme => ({
       height: 'calc(100% - 64px)',
    },
    canvas: {
-      margin: '0 auto',
+      left: '50%',
+      position: 'absolute',
    },
    ui: {
       padding: '12px',
       height: '100%'
    },
+   result: {
+      position: 'absolute',
+      width: '55%',
+      height: '35%',
+      left: '6%',
+      top: '30%',
+   },
    singleDiv: {
       width: '100%',
-      height: '100%'
+      height: '100%',
+      position: 'absolute',
    },
    singleMenu: {
-      left: '65%',
-      position: 'relative',
+      left: '67.5%',
+      position: 'absolute',
       top: '70%',
       width: '30%',
    }
@@ -49,6 +59,8 @@ class Main extends React.Component {
       anchorElUser: null,
       openKeyboard: false,
       singlePlaying: false,
+      showResult: false,
+      resultData: null,
    };
 
    constructor(props) {
@@ -57,9 +69,9 @@ class Main extends React.Component {
 
    componentDidMount() {
       window.addEventListener('resize', this.onResize);
-      this.onResize();
       gameManager.setRenderDiv(this.refs.canvasDiv);
       gameManager.main = this;
+      this.onResize();
    }
 
    /**
@@ -82,7 +94,7 @@ class Main extends React.Component {
          width = Math.round(renderWidth * scale);
          height = Math.round(renderHeight * scale);
          singleDiv.style.width = '50%';
-         singleDiv.style.marginLeft = '50%';
+         singleDiv.style.left = '50%';
       }
       // 竖屏
       else {
@@ -93,40 +105,61 @@ class Main extends React.Component {
          width = Math.round(renderWidth * scale);
          height = Math.round(renderHeight * scale);
          singleDiv.style.width = '100%';
-         singleDiv.style.marginLeft = '0';
+         singleDiv.style.left = '0';
       }
       div.style.width = width + 'px';
       div.style.height = height + 'px';
+      div.style.marginLeft = -width / 2 + 'px';
+      gameManager.render.onResize();
    }
 
    onSpeedGame = () => {
       console.log('single40');
-      this.setState({ singlePlaying: true });
+      this.setState({ singlePlaying: true, showResult: false });
       gameManager.startSpeedGame();
    }
 
    onDigGame = () => {
       console.log('dig20');
-      this.setState({ singlePlaying: true });
+      this.setState({ singlePlaying: true, showResult: false });
    }
 
    onRestartGame = () => {
       console.log('onRestartGame');
       gameManager.restart();
+      this.setState({ showResult: false });
    }
 
+   /**
+    * 游戏胜利或失败
+    */
+   onGameOver = (win, data) => {
+      console.log('onGameOver', win, data);
+      this.setState({ showResult: true, resultData: data });
+   }
+
+   /**
+    * 主动结束游戏
+    */
    onEndGame = () => {
       console.log('onEndGame');
-      gameManager.reset();
-      this.setState({ singlePlaying: false });
+      gameManager.endGame();
+      this.setState({ singlePlaying: false, showResult: false });
    }
 
    render() {
       const { classes } = this.props;
+      const { showResult, resultData } = this.state;
       return (
          <div ref={instance => this.mainDiv = instance} className={classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
                <div ref='singleDiv' className={classes.singleDiv}>
+                  <div className={classes.result}>
+                     <Result
+                        show={showResult}
+                        data={resultData}
+                     />
+                  </div>
                   <div className={classes.singleMenu}>
                      <SingleMenu
                         single={true}

@@ -45,6 +45,10 @@ class App extends Component {
          this.setState({ checked: true, logined: true });
          socket.onConnect = null;
       }
+      socket.onConnectFail = () => {
+         this.setState({ checked: true, logined: false });
+         socket.onConnectFail = null;
+      }
       socket.connect();
    }
 

@@ -14,7 +14,6 @@ export default class Game {
       }
       this.interval = 1;
       this.time = 0;
-      this.playTime = 0;
       this.watch = false;
       this.playing = false;
       this.ready = false;
@@ -76,7 +75,6 @@ export default class Game {
       document.body.addEventListener("keyup", this.onKeyUp, false);
    }
    start() {
-      this.playTime = 0;
       this.tetris.playData.reset();
       if (this.firstGame) {
          this.firstGame = false;
@@ -98,15 +96,13 @@ export default class Game {
          this.otherTetris.init();
       // this.ui.userReady(userId);
    }
-   gameOver(result) {
-      console.log(result);
+   /**
+    * 游戏结束，由tetris通知
+    */
+   gameOver(win = false) {
+      console.log(win ? 'win' : 'lose');
       this.reset();
       // this.ui.gameOver(result.win);
-   }
-   lose() {
-      if (this.single) {
-         this.reset();
-      }
    }
    reset() {
       // this.ui.reset();
@@ -124,25 +120,20 @@ export default class Game {
    update = (dt) => {
       if (this.isPaused) return;
       if (this.tetris.playing) {
-         this.playTime += dt;
-         //this.tetris.playData.time += dt;
+         this.tetris.playData.time += dt;
          this.time += dt;
-         this.tetris.renderer.renderData();
-         if (this.single) {
-            if (this.tetris.playData.lines >= 40) {
-               this.tetris.gameOver();
-               //socket.single(this.tetris.playData.time);
-               socket.single(this.playTime);
-               return;
-            }
-         }
          if (!this.watch) {
             while (this.time > this.interval) {
                this.time -= this.interval;
                this.tetris.moveDownNature();
             }
          }
+         this.tetris.renderer.renderData();
+         this.checkOver();
       }
+   }
+   checkOver() {
+      return false;
    }
    pause() {
       this.isPaused = !this.isPaused;

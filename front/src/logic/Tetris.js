@@ -110,11 +110,11 @@ export default class Tetris {
       }
       return false;
    }
-   gameOver() {
+   gameOver(win = false) {
       this.playing = false;
       if (this.me) {
          this.operate(OPERTABLE.dead);
-         this.game.lose();
+         this.game.gameOver(win);
       }
       this.render();
    }

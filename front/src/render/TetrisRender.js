@@ -327,11 +327,10 @@ export default class TetrisRender {
    renderData() {
       this.dataArea.visible = true;
       var tetris = this.tetris;
-      var game = tetris.game;
       var hostData = tetris.playData;
-      this.setText('time', game.playTime.toFixed(1));
+      this.setText('time', hostData.time.toFixed(1));
       this.setText('piece', hostData.count);
-      this.setText('speed', game.playTime == 0 ? "0.0" : (hostData.count / game.playTime).toFixed(1));
+      this.setText('speed', hostData.time == 0 ? "0.0" : (hostData.count / hostData.time).toFixed(1));
       this.setText('lines', hostData.lines);
    }
 

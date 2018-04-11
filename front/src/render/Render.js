@@ -31,7 +31,7 @@ export default class Render {
 
    initMainTetris() {
       var container = new PIXI.Container();
-      container.x = this.renderConfig.width / 2;
+      container.x = this.renderConfig.width / 2 + 10;
       container.y = 0;
       this.stage.addChild(container);
       this.main = new TetrisRender({
@@ -50,8 +50,6 @@ export default class Render {
    }
    attach(div) {
       this.div = div;
-      window.addEventListener('resize', this.onResize);
-      this.onResize();
       div.appendChild(this.renderer.view);
    }
    onResize = () => {

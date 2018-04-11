@@ -49,11 +49,13 @@ class GameSocket {
             if (_this.onConnect) {
                _this.onConnect();
             }
-            // main.onLogin();
          }
-         else
+         else {
             console.log(data.err);
-         // main.stopSpin();
+            if (_this.onConnectFail) {
+               _this.onConnectFail();
+            }
+         }
       });
    }
    _onDisconnect() {
@@ -271,7 +273,9 @@ class GameSocket {
       this.socket.emit("setting", { type: "setting", setting: setting });
    }
    setKeyboard(keyboard) {
-      gameManager.user.keyboard = keyboard;
+      for (var k in keyboard) {
+         gameManager.user.keyboard[k] = keyboard[k];
+      }
       // if (main.game) {
       //    main.game.updateInput();
       // }

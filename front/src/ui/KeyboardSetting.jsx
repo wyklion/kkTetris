@@ -14,6 +14,7 @@ import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Ta
 
 import UserManager from '../UserManager';
 import socket from '../socket/GameSocket';
+import gameManager from '../game/GameManager';
 
 var keyName = {
    8: 'Backspace',
@@ -151,7 +152,7 @@ class KeyboardSetting extends React.Component {
    }
 
    initKeys() {
-      var keyboard = UserManager.user.keyboard;
+      var keyboard = gameManager.user.keyboard;
       this.keyboard = {};
       for (var i = 0; i < keys.length; i++) {
          this.keyboard[keys[i].key] = keyboard[keys[i].key];
@@ -165,7 +166,13 @@ class KeyboardSetting extends React.Component {
    };
 
    handleSave = () => {
-
+      var dasDelay = parseInt(this.state.dasDelay);
+      if (dasDelay < 10) dasDelay = 10; else if (dasDelay > 1000) dasDelay = 1000;
+      var moveDelay = parseInt(this.state.moveDelay);
+      if (moveDelay < 0) moveDelay = 0; else if (moveDelay > 500) moveDelay = 500;
+      this.keyboard.moveDelay = moveDelay;
+      socket.setKeyboard(this.keyboard);
+      this.props.close();
    }
 
    onKeyDown = (event) => {

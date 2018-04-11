@@ -71,7 +71,6 @@ export default class GameDouble extends Game {
    readyOrPlay() {
       if (this.single) {
          this.ui.readyOrPlay();
-         this.playTime = 0;
          this.tetris.playData.reset();
          if (this.firstGame) {
             this.firstGame = false;
@@ -105,7 +104,6 @@ export default class GameDouble extends Game {
       this.ui.startVS();
       this.playing = true;
       this.ready = false;
-      this.playTime = 0;
       this.tetris.playData.reset();
       this.otherTetris.playData.reset();
       this.tetris.restart(shapes);
@@ -136,7 +134,6 @@ export default class GameDouble extends Game {
          this.ready = false;
          this.tetris.init();
          this.otherTetris.init();
-         this.playTime = 0;
          this.tetris.playData.reset();
          this.otherTetris.playData.reset();
       }
@@ -192,14 +189,12 @@ export default class GameDouble extends Game {
    update(dt) {
       if (this.isPaused) return;
       if (this.tetris.playing) {
-         this.playTime += dt;
-         //this.tetris.playData.time += dt;
+         this.tetris.playData.time += dt;
          this.time += dt;
          if (this.single) {
             if (this.tetris.playData.lines >= 40) {
                this.tetris.gameOver();
-               //socket.single(this.tetris.playData.time);
-               socket.single(this.playTime);
+               socket.single(this.tetris.playData.time);
                return;
             }
          }
