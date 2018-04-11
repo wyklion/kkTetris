@@ -7,6 +7,11 @@ var config = {
       width: 960,
       height: 700,
       top: 50,
+   },
+   renderSingle: {
+      width: 480,
+      height: 700,
+      top: 50,
    }
 }
 

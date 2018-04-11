@@ -19,6 +19,7 @@ export default class Game {
       this.playing = false;
       this.ready = false;
 
+      this.single = true;
       this.isPaused = false;
       this.firstGame = true;
       this.tetris = new Tetris(this, true);
@@ -113,7 +114,6 @@ export default class Game {
          this.keyManager.stop();
       this.playing = false;
       this.tetris.playing = false;
-      this.otherTetris.playing = false;
    }
    trashPool(trash) {
       this.tetris.hurt(trash);
@@ -127,6 +127,7 @@ export default class Game {
          this.playTime += dt;
          //this.tetris.playData.time += dt;
          this.time += dt;
+         this.tetris.renderer.renderData();
          if (this.single) {
             if (this.tetris.playData.lines >= 40) {
                this.tetris.gameOver();

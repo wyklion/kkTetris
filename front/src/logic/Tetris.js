@@ -488,7 +488,7 @@ export default class Tetris {
    }
    dispose() {
       this.renderer.setTetris(null);
-      this.renderer.reset();
+      this.renderer.clear();
       this.renderer = null;
    }
 };

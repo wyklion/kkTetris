@@ -23,7 +23,7 @@ export default class TetrisRender {
       this.container = options.container;
       this.setTetris(options.tetris);
       this.baseSize = options.baseSize || 30;
-      this.smallSize = this.baseSize * 0.8;
+      this.smallSize = this.baseSize * 0.6;
       this.displayNext = options.displayNext == null ? true : options.displayNext;
 
       this.init();
@@ -48,6 +48,8 @@ export default class TetrisRender {
       // 下一块区域
       if (this.displayNext) {
          this.initNext();
+         this.initHold();
+         this.initData();
       }
    }
 
@@ -68,7 +70,7 @@ export default class TetrisRender {
 
    initNext() {
       var na = this.nextArea = new PIXI.Container();
-      na.x = this.baseSize * 10 + 20;
+      na.x = this.baseSize * 10 + 10;
       na.y = config.render.top;
       this.container.addChild(na);
       var graphics = this.nextGraphic = new PIXI.Graphics();
@@ -77,16 +79,120 @@ export default class TetrisRender {
       // 下一块文本
       var nextText = this.nextText = new PIXI.Text('Next:', {
          fontWeight: 'bold',
-         fontSize: 20,
+         fontSize: 15,
          fontFamily: 'Arial',
          fill: '#cc00ff',
          align: 'center',
          stroke: '#FFFFFF',
          strokeThickness: 3
       });
-      nextText.x = 20;
+      nextText.x = 10;
       na.addChild(nextText);
       this.nextText.visible = false;
+   }
+
+   initHold() {
+      var ha = this.holdArea = new PIXI.Container();
+      ha.x = this.baseSize * 10 + 100;
+      ha.y = config.render.top;
+      this.container.addChild(ha);
+      var graphics = this.holdGraphic = new PIXI.Graphics();
+      ha.addChild(graphics);
+
+      // 暂存文本
+      var holdText = this.holdText = new PIXI.Text('Hold:', {
+         fontWeight: 'bold',
+         fontSize: 15,
+         fontFamily: 'Arial',
+         fill: '#cc00ff',
+         align: 'center',
+         stroke: '#FFFFFF',
+         strokeThickness: 3
+      });
+      holdText.x = 10;
+      ha.addChild(holdText);
+      this.holdText.visible = false;
+   }
+
+   initData() {
+      var da = this.dataArea = new PIXI.Container();
+      da.x = this.baseSize * 10;
+      da.y = config.render.top + 240;
+      da.visible = false;
+      this.container.addChild(da);
+
+      var datasOptions = [
+         {
+            name: 'time',
+            label: '时间',
+            value: '0.0',
+         },
+         {
+            name: 'piece',
+            label: '块数',
+            value: '0',
+         },
+         {
+            name: 'speed',
+            label: '速度',
+            value: '0.0',
+         },
+         {
+            name: 'lines',
+            label: '行数',
+            value: '0',
+         }
+      ]
+      var labelStyle = {
+         fontWeight: 'bold',
+         fontSize: 15,
+         fontFamily: 'Arial',
+         align: 'center',
+         fill: '#111111',
+      };
+      var dataStyle = {
+         fontWeight: 'bold',
+         fontSize: 20,
+         fontFamily: 'Arial',
+         align: 'center',
+         fill: '#DDDDDD',
+      };
+      this.dataTexts = {};
+      for (var i = 0; i < datasOptions.length; i++) {
+         var label = new PIXI.Text(datasOptions[i].label, labelStyle);
+         label.x = 10;
+         label.y = i * 50;
+         da.addChild(label);
+         var dataText = this.dataTexts[datasOptions[i].name] = new PIXI.Text(datasOptions[i].value, dataStyle);
+         dataText.x = 60;
+         dataText.y = i * 50 - 5;
+         da.addChild(dataText);
+      }
+      // 时间
+      var timeLabel = new PIXI.Text('时间:', labelStyle);
+      timeLabel.x = 10;
+      da.addChild(timeLabel);
+      var pieceLabel = new PIXI.Text('块数:', labelStyle);
+      pieceLabel.x = 10;
+      pieceLabel.y = 50;
+      da.addChild(pieceLabel);
+      var speedLabel = new PIXI.Text('速度:', labelStyle);
+      speedLabel.x = 10;
+      speedLabel.y = 100;
+      da.addChild(speedLabel);
+      var lineLabel = new PIXI.Text('行数:', labelStyle);
+      lineLabel.x = 10;
+      lineLabel.y = 150;
+      da.addChild(lineLabel);
+   }
+
+   clear() {
+      this.reset();
+      if (this.displayNext) {
+         this.nextText.visible = false;
+         this.holdText.visible = false;
+         this.dataArea.visible = false;
+      }
    }
 
    reset() {
@@ -95,8 +201,10 @@ export default class TetrisRender {
       graphics.beginFill(bgColor);
       graphics.drawRect(0, 0, 300, 600);
       graphics.endFill();
-      this.nextGraphic.clear();
-      this.nextText.visible = false;
+      if (this.displayNext) {
+         this.nextGraphic.clear();
+         this.holdGraphic.clear();
+      }
    }
 
    drawTetrisBlock(x, y, color, noLine) {
@@ -114,8 +222,12 @@ export default class TetrisRender {
    renderAll() {
       this.reset();
       this.nextText.visible = true;
+      this.holdText.visible = true;
       this.renderTetris();
-      this.renderNext();
+      if (this.displayNext) {
+         this.renderNext();
+         this.renderHold();
+      }
    }
 
    renderTetris() {
@@ -183,8 +295,51 @@ export default class TetrisRender {
       graphics.lineStyle(1, 0x111111, 1);
       graphics.beginFill(color);
       var offsetX = shapeId >= 3 ? size / 2 : 0;
-      graphics.drawRect(offsetX + x * size, idx * 120 + y * size, size, size);
+      graphics.drawRect(offsetX + x * size, idx * (size * 4) + y * size, size, size);
       graphics.endFill();
    }
 
+   renderHold() {
+      var tetris = this.tetris;
+      var shape = tetris.saveShape;
+      if (!shape) return;
+      var color = colors[shape.shapeId - 1];
+      if (!tetris.playing)
+         color = shadowColor;
+      for (var i = 0; i < 4; i++) {
+         var x = 1 + shape.shapeModel.cells[0][i * 2];
+         var y = 1 + shape.shapeModel.cells[0][i * 2 + 1];
+         this.drawHoldBlock(shape.shapeId, x, 4 - y, color);
+      }
+   }
+
+   drawHoldBlock(shapeId, x, y, color) {
+      var graphics = this.holdGraphic;
+      var size = this.smallSize;
+      graphics.lineStyle(1, 0x111111, 1);
+      graphics.beginFill(color);
+      var offsetX = shapeId >= 3 ? size / 2 : 0;
+      graphics.drawRect(offsetX + x * size, y * size, size, size);
+      graphics.endFill();
+   }
+
+
+   renderData() {
+      this.dataArea.visible = true;
+      var tetris = this.tetris;
+      var game = tetris.game;
+      var hostData = tetris.playData;
+      this.setText('time', game.playTime.toFixed(1));
+      this.setText('piece', hostData.count);
+      this.setText('speed', game.playTime == 0 ? "0.0" : (hostData.count / game.playTime).toFixed(1));
+      this.setText('lines', hostData.lines);
+   }
+
+   setText(dataName, value) {
+      var text = this.dataTexts[dataName];
+      if (!text) {
+         return;
+      }
+      text.text = value;
+   }
 };

@@ -31,6 +31,10 @@ const styles = theme => ({
       padding: '12px',
       height: '100%'
    },
+   singleDiv: {
+      width: '100%',
+      height: '100%'
+   },
    singleMenu: {
       left: '65%',
       position: 'relative',
@@ -62,16 +66,35 @@ class Main extends React.Component {
     * 显示比例的canvasDiv
     */
    onResize = () => {
-      var mainDiv = this.refs.mainDiv;
+      var mainDiv = this.mainDiv;
+      var div = this.refs.canvasDiv;
+      var singleDiv = this.refs.singleDiv;
       var w = mainDiv.clientWidth;
       var h = mainDiv.clientHeight;
-      // console.log(w, h);
-      var renderWidth = config.render.width;
-      var renderHeight = config.render.height;
-      var scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
-      var div = this.refs.canvasDiv;
-      var width = Math.round(renderWidth * scale);
-      var height = Math.round(renderHeight * scale);
+      var width, height;
+      // 横屏
+      if (w > h) {
+         gameManager.render.setVertical(false);
+         // console.log(w, h);
+         var renderWidth = config.render.width;
+         var renderHeight = config.render.height;
+         var scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
+         width = Math.round(renderWidth * scale);
+         height = Math.round(renderHeight * scale);
+         singleDiv.style.width = '50%';
+         singleDiv.style.marginLeft = '50%';
+      }
+      // 竖屏
+      else {
+         gameManager.render.setVertical(true);
+         var renderWidth = config.renderSingle.width;
+         var renderHeight = config.renderSingle.height;
+         var scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
+         width = Math.round(renderWidth * scale);
+         height = Math.round(renderHeight * scale);
+         singleDiv.style.width = '100%';
+         singleDiv.style.marginLeft = '0';
+      }
       div.style.width = width + 'px';
       div.style.height = height + 'px';
    }
@@ -101,26 +124,28 @@ class Main extends React.Component {
    render() {
       const { classes } = this.props;
       return (
-         <div ref='mainDiv' className={classes.main}>
+         <div ref={instance => this.mainDiv = instance} className={classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
+               <div ref='singleDiv' className={classes.singleDiv}>
+                  <div className={classes.singleMenu}>
+                     <SingleMenu
+                        single={true}
+                        playing={this.state.singlePlaying}
+                        onSpeedGame={this.onSpeedGame}
+                        onDigGame={this.onDigGame}
+                        onRestartGame={this.onRestartGame}
+                        onEndGame={this.onEndGame}
+                     />
+                  </div>
+               </div>
                <div className={classes.ui}>
-                  <Grid style={{ height: '100%' }} container spacing={24}>
+                  {/* <Grid style={{ height: '100%' }} container spacing={24}>
                      <Grid item xs={12} sm={6}>
                         <Paper className={classes.paper}>xs=12 sm=6</Paper>
                      </Grid>
                      <Grid style={{ height: '100%' }} item xs={12} sm={6}>
-                        <div className={classes.singleMenu}>
-                           <SingleMenu
-                              single={true}
-                              playing={this.state.singlePlaying}
-                              onSpeedGame={this.onSpeedGame}
-                              onDigGame={this.onDigGame}
-                              onRestartGame={this.onRestartGame}
-                              onEndGame={this.onEndGame}
-                           />
-                        </div>
                      </Grid>
-                  </Grid>
+                  </Grid>*/}
                </div>
             </div>
          </div>

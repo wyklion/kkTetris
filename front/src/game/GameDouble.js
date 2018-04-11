@@ -122,11 +122,7 @@ export default class GameDouble extends Game {
       }
    }
    reset() {
-      this.ui.reset();
-      if (!this.watch)
-         this.keyManager.stop();
-      this.playing = false;
-      this.tetris.playing = false;
+      super.reset();
       this.otherTetris.playing = false;
    }
    someoneJoined(userId, watch) {
