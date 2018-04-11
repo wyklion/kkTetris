@@ -31,7 +31,13 @@ class GameSocket {
       return GameSocket._instance;
    }
    connect() {
-      this.socket.connect();
+      if (this.socket.connected) {
+         if (this.onConnect) {
+            this.onConnect();
+         }
+      } else {
+         this.socket.connect();
+      }
    }
    disconnect() {
       this.connected = false;
