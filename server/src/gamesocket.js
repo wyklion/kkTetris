@@ -243,7 +243,7 @@ GameSocket.prototype = {
          if (!handshakeData.headers.cookie)
             return;
          // 通过客户端的cookie字符串来获取其session数据
-         handshakeData.cookie = require('express/node_modules/cookie').parse(handshakeData.headers.cookie);
+         handshakeData.cookie = require('express-session/node_modules/cookie').parse(handshakeData.headers.cookie);
          var connect_sid = handshakeData.cookie['connect.sid'];
          //console.log("conid:", connect_sid, "auth:", handshakeData.cookie);
          var sid = '';
@@ -253,7 +253,7 @@ GameSocket.prototype = {
                if (error || !session) {
                   //console.log("io auth error:", error);
                   // if we cannot grab a session, turn down the connection
-                  callback(error.message, false);
+                  callback(error, false);
                }
                else {
                   //console.log("io session:", sid, session);

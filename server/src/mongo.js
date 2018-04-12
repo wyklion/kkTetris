@@ -9,7 +9,7 @@ var Mongo = function (callback) {
    var _this = this;
    MongoClient.connect(url, function (err, db) {
       console.log("连接成功！");
-      _this.db = db;
+      _this.db = db.db("tetris");
       if (callback)
          callback();
    });

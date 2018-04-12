@@ -1,8 +1,5 @@
 .vscode
 data/
-node_modules
-mongolog
-npm-debug.log
-*.out
+**/node_modules
 front/build
-front/node_modules
+*.out

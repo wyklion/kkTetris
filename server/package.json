@@ -1,0 +1,32 @@
+{
+   "name": "kktetris_server",
+   "version": "1.0.0",
+   "description": "kk tetris server",
+   "main": "app.js",
+   "dependencies": {
+      "body-parser": "~1.18.2",
+      "connect-mongo": "^2.0.1",
+      "cookie-parser": "~1.4.3",
+      "debug": "~3.1.0",
+      "express": "~4.16.3",
+      "express-session": "^1.15.6",
+      "mongodb": "^3.0.6",
+      "morgan": "~1.9.0",
+      "serve-favicon": "~2.5.0",
+      "socket.io": "^2.1.0"
+   },
+   "devDependencies": {},
+   "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start": "node ./bin/www"
+   },
+   "keywords": [
+      "tetris"
+   ],
+   "repository": {
+      "type": "git",
+      "url": "git://github.com/wyklion/kktetris.git"
+   },
+   "author": "kk",
+   "license": "ISC"
+}
