@@ -1,7 +1,8 @@
 import Render from '../render/Render';
 import SpeedGame from './SpeedGame';
 import socket from '../socket/GameSocket';
-import Listeners from '../util/Listeners';
+import RoomManager from './RoomManager';
+import UserManager from './UserManager';
 
 /**
  * 游戏管理
@@ -10,15 +11,10 @@ class GameManager {
    constructor() {
       // 唯一画布
       this.canvas = null;
-      // 用户信息
-      this.user = null;
-      // 所有用户
-      this.users = {};
-      // 所有房间
-      this.rooms = {};
-      // 当前所在房间
-      this.room = null;
-      this.roomId = null;
+      // 用户管理
+      this.userManager = new UserManager();
+      // 房间管理
+      this.roomManager = new RoomManager();
 
       // 当前游戏
       this.game = null;
@@ -28,9 +24,6 @@ class GameManager {
       // 主界面
       this.main = null;
 
-      // 监听
-      this.updateRoomsListeners = new Listeners();
-      this.updateUsersListeners = new Listeners();
    }
    static _instance = null;
    static getInstance() {
@@ -78,34 +71,28 @@ class GameManager {
       }
    }
    /**
-    * 房间更新
+    * 房间信息
     */
-   setRooms(rooms) {
-      this.rooms = rooms;
-      this.updateRoomsListeners.execute();
+   get rooms() {
+      return this.roomManager.rooms;
    }
-   setRoom(room) {
-      this.rooms[room.id] = room;
-      this.updateRoomsListeners.execute();
+   get room() {
+      return this.roomManager.room;
    }
-   removeRoom(roomId) {
-      delete this.rooms[roomId];
-      this.updateRoomsListeners.execute();
+   get roomId() {
+      return this.roomManager.roomId;
    }
    /**
-    * 用户更新
+    * 用户信息
     */
-   setUsers(users) {
-      this.users = users;
-      this.updateUsersListeners.execute();
+   get users() {
+      return this.userManager.users;
    }
-   setUser(user) {
-      this.users[user.id] = user;
-      this.updateUsersListeners.execute();
+   get user() {
+      return this.userManager.user;
    }
-   removeUser(userId) {
-      delete this.users[userId];
-      this.updateUsersListeners.execute();
+   get userId() {
+      return this.userManager.userId;
    }
    /**
     * 40行游戏

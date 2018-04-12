@@ -25,12 +25,12 @@ class Users extends React.Component {
       const { classes } = this.props;
       var users = gameManager.users;
       var rows = [];
-      for (var i in users) {
-         var user = users[i];
+      for (var id in users) {
+         var user = users[id];
          rows.push(
-            <TableRow key={user} className={classes.row}>
-               <TableCell> {user}</TableCell>
-               <TableCell>{user}</TableCell>
+            <TableRow key={user.id} className={classes.row}>
+               <TableCell>{user.id}</TableCell>
+               <TableCell>{user.id}</TableCell>
             </TableRow>
          )
       }

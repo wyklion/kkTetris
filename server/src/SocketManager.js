@@ -104,9 +104,9 @@ class SocketManager {
       var _this = this;
       var session = socket.request.headers.session;
       if (!session || !session.user) return;
-      socket.userId = session.user.id;
-      console.log(socket.userId, "connected... " + socket.id);
-      mongo.find("users", { id: socket.userId }, (result) => {
+      var userId = session.user.id;
+      console.log(userId, "connected... " + socket.id);
+      mongo.find("users", { id: userId }, (result) => {
          if (result.length > 0) {
             var gameSocket = new GameSocket(this, socket, result[0]);
             this.gameSockets.push(this.gameSocket);

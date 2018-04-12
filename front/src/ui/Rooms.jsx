@@ -29,10 +29,10 @@ const styles = theme => ({
 
 class Rooms extends React.Component {
    componentDidMount() {
-      gameManager.updateRoomsListeners.add(this.onUpdateRooms);
+      gameManager.roomManager.updateRoomsListeners.add(this.onUpdateRooms);
    }
    componentWillUnmount() {
-      gameManager.updateRoomsListeners.remove(this.onUpdateRooms);
+      gameManager.roomManager.updateRoomsListeners.remove(this.onUpdateRooms);
    }
    onUpdateRooms = () => {
       console.log("Rooms.jsx update rooms...");
@@ -65,7 +65,7 @@ class Rooms extends React.Component {
          if (room.playUsers.length === 1) {
             playerStr = room.playUsers[0] + " 等待中……";
             // 不在房间才能进入
-            if (!gameManager.room) {
+            if (!gameManager.roomManager.isUserInRoom(gameManager.userId, room.id)) {
                button = (
                   <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onEnterClick}>
                      加入
@@ -75,7 +75,7 @@ class Rooms extends React.Component {
          } else {
             playerStr = room.playUsers[0] + " 对战 " + room.playUsers[1];
             // 不在房间才能进入
-            if (!gameManager.room) {
+            if (!gameManager.roomManager.isUserInRoom(gameManager.userId, room.id)) {
                button = (
                   <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onWatchClick}>
                      观战

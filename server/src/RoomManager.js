@@ -75,26 +75,29 @@ class RoomManager {
       else
          return { err: "room " + roomId + " not exists." }
    }
-   userLeave(socket) {
-      for (var i in this.rooms) {
-         var idx = this.rooms[i].playUsers.indexOf(socket.userId);
-         var watchIdx = this.rooms[i].watchUsers.indexOf(socket.userId);
-         if (idx > -1) {
-            this.rooms[i].playUsers.splice(idx, 1);
-            this.rooms[i].ready = {};
-            socket.broadcast.to("room" + socket.roomId).emit('roomInfo', { room: this.rooms[i], userId: socket.userId, join: false, watch: false });
-            if (this.rooms[i].playing) {
-               this.rooms[i].playing = false;
-               mongo.updateAddValue("users", { id: socket.userId }, { disconnect: 1 });
-            }
-            if (this.rooms[i].playUsers.length === 0) {
-               delete this.rooms[i];
-            }
+   userLeave(roomId, userId, socket) {
+      var room = this.rooms[roomId];
+      if (!room) {
+         return;
+      }
+      var idx = room.playUsers.indexOf(userId);
+      var watchIdx = room.watchUsers.indexOf(userId);
+      if (idx > -1) {
+         room.playUsers.splice(idx, 1);
+         room.ready = {};
+         socket.broadcast.to("room" + roomId).emit('roomInfo', { room: room, userId: userId, join: false, watch: false });
+         if (room.playing) {
+            room.playing = false;
+            // 数据库记录，用户游戏中断线
+            mongo.updateAddValue("users", { id: userId }, { disconnect: 1 });
          }
-         else if (watchIdx > -1) {
-            this.rooms[i].watchUsers.splice(watchIdx, 1);
-            socket.broadcast.to("room" + socket.roomId).emit('roomInfo', { room: this.rooms[i], userId: socket.userId, join: false, watch: true });
+         if (room.playUsers.length === 0) {
+            delete this.rooms[roomId];
          }
+      }
+      else if (watchIdx > -1) {
+         room.watchUsers.splice(watchIdx, 1);
+         socket.broadcast.to("room" + roomId).emit('roomInfo', { room: room, userId: userId, join: false, watch: true });
       }
    }
    getOtherUserId(room, userId) {
