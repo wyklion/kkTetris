@@ -2,191 +2,13 @@
  * Created by kk on 2016/4/28.
  */
 var SocketIO = require('socket.io');
-
-var OPERTABLE = {
-   ready: 0,
-   dead: 1,
-
-   left: 10,
-   right: 11,
-   down: 12,
-   drop: 13,
-   rotateL: 14,
-   rotateR: 15,
-   rotate180: 16,
-   hold: 17,
-
-   downNature: 18,
-   leftEnd: 19,
-   rightEnd: 20,
-   downEnd: 21,
-
-   attack: 30,
-   trash: 31,
-   hurt: 32,
-
-   start: 100,
-   gameover: 200,
-};
+var Tools = require('./Tools');
+var RoomManager = require('./RoomManager');
+var OPERTABLE = require('./OperTable');
 
 var MSG_TYPE = {
    lobby: 0,
    room: 1,
-};
-
-var getTime = function () {
-   var date = new Date();
-   return date.getTime();
-};
-
-var RandomGenerator = function () {
-   var shapes = [];
-   for (var i = 0; i < 100; i++) {
-      var bag = [1, 2, 3, 4, 5, 6, 7];
-      for (var j = 0; j < 7; j++) {
-         var idx = Math.floor(Math.random() * bag.length);
-         shapes.push(bag[idx])
-         bag.splice(idx, 1);
-      }
-   }
-   return shapes;
-};
-
-var RoomManager = function () {
-   this.rooms = {};
-   this.currentRoomIdx = 0;
-};
-RoomManager.prototype = {
-   constructor: RoomManager,
-   getRooms: function () {
-      return this.rooms;
-   },
-   getRoom: function (id) {
-      return this.rooms[id];
-   },
-   createRoom: function (userId) {
-      var idx = this.currentRoomIdx++;
-      this.rooms[idx] = {
-         id: idx,
-         playUsers: [userId],
-         watchUsers: [],
-         ready: {},
-      };
-      return idx;
-   },
-   joinRoom: function (roomId, userId, watch) {
-      var room = this.rooms[roomId];
-      if (room) {
-         if (!watch) {
-            if (room.playUsers.length == 1) {
-               room.playUsers.push(userId);
-               return { err: null };
-            }
-            else
-               return { err: "room " + roomId + " is empty." };
-         }
-         else if (room.playUsers.length == 2) {
-            room.watchUsers.push(userId);
-            return { err: null };
-         }
-         else
-            return { err: "room " + roomId + " is not full." };
-      }
-      else
-         return { err: "room " + roomId + " not exists." }
-   },
-   exitRoom: function (roomId, userId, watch) {
-      var room = this.rooms[roomId];
-      if (room) {
-         if (!watch) {
-            var idx = room.playUsers.indexOf(userId);
-            if (idx > -1) {
-               room.playUsers.splice(idx, 1);
-               room.ready = {};
-               if (room.playUsers.length === 0) {
-                  delete this.rooms[roomId];
-                  return { err: null, delRoom: true, watch: false };
-               }
-               else
-                  return { err: null, delRoom: false, watch: false };
-            }
-            else
-               return { err: "who exits room?" };
-         }
-         else {
-            var watchIdx = room.watchUsers.indexOf(userId);
-            if (watchIdx > -1) {
-               room.watchUsers.splice(watchIdx, 1);
-               return { err: null, delRoom: false, watch: true };
-            }
-            else
-               return { err: "who watch exits room?" };
-         }
-      }
-      else
-         return { err: "room " + roomId + " not exists." }
-   },
-   userLeave: function (socket) {
-      for (var i in this.rooms) {
-         var idx = this.rooms[i].playUsers.indexOf(socket.userId);
-         var watchIdx = this.rooms[i].watchUsers.indexOf(socket.userId);
-         if (idx > -1) {
-            this.rooms[i].playUsers.splice(idx, 1);
-            this.rooms[i].ready = {};
-            socket.broadcast.to("room" + socket.roomId).emit('roomInfo', { room: this.rooms[i], userId: socket.userId, join: false, watch: false });
-            if (this.rooms[i].playing) {
-               this.rooms[i].playing = false;
-               mongo.updateAddValue("users", { id: socket.userId }, { disconnect: 1 });
-            }
-            if (this.rooms[i].playUsers.length === 0) {
-               delete this.rooms[i];
-            }
-         }
-         else if (watchIdx > -1) {
-            this.rooms[i].watchUsers.splice(watchIdx, 1);
-            socket.broadcast.to("room" + socket.roomId).emit('roomInfo', { room: this.rooms[i], userId: socket.userId, join: false, watch: true });
-         }
-      }
-   },
-   getOtherUserId: function (room, userId) {
-      if (room.playUsers.length == 2) {
-         return room.playUsers[0] == userId ? room.playUsers[1] : room.playUsers[0];
-      }
-      return null;
-   },
-   userReady: function (socket) {
-      if (socket.roomId == null || socket.roomId == undefined) return;
-      var room = this.rooms[socket.roomId];
-      if (!room) return;
-      room.ready[socket.userId] = true;
-      var otherUser = this.getOtherUserId(room, socket.userId);
-      if (otherUser) {
-         if (room.ready[otherUser]) {
-            room.win = null;
-            room.playing = true;
-            var randomShapes = RandomGenerator();
-            socket.emit("onOperation", { oper: OPERTABLE.start, shapes: randomShapes });
-            socket.broadcast.to("room" + socket.roomId).emit("onOperation", { oper: OPERTABLE.start, shapes: randomShapes });
-            mongo.insertOne("gameinfo", { id: socket.userId, id2: otherUser, type: "vsGame", roomId: socket.roomId, time: getTime() })
-         }
-      }
-      console.log("room", socket.roomId, "user", socket.userId, "is ready...");
-   },
-   userDead: function (socket) {
-      if (socket.roomId == null || socket.roomId == undefined) return;
-      var room = this.rooms[socket.roomId];
-      if (!room) return;
-      room.ready = {};
-      room.playing = false;
-      if (room.win) return; //already gameover...
-      var otherUser = this.getOtherUserId(room, socket.userId);
-      room.win = otherUser;
-      socket.emit("onOperation", { oper: OPERTABLE.gameover, result: { win: otherUser, lose: socket.userId } });
-      socket.broadcast.to("room" + socket.roomId).emit('onOperation', { oper: OPERTABLE.gameover, result: { win: otherUser, lose: socket.userId } });
-      console.log("room", socket.roomId, "user", socket.userId, "lose", otherUser, "win");
-      mongo.updateAddValue("users", { id: socket.userId }, { lose: 1 });
-      mongo.updateAddValue("users", { id: otherUser }, { win: 1 });
-   },
 };
 
 var GameSocket = function (app, server) {
@@ -296,7 +118,8 @@ GameSocket.prototype = {
          this.users.push(socket.userId);
       socket.join("lobby");
       socket.emit('onConnection', { err: null, user: userData, users: this.users, rooms: this.roomManager.getRooms() });
-      socket.broadcast.to("lobby").emit('lobbyInfo', { err: null, users: this.users });
+      socket.broadcast.emit('lobbyInfo', { err: null, type: 'addUser', user: socket.userId });
+      // socket.broadcast.to("lobby").emit('lobbyInfo', { err: null, users: this.users });
 
       this.onDisconnect(socket);
       this.onCreateRoom(socket);
@@ -317,8 +140,7 @@ GameSocket.prototype = {
             console.log(socket.userId, "disconnect");
             _this.users.splice(idx, 1);
             _this.roomManager.userLeave(socket);
-            socket.broadcast.to("lobby").emit('lobbyInfo',
-               { err: null, users: _this.users, rooms: _this.roomManager.getRooms() });
+            socket.broadcast.emit('lobbyInfo', { err: null, type: 'removeUser', user: socket.userId });
          }
       });
    },
@@ -330,9 +152,9 @@ GameSocket.prototype = {
          socket.leave("lobby");
          socket.join("room" + socket.roomId);
          socket.emit("onCreateRoom", { err: null, room: _this.roomManager.getRoom(idx) });
-         socket.broadcast.to("lobby").emit('lobbyInfo', { rooms: _this.roomManager.getRooms() });
+         socket.broadcast.send('lobbyInfo', { err: null, type: 'setRoom', room: _this.roomManager.getRoom(idx) });
          console.log(socket.userId, "createRoom", socket.roomId);
-         mongo.insertOne("gameinfo", { id: socket.userId, type: "createRoom", roomId: idx, time: getTime() })
+         mongo.insertOne("gameinfo", { id: socket.userId, type: "createRoom", roomId: idx, time: Tools.getTime() })
       });
    },
    onJoinRoom: function (socket) {
@@ -345,11 +167,12 @@ GameSocket.prototype = {
             console.log(socket.userId, data.watch ? "watchRoom" : "joinRoom", socket.roomId);
             socket.leave("lobby");
             socket.join("room" + socket.roomId);
-            socket.broadcast.to("lobby").emit('lobbyInfo', { rooms: _this.roomManager.getRooms() });
+            socket.broadcast.emit('lobbyInfo', { err: null, type: 'setRoom', room: _this.roomManager.getRoom(socket.roomId) });
+            // socket.broadcast.to("lobby").emit('lobbyInfo', { rooms: _this.roomManager.getRooms() });
             socket.broadcast.to("room" + socket.roomId).emit('roomInfo', { room: _this.roomManager.getRoom(socket.roomId), userId: socket.userId, join: true, watch: data.watch });
             // 通知房间内人员
             _this.io.to("room" + socket.roomId).emit('msg', socket.userId + '加入了房间', _this.roomManager.getRoom(socket.roomId));
-            mongo.insertOne("gameinfo", { id: socket.userId, type: data.watch ? "watchRoom" : "joinRoom", roomId: socket.roomId, time: getTime() })
+            mongo.insertOne("gameinfo", { id: socket.userId, type: data.watch ? "watchRoom" : "joinRoom", roomId: socket.roomId, time: Tools.getTime() })
          }
          else {
             socket.emit("onJoinRoom", { err: result.err })
@@ -367,15 +190,17 @@ GameSocket.prototype = {
             console.log(socket.userId, "exit room", roomId);
             _this.io.to("room" + roomId).emit('msg', socket.userId + '退出了房间', _this.roomManager.getRoom(roomId));
             if (result.delRoom) {
-               socket.broadcast.to("lobby").emit('lobbyInfo', { rooms: _this.roomManager.getRooms() });
+               socket.broadcast.emit('lobbyInfo', { err: null, type: 'removeRoom', roomId: roomId });
+               // socket.broadcast.to("lobby").emit('lobbyInfo', { rooms: _this.roomManager.getRooms() });
             }
             else {
+               socket.broadcast.emit('lobbyInfo', { err: null, type: 'setRoom', room: _this.roomManager.getRoom(roomId) });
                socket.broadcast.to("room" + socket.roomId).emit('roomInfo', { room: _this.roomManager.getRoom(roomId), userId: socket.userId, join: false, watch: data.watch });
             }
             socket.roomId = null;
             socket.emit("onExitRoom", { err: null, result: "ok" });
-            socket.emit("lobbyInfo", { users: _this.users, rooms: _this.roomManager.getRooms() });
-            //mongo.insertOne("gameinfo", {id:socket.userId, type:"exitRoom", roomId:roomId, time:getTime()})
+            // socket.emit("lobbyInfo", { users: _this.users, rooms: _this.roomManager.getRooms() });
+            //mongo.insertOne("gameinfo", {id:socket.userId, type:"exitRoom", roomId:roomId, time:Tools.getTime()})
          }
          else
             socket.emit("onExitRoom", { err: result.err });

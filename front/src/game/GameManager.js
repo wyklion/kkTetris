@@ -1,5 +1,7 @@
 import Render from '../render/Render';
 import SpeedGame from './SpeedGame';
+import socket from '../socket/GameSocket';
+import Listeners from '../util/Listeners';
 
 /**
  * 游戏管理
@@ -25,6 +27,10 @@ class GameManager {
       // this.updateLasts = {};
       // 主界面
       this.main = null;
+
+      // 监听
+      this.updateRoomsListeners = new Listeners();
+      this.updateUsersListeners = new Listeners();
    }
    static _instance = null;
    static getInstance() {
@@ -72,6 +78,41 @@ class GameManager {
       }
    }
    /**
+    * 房间更新
+    */
+   setRooms(rooms) {
+      this.rooms = rooms;
+      this.updateRoomsListeners.execute();
+   }
+   setRoom(room) {
+      this.rooms[room.id] = room;
+      this.updateRoomsListeners.execute();
+   }
+   removeRoom(roomId) {
+      delete this.rooms[roomId];
+      this.updateRoomsListeners.execute();
+   }
+   /**
+    * 用户更新
+    */
+   setUsers(users) {
+      this.users = users;
+      this.updateUsersListeners.execute();
+   }
+   addUser(user) {
+      if (this.users.indexOf(user) === -1) {
+         this.users.push(user);
+         this.updateUsersListeners.execute();
+      }
+   }
+   removeUser(user) {
+      var idx = this.users.indexOf(user)
+      if (idx > -1) {
+         this.users.splice(idx, 1);
+      }
+      this.updateUsersListeners.execute();
+   }
+   /**
     * 40行游戏
     */
    startSpeedGame() {
@@ -90,6 +131,15 @@ class GameManager {
       if (this.game) {
          this.game.restart();
       }
+   }
+   /**
+    * 创建房间
+    */
+   createRoom() {
+      console.log("create room");
+      socket.createRoom((success) => {
+         console.log('create room result:', success);
+      });
    }
 }
 

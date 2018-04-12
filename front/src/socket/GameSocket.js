@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 import config from '../config';
 import gameManager from '../game/GameManager';
 import { OPERTABLE, MSG_TYPE } from './OperTable';
+import Listeners from '../util/Listeners';
 
 class GameSocket {
    constructor() {
@@ -22,6 +23,11 @@ class GameSocket {
       this._onJoinRoom();
       this._onExitRoom();
       this._onOperate();
+      this.connectListeners = new Listeners();
+      this.connectFailListeners = new Listeners();
+      this.disconnectListeners = new Listeners();
+      this.reconnectListeners = new Listeners();
+      this.createRoomListeners = new Listeners();
    }
    static _instance = null;
    static getInstance() {
@@ -32,9 +38,7 @@ class GameSocket {
    }
    connect() {
       if (this.socket.connected) {
-         if (this.onConnect) {
-            this.onConnect();
-         }
+         this.connectListeners.execute();
       } else {
          this.socket.connect();
       }
@@ -44,36 +48,33 @@ class GameSocket {
       this.socket.disconnect();
    }
    _onConnection() {
-      var _this = this;
-      this.socket.on('onConnection', function (data) {
+      this.socket.on('onConnection', (data) => {
          if (!data.err) {
+            // 初始化不触发刷新
             gameManager.user = data.user;
             gameManager.users = data.users;
             gameManager.rooms = data.rooms;
             console.log("login:", data);
-            _this.connected = true;
-            if (_this.onConnect) {
-               _this.onConnect();
-            }
+            this.connected = true;
+            this.connectListeners.execute();
          }
          else {
             console.log(data.err);
-            if (_this.onConnectFail) {
-               _this.onConnectFail();
-            }
+            this.connectFailListeners.execute();
          }
       });
    }
    _onDisconnect() {
-      var _this = this;
-      this.socket.on('disconnect', function () {
+      this.socket.on('disconnect', () => {
          console.log('disconnect...');
-         //_this.socket.reconnect();
+         this.disconnectListeners.execute();
+         //this.socket.reconnect();
       });
    }
    _onReconnect() {
-      this.socket.on('reconnect', function (transport_type, reconnectionAttempts) {
+      this.socket.on('reconnect', (transport_type, reconnectionAttempts) => {
          console.log('reconnect...', transport_type, reconnectionAttempts);
+         this.reconnectListeners.execute();
       });
    }
    sendMsg(data) {
@@ -88,16 +89,15 @@ class GameSocket {
       var _this = this;
       this.socket.on('lobbyInfo', function (data) {
          if (!data.err) {
-            console.log("============== lobbyInfo ===============");
-            if (data.rooms) {
-               gameManager.rooms = data.rooms;
-               // main.updateRoomList();
-               console.log("rooms:", gameManager.rooms);
-            }
-            if (data.users) {
-               gameManager.users = data.users;
-               // main.updateUserList();
-               console.log("userInfo", gameManager.users);
+            console.log("============== lobbyInfo ===============", data);
+            if (data.type === 'addUser') {
+               gameManager.addUser(data.user);
+            } else if (data.type === 'removeUser') {
+               gameManager.removeUser(data.user);
+            } else if (data.type === 'setRoom') {
+               gameManager.setRoom(data.room);
+            } else if (data.type === 'removeRoom') {
+               gameManager.removeRoom(data.roomId);
             }
          }
          else
@@ -128,20 +128,26 @@ class GameSocket {
          //    main.game.someoneLeft();
       });
    }
-   createRoom() {
+   createRoom(func) {
       // main.spin();
+      if (func) {
+         this.createRoomListeners.add(func, true);
+      }
       this.socket.emit("createRoom");
    }
    _onCreateRoom() {
-      var _this = this;
-      this.socket.on("onCreateRoom", function (data) {
+      this.socket.on("onCreateRoom", (data) => {
          if (!data.err) {
             gameManager.room = data.room;
+            gameManager.setRoom(data.room);
             console.log("onCreateRoom", gameManager.room);
+            this.createRoomListeners.execute(true);
             // main.goRoom();
          }
-         else
+         else {
             console.log(data.err);
+            this.createRoomListeners.execute(false);
+         }
          // main.stopSpin();
       });
    }
@@ -150,8 +156,7 @@ class GameSocket {
       this.socket.emit("joinRoom", { roomId: roomId, watch: watch });
    }
    _onJoinRoom() {
-      var _this = this;
-      this.socket.on("onJoinRoom", function (data) {
+      this.socket.on("onJoinRoom", (data) => {
          if (!data.err) {
             gameManager.room = data.room;
             if (data.watch) {
@@ -173,8 +178,7 @@ class GameSocket {
       // this.socket.emit("exitRoom", { watch: main.game.watch });
    }
    _onExitRoom() {
-      var _this = this;
-      this.socket.on("onExitRoom", function (data) {
+      this.socket.on("onExitRoom", (data) => {
          if (!data.err) {
             console.log("onExitRoom", gameManager.roomId);
             gameManager.roomId = null;
@@ -195,7 +199,7 @@ class GameSocket {
    }
    _onOperate() {
       var _this = this;
-      this.socket.on("onOperation", function (data) {
+      this.socket.on("onOperation", (data) => {
          console.log("other operate:", data.oper);
          // if (main.game) {
          //    var hostTetris, imitateTetris;

@@ -9,6 +9,7 @@ import gameManager from '../game/GameManager';
 import config from '../config';
 import SingleMenu from './SingleMenu';
 import Result from './Result';
+import Lobby from './Lobby';
 
 const styles = theme => ({
    root: {
@@ -55,6 +56,7 @@ const styles = theme => ({
 
 class Main extends React.Component {
    state = {
+      vertical: false,
       anchorElSetting: null,
       anchorElUser: null,
       openKeyboard: false,
@@ -80,6 +82,7 @@ class Main extends React.Component {
    onResize = () => {
       var mainDiv = this.mainDiv;
       var div = this.refs.canvasDiv;
+      var lobbyDiv = this.refs.lobbyDiv;
       var singleDiv = this.refs.singleDiv;
       var w = mainDiv.clientWidth;
       var h = mainDiv.clientHeight;
@@ -111,6 +114,7 @@ class Main extends React.Component {
       div.style.height = height + 'px';
       div.style.marginLeft = -width / 2 + 'px';
       gameManager.render.onResize();
+      this.setState({ vertical: h >= w });
    }
 
    onSpeedGame = () => {
@@ -149,10 +153,11 @@ class Main extends React.Component {
 
    render() {
       const { classes } = this.props;
-      const { showResult, resultData } = this.state;
+      const { vertical, showResult, resultData } = this.state;
       return (
          <div ref={instance => this.mainDiv = instance} className={classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
+               <Lobby ref='lobbyRef' show={!vertical} />
                <div ref='singleDiv' className={classes.singleDiv}>
                   <div className={classes.result}>
                      <Result
@@ -181,7 +186,7 @@ class Main extends React.Component {
                   </Grid>*/}
                </div>
             </div>
-         </div>
+         </div >
       );
    }
 }

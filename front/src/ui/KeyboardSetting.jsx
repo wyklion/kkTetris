@@ -12,7 +12,6 @@ import Dialog, {
 // import Divider from 'material-ui/Divider';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 
-import UserManager from '../UserManager';
 import socket from '../socket/GameSocket';
 import gameManager from '../game/GameManager';
 

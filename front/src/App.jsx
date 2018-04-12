@@ -7,7 +7,6 @@ import './App.css';
 import HeadBar from './ui/HeadBar';
 import Login from './ui/Login';
 import http from './util/http';
-import UserManager from './UserManager';
 import socket from './socket/GameSocket';
 import Main from './ui/Main';
 
@@ -40,16 +39,19 @@ class App extends Component {
    }
 
    onLogin = (result) => {
-      UserManager.user = result;
-      socket.onConnect = () => {
-         this.setState({ checked: true, logined: true });
-         socket.onConnect = null;
-      }
-      socket.onConnectFail = () => {
-         this.setState({ checked: true, logined: false });
-         socket.onConnectFail = null;
-      }
+      socket.connectListeners.add(this.onSocketConnect, true);
+      socket.connectFailListeners.add(this.onConnectFail, true);
       socket.connect();
+   }
+
+   onSocketConnect = () => {
+      this.setState({ checked: true, logined: true });
+      socket.onConnect = null;
+   }
+
+   onConnectFail = () => {
+      this.setState({ checked: true, logined: false });
+      socket.onConnectFail = null;
    }
 
    onLogout = () => {

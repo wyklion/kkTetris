@@ -11,7 +11,7 @@ import Menu, { MenuItem } from 'material-ui/Menu';
 
 import KeyboardSetting from './KeyboardSetting';
 import http from '../util/http';
-import UserManager from '../UserManager';
+import gameManager from '../game/GameManager';
 
 const styles = {
    root: {
@@ -106,7 +106,7 @@ class HeadBar extends React.Component {
                      KK俄罗斯方块
                   </Typography>
                   <div>
-                     <span>{UserManager.user.nick}</span>
+                     <span>{gameManager.user.nick}</span>
                      <IconButton
                         aria-owns={Boolean(anchorElUser) ? 'menu-appbar' : null}
                         aria-haspopup="true"
