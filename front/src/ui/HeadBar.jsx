@@ -108,7 +108,6 @@ class HeadBar extends React.Component {
                   <div>
                      <span>{UserManager.user.nick}</span>
                      <IconButton
-                        aria-owns={open ? 'menu-appbar' : null}
                         aria-haspopup="true"
                         onClick={this.handleMenuUser}
                         color="inherit"
