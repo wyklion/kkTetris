@@ -90,10 +90,10 @@ class GameSocket {
       this.socket.on('lobbyInfo', function (data) {
          if (!data.err) {
             console.log("============== lobbyInfo ===============", data);
-            if (data.type === 'addUser') {
-               gameManager.addUser(data.user);
+            if (data.type === 'setUser') {
+               gameManager.setUser(data.user);
             } else if (data.type === 'removeUser') {
-               gameManager.removeUser(data.user);
+               gameManager.removeUser(data.userId);
             } else if (data.type === 'setRoom') {
                gameManager.setRoom(data.room);
             } else if (data.type === 'removeRoom') {

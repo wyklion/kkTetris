@@ -99,9 +99,9 @@ function onListening() {
 
 //start mongo and socket...
 var Mongo = require('../src/mongo');
-var GameSocket = require('../src/GameSocket');
-var gameSocket = new GameSocket(app, server);
+var SocketManager = require('../src/SocketManager');
+var socketManager = new SocketManager(app, server);
 var init = function () {
-   gameSocket.start();
+   socketManager.start();
 }
 mongo = new Mongo(init);

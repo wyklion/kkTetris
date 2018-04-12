@@ -13,7 +13,7 @@ class GameManager {
       // 用户信息
       this.user = null;
       // 所有用户
-      this.users = [];
+      this.users = {};
       // 所有房间
       this.rooms = {};
       // 当前所在房间
@@ -99,17 +99,12 @@ class GameManager {
       this.users = users;
       this.updateUsersListeners.execute();
    }
-   addUser(user) {
-      if (this.users.indexOf(user) === -1) {
-         this.users.push(user);
-         this.updateUsersListeners.execute();
-      }
+   setUser(user) {
+      this.users[user.id] = user;
+      this.updateUsersListeners.execute();
    }
-   removeUser(user) {
-      var idx = this.users.indexOf(user)
-      if (idx > -1) {
-         this.users.splice(idx, 1);
-      }
+   removeUser(userId) {
+      delete this.users[userId];
       this.updateUsersListeners.execute();
    }
    /**
