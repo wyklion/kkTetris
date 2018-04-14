@@ -55,7 +55,8 @@ Mongo.prototype = {
          win: 0, lose: 0, disconnect: 0,
          single40Times: 0, single40Best: 999,
          keyboard: {
-            left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 150, moveDelay: 30,
+            // left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 150, moveDelay: 30,
+            left: 37, right: 39, down: 32, drop: 40, rotate: 38, rotateRight: null, rotate180: null, hold: null, dasDelay: 150, moveDelay: 30,
          },
          setting: {
             theme: 0,

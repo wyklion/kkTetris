@@ -17,14 +17,20 @@ class GameSocket {
       this.io = socketManager.io;
       this.userManager = socketManager.userManager;
       this.roomManager = socketManager.roomManager;
+      this.chatManager = socketManager.chatManager;
       this.socket = socket;
       this.user = user;
       var userId = this.userId = user.id;
       this.roomId = null;
 
-      if (!this.userManager.has(userId)) {
-         this.userManager.add(userId)
+      // 加用户
+      if (this.userManager.has(userId)) {
+         socket.emit('onConnection', { err: '该用户已登录！' });
+         socket.disconnect();
+         this.socketManager.removeSocket(this);
+         return;
       }
+      this.userManager.add(userId);
 
       socket.on('disconnect', this.onDisconnect.bind(this));
       socket.on('createRoom', this.onCreateRoom.bind(this));
@@ -37,7 +43,7 @@ class GameSocket {
       socket.on('chat', this.onChat.bind(this));
 
       // 通知
-      socket.emit('onConnection', { err: null, user: user, users: this.userManager.getUsers(), rooms: this.roomManager.getRooms() });
+      socket.emit('onConnection', { err: null, user: user, users: this.userManager.getUsers(), rooms: this.roomManager.getRooms(), chat: this.chatManager.getMessages() });
       socket.broadcast.emit('lobbyInfo', { err: null, type: 'setUser', user: this.userManager.get(userId) });
    }
    onDisconnect(reason) {
@@ -56,6 +62,7 @@ class GameSocket {
          }
       }
       this.io.emit('lobbyInfo', { err: null, type: 'removeUser', userId: userId });
+      this.socketManager.removeSocket(this);
    }
    onCreateRoom(data) {
       var socket = this.socket;
@@ -151,10 +158,15 @@ class GameSocket {
          mongo.updateOne("users", { id: this.userId }, { setting: data.setting });
       }
    }
+   /**
+    * 聊天
+    */
    onChat(data) {
       var socket = this.socket;
       if (data.to === MSG_TYPE.lobby) {
-         this.io.emit("chat", { user: this.userId, msg: data.msg });
+         data.user = this.userId;
+         this.chatManager.add(data);
+         this.io.emit("chat", data);
       }
    }
 }

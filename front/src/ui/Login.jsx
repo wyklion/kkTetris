@@ -69,7 +69,11 @@ class Login extends React.Component {
    onKeyDown = (event) => {
       // 回车
       if (event.keyCode === 13) {
-         this.onLoginClick();
+         if (this.state.register) {
+            this.onRegisterClick();
+         } else {
+            this.onLoginClick();
+         }
       }
    }
 

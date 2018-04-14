@@ -11,6 +11,7 @@ import http from './util/http';
 import socket from './socket/GameSocket';
 import Main from './ui/Main';
 import theme from './ui/Theme';
+import gameManager from './game/GameManager';
 
 const classes = {
    bg: {
@@ -47,16 +48,19 @@ class App extends Component {
    }
 
    onSocketConnect = () => {
+      gameManager.logined = true;
       this.setState({ checked: true, logined: true });
       socket.onConnect = null;
    }
 
-   onConnectFail = () => {
+   onConnectFail = (err) => {
       this.setState({ checked: true, logined: false });
       socket.onConnectFail = null;
+      alert(err);
    }
 
    onLogout = () => {
+      gameManager.logined = false;
       this.setState({ logined: false });
       socket.disconnect();
    }

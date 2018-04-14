@@ -3,6 +3,7 @@ import SpeedGame from './SpeedGame';
 import socket from '../socket/GameSocket';
 import RoomManager from './RoomManager';
 import UserManager from './UserManager';
+import ChatManager from './ChatManager';
 
 /**
  * 游戏管理
@@ -15,6 +16,8 @@ class GameManager {
       this.userManager = new UserManager();
       // 房间管理
       this.roomManager = new RoomManager();
+      // 聊天管理
+      this.chatManager = new ChatManager();
 
       // 当前游戏
       this.game = null;
@@ -23,6 +26,8 @@ class GameManager {
       // this.updateLasts = {};
       // 主界面
       this.main = null;
+      // 登录状态
+      this.logined = false;
 
    }
    static _instance = null;
@@ -48,7 +53,9 @@ class GameManager {
       for (var i = 0; i < this.updateFuncs.length; i++) {
          this.updateFuncs[i](this._deltaTime);
       }
-      this.render.render();
+      if (this.logined) {
+         this.render.render();
+      }
       this.aniHandle = requestAnimationFrame(this.mainLoop);
    }
    addUpdate(object) {
@@ -93,6 +100,14 @@ class GameManager {
    }
    get userId() {
       return this.userManager.userId;
+   }
+   /**
+    * 更新键位
+    */
+   updateKeyboard() {
+      if (this.game) {
+         this.game.updateKeyboard();
+      }
    }
    /**
     * 40行游戏

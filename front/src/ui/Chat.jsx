@@ -8,9 +8,8 @@ import Paper from 'material-ui/Paper';
 import Input from 'material-ui/Input';
 
 import gameManager from '../game/GameManager';
-import socket from '../socket/GameSocket';
 import config from '../config';
-import { MSG_TYPE } from '../socket/OperTable'
+import Tools from '../util/Tools';
 
 function TabContainer(props) {
    return (
@@ -41,7 +40,7 @@ const styles = theme => ({
    },
    content: {
       height: 'calc(100% - 48px)',
-      background: '#aaaaaa'
+      // background: '#dddddd'
    },
    chatContent: {
       height: 'calc(100% - 30px)',
@@ -49,7 +48,7 @@ const styles = theme => ({
       overflowY: 'auto',
    },
    message: {
-      float: 'left',
+      textAlign: 'left',
       padding: '0 8px',
    },
    chatInput: {
@@ -65,8 +64,9 @@ const styles = theme => ({
 class Chat extends React.Component {
    constructor(props) {
       super(props);
+      this.chatContentRef = null;
       this.inputRef = null;
-      this.msgIdx = 0;
+      this.chatManager = gameManager.chatManager;
    }
    state = {
       value: 0,
@@ -74,11 +74,19 @@ class Chat extends React.Component {
       chatInput: '',
    };
 
+   componentWillMount() {
+      this.state.messages = this.chatManager.getMessages();
+   }
    componentDidMount() {
-      socket.chatListeners.add(this.onGetMessage);
+      this.chatManager.updateChatListeners.add(this.onGetMessage);
+      this.scrollToBottom();
    }
    componentWillUnmount() {
-      socket.chatListeners.remove(this.onGetMessage);
+      this.chatManager.updateChatListeners.remove(this.onGetMessage);
+   }
+
+   scrollToBottom() {
+      this.chatContentRef.scrollTop = this.chatContentRef.scrollHeight;
    }
 
    handleChangeTab = (event, value) => {
@@ -95,19 +103,13 @@ class Chat extends React.Component {
       if (msg == '') {
          return;
       }
-      var data = {
-         to: MSG_TYPE.lobby,
-         msg: msg
-      }
-      socket.chat(data);
+      this.chatManager.sendLobby(msg);
    }
 
    onGetMessage = (data) => {
-      // msg = decodeURI(msg);
-      data.idx = this.msgIdx++;
       var messages = this.state.messages;
-      messages.push(data);
       this.setState({ messages: messages });
+      this.scrollToBottom();
    }
 
    onKeyDown = (event) => {
@@ -124,8 +126,9 @@ class Chat extends React.Component {
       var messages = this.state.messages;
       for (var i = 0; i < messages.length; i++) {
          var data = messages[i];
+         var time = Tools.formatTime(data.time, '[hh:mm:ss]');
          msgs.push(
-            <div key={data.idx} className={classes.message}><span>{data.user}:</span> <span>{data.msg}</span></div >
+            <div key={data.idx} className={classes.message}><span>{time}</span><span>{data.user}:</span> <span>{decodeURI(data.msg)}</span></div >
          )
       }
       return msgs;
@@ -152,7 +155,7 @@ class Chat extends React.Component {
                   <Tab label="大厅聊天" />
                </Tabs>
                <div className={classes.content} >
-                  <div className={classes.chatContent} >
+                  <div ref={instance => this.chatContentRef = instance} className={classes.chatContent} >
                      {messages}
                   </div>
                   <div className={classes.chatInput}>
@@ -165,6 +168,7 @@ class Chat extends React.Component {
                         className={classes.input}
                         onKeyDown={this.onKeyDown}
                         inputProps={{
+                           'maxLength': 128,
                            'aria-label': 'Description',
                         }}
                      />

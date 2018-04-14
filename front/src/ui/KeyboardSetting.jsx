@@ -172,6 +172,7 @@ class KeyboardSetting extends React.Component {
       this.keyboard.moveDelay = moveDelay;
       socket.setKeyboard(this.keyboard);
       this.props.close();
+      gameManager.updateKeyboard();
    }
 
    onKeyDown = (event) => {

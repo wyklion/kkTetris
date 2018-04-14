@@ -46,8 +46,24 @@ const styles = theme => ({
 
 class Lobby extends React.Component {
    state = {
+      userCount: 0,
       value: 0,
    };
+
+   componentWillMount() {
+      this.state.userCount = gameManager.userManager.userCount;
+   }
+   componentDidMount() {
+      gameManager.userManager.updateUsersListeners.add(this.onUpdateUser);
+   }
+   componentWillUnmount() {
+      gameManager.userManager.updateUsersListeners.remove(this.onUpdateUser);
+   }
+
+   onUpdateUser = () => {
+      this.setState({ userCount: gameManager.userManager.userCount });
+   }
+
    handleChangeTab = (event, value) => {
       this.setState({ value });
    };
@@ -71,7 +87,7 @@ class Lobby extends React.Component {
                >
                   <Tab label="房间" />
                   <Tab label="好友" />
-                  <Tab label="在线" />
+                  <Tab label={"在线(" + gameManager.userManager.userCount + ")"} />
                </Tabs>
                <div className={classes.content} >
                   {value === 0 && <Rooms />}

@@ -6,6 +6,7 @@ var SocketIO = require('socket.io');
 var Tools = require('./Tools');
 var RoomManager = require('./RoomManager');
 var UserManager = require('./UserManager');
+var ChatManager = require('./ChatManager');
 var OPERTABLE = require('./OperTable');
 var GameSocket = require('./GameSocket');
 
@@ -24,9 +25,11 @@ class SocketManager {
       this.session = null;
       this.init();
 
-      this.gameSockets = [];
       this.userManager = new UserManager();
       this.roomManager = new RoomManager();
+      this.chatManager = new ChatManager();
+
+      this.gameSockets = [];
    }
    init() {
       var _this = this;
@@ -98,19 +101,32 @@ class SocketManager {
          var session = socket.request.headers.session;
          if (!session || !session.user) return;
          var userId = session.user.id;
-         console.log(userId, "connected... " + socket.id);
          mongo.find("users", { id: userId }, (result) => {
             if (result.length > 0) {
-               var gameSocket = new GameSocket(this, socket, result[0]);
-               this.gameSockets.push(this.gameSocket);
+               if (this.userManager.has(userId)) {
+                  console.log(userId, 'already connected...');
+                  socket.emit('onConnection', { err: '该用户已登录！' });
+                  socket.disconnect(true);
+                  return;
+               } else {
+                  console.log(userId, "connected... " + socket.id);
+                  var gameSocket = new GameSocket(this, socket, result[0]);
+                  this.gameSockets.push(gameSocket);
+               }
             }
             else {
-               socket.emit('onConnection', { err: "Can't find user when connect..." });
+               socket.emit('onConnection', { err: '找不到该用户！' });
                socket.disconnect(true);
-               console.log("Can't find user when connect...");
+               console.log(userId, 'is not exists...');
             }
          })
       });
+   }
+   removeSocket(socket) {
+      var idx = this.gameSockets.indexOf(socket);
+      if (idx > -1) {
+         this.gameSockets.splice(idx, 1);
+      }
    }
 }
 

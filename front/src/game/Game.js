@@ -30,7 +30,7 @@ export default class Game {
       if (!this.watch)
          this.input();
    }
-   updateInput() {
+   updateKeyboard() {
       this.keyManager.updateInput();
    }
    input() {

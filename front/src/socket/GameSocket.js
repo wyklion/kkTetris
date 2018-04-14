@@ -30,7 +30,6 @@ class GameSocket {
       this.disconnectListeners = new Listeners();
       this.reconnectListeners = new Listeners();
       this.createRoomListeners = new Listeners();
-      this.chatListeners = new Listeners();
    }
    static _instance = null;
    static getInstance() {
@@ -57,57 +56,61 @@ class GameSocket {
       this.reconnectListeners.execute();
    }
    onConnection = (data) => {
+      this.userManager = gameManager.userManager;
+      this.roomManager = gameManager.roomManager;
+      this.chatManager = gameManager.chatManager;
       if (!data.err) {
          // 初始化不触发刷新
-         gameManager.userManager.user = data.user;
-         gameManager.userManager.initUsers(data.users);
-         gameManager.roomManager.initRooms(data.rooms);
+         this.userManager.user = data.user;
+         this.userManager.initUsers(data.users);
+         this.roomManager.initRooms(data.rooms);
+         this.chatManager.setMessages(data.chat);
          console.log("login:", data);
          this.connectListeners.execute();
       }
       else {
          console.log(data.err);
-         this.connectFailListeners.execute();
+         this.connectFailListeners.execute(data.err);
       }
    }
    onChat = (data) => {
-      this.chatListeners.execute(data);
+      this.chatManager.add(data);
    }
    onLobbyInfo = (data) => {
       if (!data.err) {
          console.log("============== lobbyInfo ===============", data);
          if (data.type === 'setUser') {
-            gameManager.setUser(data.user);
+            this.userManager.setUser(data.user);
          } else if (data.type === 'removeUser') {
-            gameManager.removeUser(data.userId);
+            this.userManager.removeUser(data.userId);
          } else if (data.type === 'setRoom') {
-            gameManager.roomManager.setRoom(data.room);
+            this.roomManager.setRoom(data.room);
          } else if (data.type === 'removeRoom') {
-            gameManager.roomManager.removeRoom(data.roomId);
+            this.roomManager.removeRoom(data.roomId);
          }
       }
       else
          console.log(data.err);
    }
    onRoomInfo = (data) => {
-      gameManager.room = data.room;
-      console.log("roomInfo:", gameManager.room);
+      this.roomManager.room = data.room;
+      console.log("roomInfo:", this.roomManager.room);
       if (data.join) {
          // main.game.someoneJoined(data.userId, data.watch);
       }
       else {
          // main.game.someoneLeft(data.userId, data.watch);
       }
-      //if(main.game.single && gameManager.room.playUsers.length == 2){
+      //if(main.game.single && this.roomManager.room.playUsers.length == 2){
       //    main.game.someoneJoined();
       //}
-      //else if(!main.game.single && gameManager.room.playUsers.length == 1)
+      //else if(!main.game.single && this.roomManager.room.playUsers.length == 1)
       //    main.game.someoneLeft();
    }
    onCreateRoom = (data) => {
       if (!data.err) {
-         gameManager.roomManager.roomId = data.roomId;
-         console.log("onCreateRoom ", gameManager.room);
+         this.roomManager.roomId = data.roomId;
+         console.log("onCreateRoom ", this.roomManager.room);
          this.createRoomListeners.execute(true);
          // main.goRoom();
       }
@@ -119,14 +122,14 @@ class GameSocket {
    }
    onJoinRoom = (data) => {
       if (!data.err) {
-         gameManager.room = data.room;
+         this.roomManager.room = data.room;
          if (data.watch) {
             // main.goRoom(true);
-            console.log("watch room:", gameManager.room);
+            console.log("watch room:", this.roomManager.room);
          }
          else {
             // main.goRoom();
-            console.log("onJoinRoom", gameManager.room);
+            console.log("onJoinRoom", this.roomManager.room);
          }
       }
       else
@@ -135,9 +138,9 @@ class GameSocket {
    }
    onExitRoom = (data) => {
       if (!data.err) {
-         console.log("onExitRoom", gameManager.roomId);
-         gameManager.roomId = null;
-         gameManager.room = null;
+         console.log("onExitRoom", this.roomManager.roomId);
+         this.roomManager.roomId = null;
+         this.roomManager.room = null;
          // main.exitRoom();
       }
       else
@@ -222,9 +225,10 @@ class GameSocket {
       this.socket.emit("chat", data);
    }
    getRoomOtherUser() {
-      if (!gameManager.room) return null;
-      if (gameManager.room.playUsers.length < 2) return null;
-      var otherUser = gameManager.user.id === gameManager.room.playUsers[0] ? gameManager.room.playUsers[1] : gameManager.room.playUsers[0];
+      var room = this.roomManager.room;
+      if (!room) return null;
+      if (room.playUsers.length < 2) return null;
+      var otherUser = this.userManager.user.id === room.playUsers[0] ? room.playUsers[1] : room.playUsers[0];
       return otherUser;
    }
    createRoom(func) {
@@ -255,12 +259,12 @@ class GameSocket {
       });
    }
    setSetting(setting) {
-      gameManager.user.setting = setting;
+      this.userManager.user.setting = setting;
       this.socket.emit("setting", { type: "setting", setting: setting });
    }
    setKeyboard(keyboard) {
       for (var k in keyboard) {
-         gameManager.user.keyboard[k] = keyboard[k];
+         this.userManager.user.keyboard[k] = keyboard[k];
       }
       // if (main.game) {
       //    main.game.updateInput();

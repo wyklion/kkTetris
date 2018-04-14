@@ -64,6 +64,7 @@ export default class Render {
       this.stage.scale.x = this.stage.scale.y = scale;
    }
    render() {
-      this.renderer.render(this.stage);
+      // this.renderer.render(this.stage);
+      this.app.render();
    }
 }
