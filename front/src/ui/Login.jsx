@@ -30,7 +30,7 @@ const styles = theme => ({
       marginTop: '-150px'
    },
    formLabel: {
-      color: color[800],
+      // color: color[800],
       fontFamily: 'Arial',
       fontWeight: 'bolder',
       textAlign: 'center',

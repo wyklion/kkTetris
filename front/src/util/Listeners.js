@@ -23,6 +23,9 @@ export default class Listeners {
       var listener = new Listener(func, once);
       this.listeners.push(listener);
    }
+   addOnce(func) {
+      this.add(func, true);
+   }
    remove(func) {
       for (var i = 0; i < this.listeners.length; i++) {
          if (this.listeners[i].func === func) {

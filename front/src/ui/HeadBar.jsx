@@ -19,6 +19,7 @@ const styles = {
    },
    flex: {
       flex: 1,
+      fontFamily: 'SimHei',
    },
    menuButton: {
       marginLeft: -12,
@@ -69,7 +70,6 @@ class HeadBar extends React.Component {
    render() {
       const { classes } = this.props;
       const { anchorElSetting, anchorElUser } = this.state;
-
       return (
          <div className={classes.root}>
             <KeyboardSetting

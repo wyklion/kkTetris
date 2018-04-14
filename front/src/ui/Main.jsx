@@ -10,6 +10,7 @@ import config from '../config';
 import SingleMenu from './SingleMenu';
 import Result from './Result';
 import Lobby from './Lobby';
+import Chat from './Chat';
 
 const styles = theme => ({
    root: {
@@ -158,6 +159,7 @@ class Main extends React.Component {
          <div ref={instance => this.mainDiv = instance} className={classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
                <Lobby ref='lobbyRef' show={!vertical} />
+               <Chat ref='chatRef' show={!vertical} />
                <div ref='singleDiv' className={classes.singleDiv}>
                   <div className={classes.result}>
                      <Result

@@ -9,14 +9,14 @@ import Listeners from '../util/Listeners';
 
 class GameSocket {
    constructor() {
-      // main.spin();
-      // $('#openWaiting').remove();
-      this.connected = false;
-      this.socket = io(config.server);
+      this.socket = io(config.server, {
+         autoConnect: false
+      });
 
+      this.socket.on('connect', this.onConnect);
+      this.socket.on('disconnect', this.onDisconnect);
+      this.socket.on('reconnect', this.onReconnect);
       this.socket.on('onConnection', this.onConnection);
-      this.socket.on('disconnect', this.onReconnect);
-      this.socket.on('reconnect', this.onConnection);
       this.socket.on('lobbyInfo', this.onLobbyInfo);
       this.socket.on('chat', this.onChat);
       this.socket.on('roomInfo', this.onRoomInfo);
@@ -30,6 +30,7 @@ class GameSocket {
       this.disconnectListeners = new Listeners();
       this.reconnectListeners = new Listeners();
       this.createRoomListeners = new Listeners();
+      this.chatListeners = new Listeners();
    }
    static _instance = null;
    static getInstance() {
@@ -39,30 +40,12 @@ class GameSocket {
       return GameSocket._instance;
    }
    connect() {
-      if (this.socket.connected) {
-         this.connectListeners.execute();
-      } else {
-         this.socket.connect();
-      }
+      this.socket.connect();
    }
    disconnect() {
-      this.connected = false;
       this.socket.disconnect();
    }
-   onConnection = (data) => {
-      if (!data.err) {
-         // 初始化不触发刷新
-         gameManager.userManager.user = data.user;
-         gameManager.userManager.initUsers(data.users);
-         gameManager.roomManager.initRooms(data.rooms);
-         console.log("login:", data);
-         this.connected = true;
-         this.connectListeners.execute();
-      }
-      else {
-         console.log(data.err);
-         this.connectFailListeners.execute();
-      }
+   onConnect = () => {
    }
    onDisconnect = () => {
       console.log('disconnect...');
@@ -73,8 +56,22 @@ class GameSocket {
       console.log('reconnect...', transport_type, reconnectionAttempts);
       this.reconnectListeners.execute();
    }
+   onConnection = (data) => {
+      if (!data.err) {
+         // 初始化不触发刷新
+         gameManager.userManager.user = data.user;
+         gameManager.userManager.initUsers(data.users);
+         gameManager.roomManager.initRooms(data.rooms);
+         console.log("login:", data);
+         this.connectListeners.execute();
+      }
+      else {
+         console.log(data.err);
+         this.connectFailListeners.execute();
+      }
+   }
    onChat = (data) => {
-      // main.putMsg(data.user, data.msg);
+      this.chatListeners.execute(data);
    }
    onLobbyInfo = (data) => {
       if (!data.err) {
@@ -221,7 +218,7 @@ class GameSocket {
       // }
    }
 
-   sendMsg(data) {
+   chat(data) {
       this.socket.emit("chat", data);
    }
    getRoomOtherUser() {

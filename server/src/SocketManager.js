@@ -94,28 +94,23 @@ class SocketManager {
       });
    }
    start() {
-      this.io.on('connection', this.onConnection.bind(this));
-      //mongo.find("users", {id:"kk"}, function(result){
-      //    console.log(result);
-      //})
-   }
-   onConnection(socket) {
-      //console.log("connect session:", session);
-      var _this = this;
-      var session = socket.request.headers.session;
-      if (!session || !session.user) return;
-      var userId = session.user.id;
-      console.log(userId, "connected... " + socket.id);
-      mongo.find("users", { id: userId }, (result) => {
-         if (result.length > 0) {
-            var gameSocket = new GameSocket(this, socket, result[0]);
-            this.gameSockets.push(this.gameSocket);
-         }
-         else {
-            socket.emit('onConnection', { err: "Can't find user when connect..." });
-            console.log("Can't find user when connect...");
-         }
-      })
+      this.io.on('connection', (socket) => {
+         var session = socket.request.headers.session;
+         if (!session || !session.user) return;
+         var userId = session.user.id;
+         console.log(userId, "connected... " + socket.id);
+         mongo.find("users", { id: userId }, (result) => {
+            if (result.length > 0) {
+               var gameSocket = new GameSocket(this, socket, result[0]);
+               this.gameSockets.push(this.gameSocket);
+            }
+            else {
+               socket.emit('onConnection', { err: "Can't find user when connect..." });
+               socket.disconnect(true);
+               console.log("Can't find user when connect...");
+            }
+         })
+      });
    }
 }
 

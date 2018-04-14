@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import gameManager from '../game/GameManager';
+import theme from './Theme';
 
 const styles = theme => ({
    button: {

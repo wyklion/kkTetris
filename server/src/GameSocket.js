@@ -25,8 +25,6 @@ class GameSocket {
       if (!this.userManager.has(userId)) {
          this.userManager.add(userId)
       }
-      socket.emit('onConnection', { err: null, user: user, users: this.userManager.getUsers(), rooms: this.roomManager.getRooms() });
-      socket.broadcast.emit('lobbyInfo', { err: null, type: 'setUser', user: this.userManager.get(userId) });
 
       socket.on('disconnect', this.onDisconnect.bind(this));
       socket.on('createRoom', this.onCreateRoom.bind(this));
@@ -38,11 +36,14 @@ class GameSocket {
       socket.on('setting', this.onSetting.bind(this));
       socket.on('chat', this.onChat.bind(this));
 
+      // 通知
+      socket.emit('onConnection', { err: null, user: user, users: this.userManager.getUsers(), rooms: this.roomManager.getRooms() });
+      socket.broadcast.emit('lobbyInfo', { err: null, type: 'setUser', user: this.userManager.get(userId) });
    }
-   onDisconnect() {
+   onDisconnect(reason) {
       var socket = this.socket;
       var userId = this.userId;
-      console.log(userId, "disconnect");
+      console.log(userId, "disconnect for reason:", reason);
       var roomId = this.userManager.getRoom(userId);
       this.userManager.remove(userId);
       if (roomId != null) {
@@ -152,7 +153,7 @@ class GameSocket {
    }
    onChat(data) {
       var socket = this.socket;
-      if (data.type === MSG_TYPE.lobby) {
+      if (data.to === MSG_TYPE.lobby) {
          this.io.emit("chat", { user: this.userId, msg: data.msg });
       }
    }

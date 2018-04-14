@@ -36,11 +36,11 @@ const styles = theme => ({
       height: 'calc(100% - 20px)',
    },
    tabs: {
-      background: '#dddddd'
+      // background: '#dddddd'
    },
    content: {
       height: 'calc(100% - 48px)',
-      background: '#aaaaaa'
+      // background: '#aaaaaa'
    }
 });
 
