@@ -6,6 +6,7 @@ export default class KeyState {
       this.endFunc = endFunc;
       this.isDown = isDown;
       this.press = false;
+      this.das = false;
       var dasHandle = null;
       var moveHandle = null;
    }
@@ -22,6 +23,7 @@ export default class KeyState {
       }
    }
    dasCall = () => {
+      this.das = true;
       var moveDelay = this.manager.moveDelay;
       if (moveDelay === 0) {
          this.endFunc();
@@ -30,8 +32,14 @@ export default class KeyState {
          this.moveHandle = setInterval(this.func, moveDelay);
       }
    }
+   keepDown() {
+      if (this.das && this.manager.moveDelay === 0) {
+         this.endFunc();
+      }
+   }
    keyUp() {
       this.press = false;
+      this.das = false;
       this.stop();
    }
    stop() {

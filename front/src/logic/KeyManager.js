@@ -38,13 +38,16 @@ export default class KeyManager {
       this.down = new KeyState(this, this.downFunc, this.downEndFunc);
    }
    onKeyDown(key) {
+      var leftright = false;
       if (key === this.leftKey) {
          this.left.keyDown();
          this.right.keyUp();
+         leftright = true;
       }
       else if (key === this.rightKey) {
          this.right.keyDown();
          this.left.keyUp();
+         leftright = true;
       }
       else if (key === this.downKey) {
          this.down.keyDown();
@@ -63,6 +66,10 @@ export default class KeyManager {
       }
       else if (key === this.holdKey) {
          this.holdFunc();
+      }
+      if (!leftright) {
+         this.left.keepDown();
+         this.right.keepDown();
       }
    }
    onKeyUp(key) {
