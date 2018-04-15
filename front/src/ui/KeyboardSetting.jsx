@@ -167,6 +167,7 @@ class KeyboardSetting extends React.Component {
    handleSave = () => {
       var dasDelay = parseInt(this.state.dasDelay);
       if (dasDelay < 10) dasDelay = 10; else if (dasDelay > 1000) dasDelay = 1000;
+      this.keyboard.dasDelay = dasDelay;
       var moveDelay = parseInt(this.state.moveDelay);
       if (moveDelay < 0) moveDelay = 0; else if (moveDelay > 500) moveDelay = 500;
       this.keyboard.moveDelay = moveDelay;

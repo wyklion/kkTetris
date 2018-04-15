@@ -123,7 +123,7 @@ export default class Game {
          this.tetris.playData.time += dt;
          this.time += dt;
          if (!this.watch) {
-            while (this.time > this.interval) {
+            while (this.tetris.playing && this.time > this.interval) {
                this.time -= this.interval;
                this.tetris.moveDownNature();
             }

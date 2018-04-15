@@ -34,6 +34,7 @@ export default class Render {
       container.x = this.renderConfig.width / 2;
       this.stage.addChild(container);
       this.main = new TetrisRender({
+         render: this,
          container: container
       });
    }

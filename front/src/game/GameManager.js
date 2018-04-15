@@ -4,6 +4,7 @@ import socket from '../socket/GameSocket';
 import RoomManager from './RoomManager';
 import UserManager from './UserManager';
 import ChatManager from './ChatManager';
+import config from '../config';
 
 /**
  * 游戏管理
@@ -53,7 +54,7 @@ class GameManager {
       for (var i = 0; i < this.updateFuncs.length; i++) {
          this.updateFuncs[i](this._deltaTime);
       }
-      if (this.logined) {
+      if (this.logined && config.fps60) {
          this.render.render();
       }
       this.aniHandle = requestAnimationFrame(this.mainLoop);

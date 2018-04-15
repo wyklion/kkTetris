@@ -62,7 +62,7 @@ class Result extends React.Component {
                时间：{data.time.toFixed(1)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.loseItem}>
-               速度：{(data.count / data.time).toFixed(1)}
+               速度：{(data.count / data.time).toFixed(2)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.loseItem}>
                块数：{data.count}
@@ -96,7 +96,7 @@ class Result extends React.Component {
                时间：{data.time.toFixed(1)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.item}>
-               速度：{(data.count / data.time).toFixed(1)}
+               速度：{(data.count / data.time).toFixed(2)}
             </Typography>
          </Paper>
       )

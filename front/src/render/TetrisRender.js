@@ -70,6 +70,7 @@ var colors = [
 export default class TetrisRender {
    constructor(options) {
       this.scale = 1;
+      this.render = options.render;
       this.container = options.container;
       this.setTetris(options.tetris);
       this.baseSize = options.baseSize || 30;
@@ -125,8 +126,10 @@ export default class TetrisRender {
          bgGraphics.moveTo(0, y);
          bgGraphics.lineTo(300, y);
       }
-      bgGraphics.lineStyle(1 / this.scale, bgBorderColor, 1);
-      bgGraphics.drawRect(0, 0, this.baseSize * 10, this.baseSize * 20);
+      var bgCover = this.bgCoverGraphics;
+      bgCover.clear();
+      bgCover.lineStyle(2 / this.scale, bgBorderColor, 1);
+      bgCover.drawRect(0, 0, this.baseSize * 10, this.baseSize * 20);
    }
    initTetris() {
       var tetris = this.tetris;
@@ -139,10 +142,13 @@ export default class TetrisRender {
       // 背景线
       var bgGraphics = this.bgGraphics = new PIXI.Graphics();
       ta.addChild(bgGraphics);
-      this.drawTetrisBg();
       // 方块区
       var graphics = this.tetrisGraphic = new PIXI.Graphics();
       ta.addChild(graphics);
+      // 背景框
+      var bgCoverGraphics = this.bgCoverGraphics = new PIXI.Graphics();
+      ta.addChild(bgCoverGraphics);
+      this.drawTetrisBg();
    }
 
    initNext() {
@@ -302,6 +308,9 @@ export default class TetrisRender {
          this.renderNext();
          this.renderHold();
       }
+      if (!config.fps60) {
+         this.render.render();
+      }
    }
 
    /**
@@ -416,8 +425,11 @@ export default class TetrisRender {
       var hostData = tetris.playData;
       this.setText('time', hostData.time.toFixed(1));
       this.setText('piece', hostData.count);
-      this.setText('speed', hostData.time == 0 ? "0.0" : (hostData.count / hostData.time).toFixed(1));
+      this.setText('speed', hostData.time == 0 ? "0.00" : (hostData.count / hostData.time).toFixed(2));
       this.setText('lines', hostData.lines);
+      if (!config.fps60) {
+         this.render.render();
+      }
    }
    setText(dataName, value) {
       var text = this.dataTexts[dataName];
