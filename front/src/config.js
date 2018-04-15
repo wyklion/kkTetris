@@ -6,12 +6,10 @@ var config = {
    render: {
       width: 960,
       height: 700,
-      top: 20,
    },
    renderSingle: {
       width: 480,
       height: 700,
-      top: 20,
    }
 }
 

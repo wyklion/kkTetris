@@ -2,13 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
+import RefreshIcon from 'material-ui-icons/Refresh';
+import CloseIcon from 'material-ui-icons/Close';
+
 import gameManager from '../game/GameManager';
 import theme from './Theme';
 
 const styles = theme => ({
    button: {
-      width: '100%',
       marginBottom: '10px',
+      minWidth: '60px',
    },
 })
 
@@ -71,22 +74,22 @@ class SingleMenu extends React.Component {
          if (!this.props.playing) {
             buttons = (
                <div>
-                  <Button variant="raised" color="primary" className={classes.button} onClick={this.onSpeedGameClick}>
-                     竞速40行(F2)
+                  <Button variant="raised" color="primary" title="竞速40行(F2)" className={classes.button} onClick={this.onSpeedGameClick}>
+                     竞速
                </Button>
-                  <Button variant="raised" color="secondary" className={classes.button} onClick={this.onDigGameClick}>
-                     挖掘20行(F3)
+                  <Button variant="raised" color="secondary" title="挖掘20行(F3)" className={classes.button} onClick={this.onDigGameClick}>
+                     挖掘
                </Button>
                </div>
             )
          } else {
             buttons = (
                <div>
-                  <Button variant="raised" color="primary" className={classes.button} onClick={this.onRestartClick}>
-                     重来(F2)
+                  <Button variant="fab" color="primary" title="重来(F2)" aria-label="add" className={classes.button} onClick={this.onRestartClick}>
+                     <RefreshIcon />
                   </Button>
-                  <Button variant="raised" color="primary" className={classes.button} onClick={this.onEndGameClick}>
-                     结束(ESC)
+                  <Button variant="fab" color="secondary" title="结束(ESC)" aria-label="add" className={classes.button} onClick={this.onEndGameClick}>
+                     <CloseIcon />
                   </Button>
                </div>
             )

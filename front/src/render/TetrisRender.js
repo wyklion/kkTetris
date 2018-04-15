@@ -5,21 +5,71 @@
 import * as PIXI from 'pixi.js'
 import config from '../config';
 
-var bgColor = 0xAAAAAA;
-var shadowColor = 0x7777777;
+// var layout = {
+//    tetris: {
+//       x: 10,
+//       y: 20,
+//    },
+//    next: {
+//       x: 320,
+//       y: 20,
+//    },
+//    hold: {
+//       x: 410,
+//       y: 20,
+//    },
+//    data: {
+//       x: 320,
+//       y: 260,
+//    }
+// }
+var layout = {
+   tetris: {
+      x: 85,
+      y: 10,
+   },
+   next: {
+      x: 390,
+      y: 10,
+   },
+   hold: {
+      x: 5,
+      y: 10,
+   },
+   data: {
+      x: 385,
+      y: 250,
+   }
+}
+
+var bgColor = 0x333333;
+var bgBorderColor = 0x111111;
+var bgLineColor = 0x666666;
+var shadowColor = 0x777777;
 var deadColor = 0x777777;
+// var colors = [
+//    0x00FFFF, // 'cyan'
+//    0xFFFF00, // 'yellow'
+//    0xA020F0, // 'purple'
+//    0xFFA500, // 'orange'
+//    0x0000FF, // 'blue'
+//    0xFF0000, // 'red'
+//    0x00FF00,// 'green'
+// ];
 var colors = [
-   0x00FFFF, // 'cyan'
-   0xFFFF00, // 'yellow'
-   0xA020F0, // 'purple'
-   0xFFA500, // 'orange'
-   0x0000FF, // 'blue'
-   0xFF0000, // 'red'
-   0x00FF00,// 'green'
+   0x0F9BD7, // I
+   0xE39F02, // O
+   0x9D298A, // T
+   0xE35B02, // L
+   0x2141C6, // J
+   0xD70F37, // Z
+   0x59B101,// S
 ];
+
 
 export default class TetrisRender {
    constructor(options) {
+      this.scale = 1;
       this.container = options.container;
       this.setTetris(options.tetris);
       this.baseSize = options.baseSize || 30;
@@ -53,25 +103,52 @@ export default class TetrisRender {
       }
    }
 
+   onResize(scale) {
+      this.scale = scale;
+      this.drawTetrisBg();
+   }
+
+   drawTetrisBg() {
+      var bgGraphics = this.bgGraphics;
+      bgGraphics.beginFill(bgColor);
+      bgGraphics.drawRect(0, 0, 300, 600);
+      bgGraphics.endFill();
+      bgGraphics.lineStyle(1 / this.scale, bgLineColor, 1);
+      var i;
+      for (i = 1; i <= 9; i++) {
+         var x = i * this.baseSize;
+         bgGraphics.moveTo(x, 0);
+         bgGraphics.lineTo(x, 600);
+      }
+      for (i = 1; i <= 19; i++) {
+         var y = i * this.baseSize;
+         bgGraphics.moveTo(0, y);
+         bgGraphics.lineTo(300, y);
+      }
+      bgGraphics.lineStyle(1 / this.scale, bgBorderColor, 1);
+      bgGraphics.drawRect(0, 0, this.baseSize * 10, this.baseSize * 20);
+   }
    initTetris() {
       var tetris = this.tetris;
       var ta = this.tetrisArea = new PIXI.Container();
       ta.width = this.baseSize * 10;
       ta.height = this.baseSize * 20;
-      ta.x = 0;
-      ta.y = config.render.top;
+      ta.x = layout.tetris.x;
+      ta.y = layout.tetris.y;
       this.container.addChild(ta);
+      // 背景线
+      var bgGraphics = this.bgGraphics = new PIXI.Graphics();
+      ta.addChild(bgGraphics);
+      this.drawTetrisBg();
+      // 方块区
       var graphics = this.tetrisGraphic = new PIXI.Graphics();
-      graphics.beginFill(bgColor);
-      graphics.drawRect(0, 0, 300, 600);
-      graphics.endFill();
       ta.addChild(graphics);
    }
 
    initNext() {
       var na = this.nextArea = new PIXI.Container();
-      na.x = this.baseSize * 10 + 10;
-      na.y = config.render.top;
+      na.x = layout.next.x;
+      na.y = layout.next.y;
       this.container.addChild(na);
       var graphics = this.nextGraphic = new PIXI.Graphics();
       na.addChild(graphics);
@@ -79,22 +156,23 @@ export default class TetrisRender {
       // 下一块文本
       var nextText = this.nextText = new PIXI.Text('Next:', {
          fontWeight: 'bold',
-         fontSize: 15,
+         fontSize: 15 * 2,
          fontFamily: 'Arial',
-         fill: '#cc00ff',
+         fill: '#f4511e',
          align: 'center',
          stroke: '#FFFFFF',
-         strokeThickness: 3
+         strokeThickness: 6
       });
       nextText.x = 10;
+      nextText.scale.set(0.5, 0.5);
       na.addChild(nextText);
       this.nextText.visible = false;
    }
 
    initHold() {
       var ha = this.holdArea = new PIXI.Container();
-      ha.x = this.baseSize * 10 + 100;
-      ha.y = config.render.top;
+      ha.x = layout.hold.x;
+      ha.y = layout.hold.y;
       this.container.addChild(ha);
       var graphics = this.holdGraphic = new PIXI.Graphics();
       ha.addChild(graphics);
@@ -102,22 +180,23 @@ export default class TetrisRender {
       // 暂存文本
       var holdText = this.holdText = new PIXI.Text('Hold:', {
          fontWeight: 'bold',
-         fontSize: 15,
+         fontSize: 15 * 2,
          fontFamily: 'Arial',
-         fill: '#cc00ff',
+         fill: '#f4511e',
          align: 'center',
          stroke: '#FFFFFF',
-         strokeThickness: 3
+         strokeThickness: 6
       });
       holdText.x = 10;
+      holdText.scale.set(0.5, 0.5);
       ha.addChild(holdText);
       this.holdText.visible = false;
    }
 
    initData() {
-      var da = this.dataArea = new PIXI.Container();
-      da.x = this.baseSize * 10;
-      da.y = config.render.top + 240;
+      var da = this.dataArea = new PIXI.Container();;
+      da.x = layout.data.x;
+      da.y = layout.data.y;
       da.visible = false;
       this.container.addChild(da);
 
@@ -145,14 +224,14 @@ export default class TetrisRender {
       ]
       var labelStyle = {
          fontWeight: 'bold',
-         fontSize: 15,
+         fontSize: 12 * 2,
          fontFamily: 'Arial',
          align: 'center',
          fill: '#111111',
       };
       var dataStyle = {
          fontWeight: 'bold',
-         fontSize: 20,
+         fontSize: 15 * 2,
          fontFamily: 'Arial',
          align: 'center',
          fill: '#DDDDDD',
@@ -161,31 +240,20 @@ export default class TetrisRender {
       for (var i = 0; i < datasOptions.length; i++) {
          var label = new PIXI.Text(datasOptions[i].label, labelStyle);
          label.x = 10;
-         label.y = i * 50;
+         label.y = 30 + i * 50;
+         label.scale.set(0.5, 0.5);
          da.addChild(label);
          var dataText = this.dataTexts[datasOptions[i].name] = new PIXI.Text(datasOptions[i].value, dataStyle);
-         dataText.x = 60;
-         dataText.y = i * 50 - 5;
+         dataText.x = 40;
+         dataText.y = 30 + i * 50 - 1;
+         dataText.scale.set(0.5, 0.5);
          da.addChild(dataText);
       }
-      // 时间
-      var timeLabel = new PIXI.Text('时间:', labelStyle);
-      timeLabel.x = 10;
-      da.addChild(timeLabel);
-      var pieceLabel = new PIXI.Text('块数:', labelStyle);
-      pieceLabel.x = 10;
-      pieceLabel.y = 50;
-      da.addChild(pieceLabel);
-      var speedLabel = new PIXI.Text('速度:', labelStyle);
-      speedLabel.x = 10;
-      speedLabel.y = 100;
-      da.addChild(speedLabel);
-      var lineLabel = new PIXI.Text('行数:', labelStyle);
-      lineLabel.x = 10;
-      lineLabel.y = 150;
-      da.addChild(lineLabel);
    }
 
+   /**
+    * 清空并隐藏状态
+    */
    clear() {
       this.reset();
       if (this.displayNext) {
@@ -195,30 +263,36 @@ export default class TetrisRender {
       }
    }
 
+   /**
+    * 清空
+    */
    reset() {
       var graphics = this.tetrisGraphic;
       graphics.clear();
-      graphics.beginFill(bgColor);
-      graphics.drawRect(0, 0, 300, 600);
-      graphics.endFill();
       if (this.displayNext) {
          this.nextGraphic.clear();
          this.holdGraphic.clear();
       }
    }
 
+   /**
+    * 方块区的一块
+    */
    drawTetrisBlock(x, y, color, noLine) {
       var graphics = this.tetrisGraphic;
-      if (noLine) {
-         graphics.lineStyle(0);
-      } else {
-         graphics.lineStyle(1, 0x111111, 1);
-      }
+      // if (noLine) {
+      //    graphics.lineStyle(0);
+      // } else {
+      //    graphics.lineStyle(2, 0x222222, 1);
+      // }
       graphics.beginFill(color);
       graphics.drawRect(x * this.baseSize, y * this.baseSize, this.baseSize, this.baseSize);
       graphics.endFill();
    }
 
+   /**
+    * 刷新
+    */
    renderAll() {
       this.reset();
       this.nextText.visible = true;
@@ -230,6 +304,9 @@ export default class TetrisRender {
       }
    }
 
+   /**
+    * 主方块区
+    */
    renderTetris() {
       var tetris = this.tetris;
       for (var i = 0; i < tetris.row; i++) {
@@ -248,7 +325,9 @@ export default class TetrisRender {
       // 操作的方块
       this.renderShape();
    }
-
+   /**
+    * 当前块
+    */
    renderShape(shadow) {
       var tetris = this.tetris;
       var shape = tetris.shape;
@@ -272,6 +351,9 @@ export default class TetrisRender {
       }
    }
 
+   /**
+    * 下一块
+    */
    renderNext() {
       var tetris = this.tetris;
       if (!tetris.nextShapes || tetris.nextShapes.length === 0) return;
@@ -292,13 +374,16 @@ export default class TetrisRender {
    drawNextBlock(idx, shapeId, x, y, color) {
       var graphics = this.nextGraphic;
       var size = this.smallSize;
-      graphics.lineStyle(1, 0x111111, 1);
+      // graphics.lineStyle(1, 0x111111, 1);
       graphics.beginFill(color);
       var offsetX = shapeId >= 3 ? size / 2 : 0;
       graphics.drawRect(offsetX + x * size, idx * (size * 4) + y * size, size, size);
       graphics.endFill();
    }
 
+   /**
+    * 暂存
+    */
    renderHold() {
       var tetris = this.tetris;
       var shape = tetris.saveShape;
@@ -312,18 +397,19 @@ export default class TetrisRender {
          this.drawHoldBlock(shape.shapeId, x, 4 - y, color);
       }
    }
-
    drawHoldBlock(shapeId, x, y, color) {
       var graphics = this.holdGraphic;
       var size = this.smallSize;
-      graphics.lineStyle(1, 0x111111, 1);
+      // graphics.lineStyle(1, 0x111111, 1);
       graphics.beginFill(color);
       var offsetX = shapeId >= 3 ? size / 2 : 0;
       graphics.drawRect(offsetX + x * size, y * size, size, size);
       graphics.endFill();
    }
 
-
+   /**
+    * 数据
+    */
    renderData() {
       this.dataArea.visible = true;
       var tetris = this.tetris;
@@ -333,7 +419,6 @@ export default class TetrisRender {
       this.setText('speed', hostData.time == 0 ? "0.0" : (hostData.count / hostData.time).toFixed(1));
       this.setText('lines', hostData.lines);
    }
-
    setText(dataName, value) {
       var text = this.dataTexts[dataName];
       if (!text) {

@@ -31,8 +31,7 @@ export default class Render {
 
    initMainTetris() {
       var container = new PIXI.Container();
-      container.x = this.renderConfig.width / 2 + 10;
-      container.y = 0;
+      container.x = this.renderConfig.width / 2;
       this.stage.addChild(container);
       this.main = new TetrisRender({
          container: container
@@ -42,9 +41,9 @@ export default class Render {
       if (vertical != this.vertical) {
          this.vertical = vertical;
          if (vertical) {
-            this.main.container.x = 10;
+            this.main.container.x = 0;
          } else {
-            this.main.container.x = this.renderConfig.width / 2 + 10;
+            this.main.container.x = this.renderConfig.width / 2;
          }
       }
    }
@@ -65,6 +64,7 @@ export default class Render {
       // var scale = w / h > 4 / 3 ? h / render.height : w / render.width;
       // this.renderer.resize(render.width * scale, render.height * scale);
       this.stage.scale.x = this.stage.scale.y = scale;
+      this.main.onResize(scale);
    }
    render() {
       // this.renderer.render(this.stage);

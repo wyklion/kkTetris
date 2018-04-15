@@ -42,7 +42,7 @@ const styles = theme => ({
       position: 'absolute',
       width: '55%',
       height: '35%',
-      left: '6%',
+      left: '22%',
       top: '30%',
    },
    singleDiv: {
@@ -51,10 +51,10 @@ const styles = theme => ({
       position: 'absolute',
    },
    singleMenu: {
-      left: '67.5%',
+      left: '85%',
       position: 'absolute',
       top: '70%',
-      width: '30%',
+      width: '10%',
    }
 });
 
