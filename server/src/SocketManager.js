@@ -101,25 +101,23 @@ class SocketManager {
          var session = socket.request.headers.session;
          if (!session || !session.user) return;
          var userId = session.user.id;
-         mongo.find("users", { id: userId }, (result) => {
-            if (result.length > 0) {
+         mongo.findUser(userId, (err, user) => {
+            if (err) {
+               socket.emit('onConnection', { err: '找不到该用户！' });
+               socket.disconnect(true);
+               console.log(userId, 'is not exists...');
+            } else {
                if (this.userManager.has(userId)) {
                   console.log(userId, 'already connected...');
                   socket.emit('onConnection', { err: '该用户已登录！' });
                   socket.disconnect(true);
-                  return;
                } else {
                   console.log(userId, "connected... " + socket.id);
-                  var gameSocket = new GameSocket(this, socket, result[0]);
+                  var gameSocket = new GameSocket(this, socket, user);
                   this.gameSockets.push(gameSocket);
                }
             }
-            else {
-               socket.emit('onConnection', { err: '找不到该用户！' });
-               socket.disconnect(true);
-               console.log(userId, 'is not exists...');
-            }
-         })
+         });
       });
    }
    removeSocket(socket) {

@@ -80,7 +80,7 @@ class Result extends React.Component {
       }
       var classes = this.props.classes;
       var title = '竞速40行';
-      var best = gameManager.user.single40Best;
+      var best = gameManager.user.speed40Best;
       if (data.time < best) {
          best = data.time;
       }

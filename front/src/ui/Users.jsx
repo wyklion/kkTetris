@@ -21,6 +21,15 @@ const styles = theme => ({
 });
 
 class Users extends React.Component {
+   componentDidMount() {
+      gameManager.userManager.updateUsersListeners.add(this.onUpdate);
+   }
+   componentWillUnmount() {
+      gameManager.userManager.updateUsersListeners.remove(this.onUpdate);
+   }
+   onUpdate = () => {
+      this.forceUpdate();
+   }
    makeUsers() {
       const { classes } = this.props;
       var users = gameManager.users;

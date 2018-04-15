@@ -60,6 +60,17 @@ class HeadBar extends React.Component {
       this.setState({ openKeyboard: false })
    }
 
+   /**
+    * 打开个人信息
+    */
+   handleProfile = () => {
+      this.setState({ anchorElUser: null });
+      this.props.onProfile(gameManager.userManager.userId);
+   }
+
+   /**
+    * 退出登录
+    */
    handleLogout = () => {
       this.setState({ anchorEl: null });
       http.get({ url: 'logout' }, (err, result) => {
@@ -129,7 +140,7 @@ class HeadBar extends React.Component {
                         open={Boolean(anchorElUser)}
                         onClose={this.handleCloseUser}
                      >
-                        <MenuItem onClick={this.handleCloseUser}>个人信息</MenuItem>
+                        <MenuItem onClick={this.handleProfile}>个人信息</MenuItem>
                         <MenuItem onClick={this.handleLogout}>退出登录</MenuItem>
                      </Menu>
                   </div>

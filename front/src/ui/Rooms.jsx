@@ -35,7 +35,6 @@ class Rooms extends React.Component {
       gameManager.roomManager.updateRoomsListeners.remove(this.onUpdateRooms);
    }
    onUpdateRooms = () => {
-      console.log("Rooms.jsx update rooms...");
       this.forceUpdate();
    }
    onCreateClick = () => {

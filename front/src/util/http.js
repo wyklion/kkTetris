@@ -23,15 +23,32 @@ http.quest = function (option, callback) {
          }
       }
    };
+   if (method == 'get') {
+      if (typeof data === 'object') {
+         var first = true;
+         for (var k in data) {
+            if (first) {
+               url += '?' + k + '=' + data[k];
+               first = false;
+            } else {
+               url += '&' + k + '=' + data[k];
+            }
+         }
+      }
+   }
    xhr.open(method, url, true);
    xhr.withCredentials = true;
-   if (typeof data === 'object') {
-      xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
-      try {
-         data = JSON.stringify(data);
-      } catch (e) { }
+   if (method == 'post') {
+      if (typeof data === 'object') {
+         xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+         try {
+            data = JSON.stringify(data);
+         } catch (e) { }
+      }
+      xhr.send(data);
+   } else {
+      xhr.send();
    }
-   xhr.send(data);
    xhr.ontimeout = function () {
       callback && callback('timeout');
       console.log('%c连%c接%c超%c时', 'color:red', 'color:orange', 'color:purple', 'color:green');

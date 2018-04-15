@@ -61,8 +61,7 @@ class GameSocket {
       this.chatManager = gameManager.chatManager;
       if (!data.err) {
          // 初始化不触发刷新
-         this.userManager.user = data.user;
-         this.userManager.initUsers(data.users);
+         this.userManager.initUsers(data.user, data.users);
          this.roomManager.initRooms(data.rooms);
          this.chatManager.setMessages(data.chat);
          console.log("login:", data);
@@ -73,9 +72,20 @@ class GameSocket {
          this.connectFailListeners.execute(data.err);
       }
    }
+
+   /**
+    * 聊天
+    */
+   chat(data) {
+      this.socket.emit("chat", data);
+   }
    onChat = (data) => {
       this.chatManager.add(data);
    }
+
+   /**
+    * 大厅信息
+    */
    onLobbyInfo = (data) => {
       if (!data.err) {
          console.log("============== lobbyInfo ===============", data);
@@ -92,6 +102,10 @@ class GameSocket {
       else
          console.log(data.err);
    }
+
+   /**
+    * 房间信息
+    */
    onRoomInfo = (data) => {
       this.roomManager.room = data.room;
       console.log("roomInfo:", this.roomManager.room);
@@ -107,6 +121,17 @@ class GameSocket {
       //else if(!main.game.single && this.roomManager.room.playUsers.length == 1)
       //    main.game.someoneLeft();
    }
+
+   /**
+    * 创建房间
+    */
+   createRoom(func) {
+      // main.spin();
+      if (func) {
+         this.createRoomListeners.add(func, true);
+      }
+      this.socket.emit("createRoom");
+   }
    onCreateRoom = (data) => {
       if (!data.err) {
          this.roomManager.roomId = data.roomId;
@@ -119,6 +144,14 @@ class GameSocket {
          this.createRoomListeners.execute(false);
       }
       // main.stopSpin();
+   }
+
+   /**
+    * 加入房间
+    */
+   joinRoom(roomId, watch) {
+      // main.spin();
+      this.socket.emit("joinRoom", { roomId: roomId, watch: watch });
    }
    onJoinRoom = (data) => {
       if (!data.err) {
@@ -136,6 +169,14 @@ class GameSocket {
          console.log(data.err);
       // main.stopSpin();
    }
+
+   /**
+    * 离开房间
+    */
+   exitRoom() {
+      // main.spin();
+      // this.socket.emit("exitRoom", { watch: main.game.watch });
+   }
    onExitRoom = (data) => {
       if (!data.err) {
          console.log("onExitRoom", this.roomManager.roomId);
@@ -146,6 +187,17 @@ class GameSocket {
       else
          console.log(data.err);
       // main.stopSpin();
+   }
+
+   /**
+    * 游戏操作
+    */
+   operate(oper, data) {
+      var info = { oper: oper };
+      if (data) {
+         info.data = data;
+      }
+      this.socket.emit("operation", info);
    }
    onOperation = (data) => {
       console.log("other operate:", data.oper);
@@ -221,47 +273,26 @@ class GameSocket {
       // }
    }
 
-   chat(data) {
-      this.socket.emit("chat", data);
-   }
-   getRoomOtherUser() {
-      var room = this.roomManager.room;
-      if (!room) return null;
-      if (room.playUsers.length < 2) return null;
-      var otherUser = this.userManager.user.id === room.playUsers[0] ? room.playUsers[1] : room.playUsers[0];
-      return otherUser;
-   }
-   createRoom(func) {
-      // main.spin();
-      if (func) {
-         this.createRoomListeners.add(func, true);
-      }
-      this.socket.emit("createRoom");
-   }
-   joinRoom(roomId, watch) {
-      // main.spin();
-      this.socket.emit("joinRoom", { roomId: roomId, watch: watch });
-   }
-   exitRoom() {
-      // main.spin();
-      // this.socket.emit("exitRoom", { watch: main.game.watch });
-   }
-   operate(oper, data) {
-      var info = { oper: oper };
-      if (data) {
-         info.data = data;
-      }
-      this.socket.emit("operation", info);
-   }
-   single(time) {
-      this.socket.emit("single40", {
+   /**
+    * 竞速40行记录
+    */
+   sendSpeed40(time) {
+      this.socket.emit("speed40", {
          time: time,
       });
    }
+
+   /**
+    * 设置
+    */
    setSetting(setting) {
       this.userManager.user.setting = setting;
       this.socket.emit("setting", { type: "setting", setting: setting });
    }
+
+   /**
+    * 键位设置
+    */
    setKeyboard(keyboard) {
       for (var k in keyboard) {
          this.userManager.user.keyboard[k] = keyboard[k];
@@ -270,6 +301,32 @@ class GameSocket {
       //    main.game.updateInput();
       // }
       this.socket.emit("setting", { type: "keyboard", keyboard: keyboard });
+   }
+
+   /**
+    * 好友
+    */
+   addFriend(friendId, callback) {
+      this.socket.emit('friend', {
+         type: 'add',
+         id: friendId
+      }, (err, result) => {
+         if (!err) {
+            this.userManager.setFriend(result);
+         }
+         callback(err, result);
+      });
+   }
+   removeFriend(friendId, callback) {
+      this.socket.emit('friend', {
+         type: 'remove',
+         id: friendId
+      }, (err, result) => {
+         if (!err) {
+            this.userManager.removeFriend(friendId);
+         }
+         callback(err, result);
+      });
    }
 }
 

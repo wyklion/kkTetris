@@ -12,7 +12,7 @@ export default class SpeedGame extends Game {
    checkOver() {
       if (this.tetris.playData.lines >= this.lineCount) {
          this.tetris.gameOver(true);
-         socket.single(this.tetris.playData.time);
+         socket.sendSpeed40(this.tetris.playData.time);
          return true;
       }
       return false;

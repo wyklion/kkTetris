@@ -21,6 +21,9 @@ const styles = theme => ({
       textAlign: 'center',
       color: theme.palette.text.secondary,
    },
+   hidden: {
+      display: 'none',
+   },
    main: {
       position: 'absolute',
       top: '64px',
@@ -72,9 +75,14 @@ class Main extends React.Component {
 
    componentDidMount() {
       window.addEventListener('resize', this.onResize);
-      gameManager.setRenderDiv(this.refs.canvasDiv);
+      gameManager.render.attach(this.refs.canvasDiv);
       gameManager.main = this;
       this.onResize();
+   }
+
+   componentWillUnmount() {
+      window.removeEventListener('resize', this.onResize);
+      gameManager.render.detach();
    }
 
    /**
@@ -119,7 +127,7 @@ class Main extends React.Component {
    }
 
    onSpeedGame = () => {
-      console.log('single40');
+      console.log('speed40');
       this.setState({ singlePlaying: true, showResult: false });
       gameManager.startSpeedGame();
    }
@@ -153,10 +161,10 @@ class Main extends React.Component {
    }
 
    render() {
-      const { classes } = this.props;
+      const { classes, hidden } = this.props;
       const { vertical, showResult, resultData } = this.state;
       return (
-         <div ref={instance => this.mainDiv = instance} className={classes.main}>
+         <div ref={instance => this.mainDiv = instance} className={hidden ? classes.hidden : classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
                <Lobby ref='lobbyRef' show={!vertical} />
                <Chat ref='chatRef' show={!vertical} />

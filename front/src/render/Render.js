@@ -52,6 +52,9 @@ export default class Render {
       this.div = div;
       div.appendChild(this.renderer.view);
    }
+   detach() {
+      this.renderer.view.parentNode.removeChild(this.renderer.view);
+   }
    onResize = () => {
       var div = this.div;
       var w = div.clientWidth;

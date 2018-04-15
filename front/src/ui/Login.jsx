@@ -23,14 +23,14 @@ const styles = theme => ({
    form: {
       position: 'fixed',
       width: '300px',
-      height: '300px',
+      height: '400px',
       left: '50%',
       top: '50%',
       marginLeft: '-150px',
-      marginTop: '-150px'
+      marginTop: '-200px'
    },
    formLabel: {
-      // color: color[800],
+      color: '#00acc1',
       fontFamily: 'Arial',
       fontWeight: 'bolder',
       textAlign: 'center',
@@ -89,19 +89,23 @@ class Login extends React.Component {
       })
    }
 
+   onLoginUIClick = () => {
+      this.setState({ register: false });
+   }
    onRegisterUIClick = () => {
-      this.setState({ register: true })
+      this.setState({ register: true });
    }
 
    onRegisterClick = () => {
-      var id = this.name.value;
+      var id = this.id.value;
+      var name = this.name.value;
       var pswd = this.password.value;
       var pswd2 = this.password2.value;
       if (pswd != pswd2) {
          alert('两次密码不一致！')
          return;
       }
-      http.post({ url: 'register', data: { id: id, pswd: pswd } }, (err, result) => {
+      http.post({ url: 'register', data: { id: id, name: name, pswd: pswd } }, (err, result) => {
          if (err) {
             alert(err);
          } else {
@@ -177,8 +181,23 @@ class Login extends React.Component {
                control={
                   <Input
                      onKeyDown={this.onKeyDown}
-                     inputRef={(instance) => this.name = instance}
+                     inputRef={(instance) => this.id = instance}
                      placeholder="帐号"
+                     className={classes.input}
+                     inputProps={{
+                        'aria-label': 'Description',
+                     }}
+                  />
+               }
+            />
+            <FormControlLabel
+               key="regesterName"
+               className={classes.controlLabel}
+               control={
+                  <Input
+                     onKeyDown={this.onKeyDown}
+                     inputRef={(instance) => this.name = instance}
+                     placeholder="昵称"
                      className={classes.input}
                      inputProps={{
                         'aria-label': 'Description',
@@ -225,6 +244,14 @@ class Login extends React.Component {
                variant="raised"
                color="primary">
                注册
+            </Button>
+            <Button
+               key="registerUIButton"
+               color="primary"
+               className={classes.button}
+               onClick={this.onLoginUIClick}
+            >
+               登录
             </Button>
          </FormControl>
       )

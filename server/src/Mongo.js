@@ -6,10 +6,11 @@ var MongoClient = require('mongodb').MongoClient;
 var url = 'mongodb://localhost:27017/tetris';
 
 var Mongo = function (callback) {
-   var _this = this;
-   MongoClient.connect(url, function (err, db) {
+   MongoClient.connect(url, (err, db) => {
       console.log("连接成功！");
-      _this.db = db.db("tetris");
+      this.db = db.db("tetris");
+      // 重启更新表，仅需一次。
+      // this.refreshUser();
       if (callback)
          callback();
    });
@@ -19,6 +20,114 @@ Mongo.prototype = {
    onOpen: function () {
 
    },
+   createNewUser: function (userId, name, password, callback) {
+      this.insertOne("users", {
+         id: userId, // 帐号
+         nick: name, // 昵称
+         password: password, // 密码
+         sign: '', // 签名
+         // 对战信息
+         level: 0, // 等级
+         score: 0, // 分数
+         win: 0, // 胜
+         lose: 0, // 负
+         disconnect: 0, // 掉线
+         // 单人信息
+         speed40Times: 0, // 40行次数
+         speed40Best: 1000, // 40行最佳
+         // 好友
+         friends: [],
+         // 个人设置
+         keyboard: {
+            // left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 150, moveDelay: 30,
+            left: 37, right: 39, down: 32, drop: 40, rotate: 38, rotateRight: null, rotate180: null, hold: null, dasDelay: 150, moveDelay: 30,
+         },
+         setting: {
+            theme: 0,
+         }
+      }, function (err, result) {
+         if (callback) callback(err, result);
+      })
+   },
+   /**
+    * 更新用户表，仅需一次
+    */
+   refreshUser: function (userId) {
+      var c = this.db.collection("users");
+      c.updateMany({ "friends": { $exists: true } }, { $set: { "friends": {} } }, function (err, res) {
+         if (err) {
+            console.log(err);
+         } else {
+            console.log(res.result.nModified + " 条用户记录被更新");
+         }
+      });
+   },
+   /**
+    * 查找用户
+    */
+   findUser: function (userId, callback) {
+      this.findOne('users', { id: userId }, callback);
+   },
+   getUserInfo: function (userId, callback) {
+
+   },
+   /**
+    * 好友
+    */
+   addFriend: function (userId, friendId, callback) {
+      this.findUser(friendId, (err, friend) => {
+         if (err) {
+            callback('找不到好友！');
+         } else {
+            this.findUser(userId, (err, user) => {
+               if (err) {
+                  callback('找不到用户！');
+               } else {
+                  if (user.friends[friendId]) {
+                     callback('已经是好友了！');
+                  } else {
+                     var newFriend = { id: friendId, nick: friend.nick };
+                     user.friends[friendId] = newFriend;
+                     this.updateOne('users', { id: userId }, { friends: user.friends }, (err, result) => {
+                        if (err) {
+                           callback('添加好友出错');
+                        } else {
+                           callback(null, newFriend);
+                        }
+                     });
+                  }
+               }
+            });
+         }
+      });
+   },
+   removeFriend: function (userId, friendId, callback) {
+      this.findUser(friendId, (err, friend) => {
+         if (err) {
+            callback('好友不存在！');
+         } else {
+            this.findUser(userId, (err, user) => {
+               if (err) {
+                  callback('找不到用户！');
+               } else {
+                  if (!user.friends[friendId]) {
+                     callback('没有这个好友！');
+                  } else {
+                     delete user.friends[friendId];
+                     this.updateOne('users', { id: userId }, { friends: user.friends }, (err, result) => {
+                        if (err) {
+                           callback('删除好友出错');
+                        } else {
+                           callback(null, friendId);
+                        }
+                     });
+                  }
+               }
+            });
+         }
+      });
+   },
+
    findOption: function (collection, query, options, callback) {
       var c = this.db.collection(collection);
       c.find(query, options).toArray(function (err, result) {
@@ -48,22 +157,20 @@ Mongo.prototype = {
             callback(result);
       });
    },
-   createNewUser: function (userId, password, callback) {
-      this.insertOne("users", {
-         id: userId, nick: userId, password: password,
-         level: 0, score: 0,
-         win: 0, lose: 0, disconnect: 0,
-         single40Times: 0, single40Best: 999,
-         keyboard: {
-            // left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 150, moveDelay: 30,
-            left: 37, right: 39, down: 32, drop: 40, rotate: 38, rotateRight: null, rotate180: null, hold: null, dasDelay: 150, moveDelay: 30,
-         },
-         setting: {
-            theme: 0,
+   findOne: function (collection, query, callback) {
+      var c = this.db.collection(collection);
+      c.find(query).toArray(function (err, result) {
+         if (err) {
+            callback(err);
          }
-      }, function (err, result) {
-         if (callback) callback(err, result);
-      })
+         else {
+            if (result.length > 0) {
+               callback(null, result[0]);
+            } else {
+               callback('find nothing');
+            }
+         }
+      });
    },
    insertOne: function (collection, doc, callback) {
       var c = this.db.collection(collection);
@@ -80,6 +187,12 @@ Mongo.prototype = {
    updateOne: function (collection, query, doc, callback) {
       var c = this.db.collection(collection);
       c.updateOne(query, { $set: doc }, function (err, result) {
+         if (callback) callback(err, result);
+      });
+   },
+   updateAddToSet: function (collection, query, doc, callback) {
+      var c = this.db.collection(collection);
+      c.updateOne(query, { $addToSet: doc }, function (err, result) {
          if (callback) callback(err, result);
       });
    },

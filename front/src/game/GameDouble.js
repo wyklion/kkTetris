@@ -194,7 +194,7 @@ export default class GameDouble extends Game {
          if (this.single) {
             if (this.tetris.playData.lines >= 40) {
                this.tetris.gameOver();
-               socket.single(this.tetris.playData.time);
+               socket.sendSpeed40(this.tetris.playData.time);
                return;
             }
          }

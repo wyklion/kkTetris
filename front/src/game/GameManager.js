@@ -68,15 +68,20 @@ class GameManager {
          this.updateFuncs.splice(idx, 1);
       }
    }
-   setRenderDiv(div) {
-      this.render.attach(div);
-   }
    reset() {
       if (this.game) {
          this.game.dispose();
          this.game = null;
       }
    }
+   /**
+    * 登出处理
+    */
+   logout() {
+      this.logined = false;
+      this.reset();
+   }
+
    /**
     * 房间信息
     */
@@ -101,6 +106,18 @@ class GameManager {
    get userId() {
       return this.userManager.userId;
    }
+
+   /**
+    * 获取房间另一个玩家
+    */
+   getRoomOtherUser() {
+      var room = this.roomManager.room;
+      if (!room) return null;
+      if (room.playUsers.length < 2) return null;
+      var otherUser = this.userManager.user.id === room.playUsers[0] ? room.playUsers[1] : room.playUsers[0];
+      return otherUser;
+   }
+
    /**
     * 更新键位
     */

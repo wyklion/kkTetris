@@ -38,9 +38,10 @@ class GameSocket {
       socket.on('exitRoom', this.onExitRoom.bind(this));
       socket.on('operation', this.onPlaying.bind(this));
 
-      socket.on('single40', this.onSingle.bind(this));
+      socket.on('speed40', this.onSpeed.bind(this));
       socket.on('setting', this.onSetting.bind(this));
       socket.on('chat', this.onChat.bind(this));
+      socket.on('friend', this.onFriend.bind(this));
 
       // 通知
       socket.emit('onConnection', { err: null, user: user, users: this.userManager.getUsers(), rooms: this.roomManager.getRooms(), chat: this.chatManager.getMessages() });
@@ -144,10 +145,10 @@ class GameSocket {
          this.roomManager.userReady(socket);
       }
    }
-   onSingle(data) {
+   onSpeed(data) {
       var socket = this.socket;
-      mongo.updateAddValue("users", { id: this.userId }, { single40Times: 1 });
-      mongo.updateOne("users", { id: this.userId, single40Best: { "$gt": data.time } }, { single40Best: data.time });
+      mongo.updateAddValue("users", { id: this.userId }, { speed40Times: 1 });
+      mongo.updateOne("users", { id: this.userId, speed40Best: { "$gt": data.time } }, { speed40Best: data.time });
    }
    onSetting(data) {
       var socket = this.socket;
@@ -167,6 +168,20 @@ class GameSocket {
          data.user = this.userId;
          this.chatManager.add(data);
          this.io.emit("chat", data);
+      }
+   }
+   /**
+    * 好友
+    */
+   onFriend(data, callback) {
+      if (data.type === 'add') {
+         if (this.userId == data.id) {
+            callback('不能加自己为好友！');
+         } else {
+            mongo.addFriend(this.userId, data.id, callback);
+         }
+      } else if (data.type === 'remove') {
+         mongo.removeFriend(this.userId, data.id, callback);
       }
    }
 }
