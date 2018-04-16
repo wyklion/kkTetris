@@ -79,27 +79,27 @@ class Profile extends React.Component {
                >
                   返回
                </Button>
-               <Typography variant="headline" color="inherit" className={classes.title}>
+               <Typography variant="headline" className={classes.title}>
                   玩家信息
                </Typography>
-               <Typography variant="subheading" color="inherit" className={classes.item}>
+               <Typography variant="subheading" className={classes.item}>
                   帐号： {user.id}
                </Typography>
-               <Typography variant="subheading" color="inherit" className={classes.item}>
+               <Typography variant="subheading" className={classes.item}>
                   昵称： {user.nick}
                </Typography>
-               <Typography variant="subheading" color="inherit" className={classes.item}>
+               <Typography variant="subheading" className={classes.item}>
                   签名： {user.sign}
                </Typography>
             </div>
             <div className={classes.statsDiv} >
-               <Typography variant="headline" color="inherit" className={classes.title}>
+               <Typography variant="headline" className={classes.title}>
                   游戏信息
                </Typography>
-               <Typography variant="subheading" color="inherit" className={classes.item}>
+               <Typography variant="subheading" className={classes.item}>
                   竞速40行次数： {speed40Times}
                </Typography>
-               <Typography variant="subheading" color="inherit" className={classes.item}>
+               <Typography variant="subheading" className={classes.item}>
                   竞速40行最佳： {speed40Best}
                </Typography>
             </div>

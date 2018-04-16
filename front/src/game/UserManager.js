@@ -65,6 +65,10 @@ export default class UserManager {
     * 更新好友
     */
    setFriend(friend) {
+      if (!friend) {
+         // 补加好友时会出现
+         return;
+      }
       this.user.friends[friend.id] = friend;
       this.updateUserCount();
    }

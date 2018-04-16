@@ -83,10 +83,14 @@ Mongo.prototype = {
                if (err) {
                   callback('找不到用户！');
                } else {
-                  if (user.friends[friendId]) {
+                  if (user.friends[friendId] && friend.friends[userId]) {
                      callback('已经是好友了！');
-                  } else {
-                     var newFriend = { id: friendId, nick: friend.nick };
+                  }
+                  var newFriend;
+                  var add1 = false;
+                  if (!user.friends[friendId]) {
+                     add1 = true;
+                     newFriend = { id: friendId, nick: friend.nick };
                      user.friends[friendId] = newFriend;
                      this.updateOne('users', { id: userId }, { friends: user.friends }, (err, result) => {
                         if (err) {
@@ -96,10 +100,27 @@ Mongo.prototype = {
                         }
                      });
                   }
+                  if (!friend.friends[userId]) {
+                     // 把自己加成对方好友
+                     friend.friends[userId] = { id: userId, nick: user.nick };
+                     this.updateOne('users', { id: friendId }, { friends: friend.friends }, (err, result) => {
+                        // 第一条没执行的时候由这条返回
+                        if (!add1) {
+                           if (err) {
+                              callback('添加好友出错');
+                           } else {
+                              callback(null, null);
+                           }
+                        }
+                     });
+                  }
                }
             });
          }
       });
+   },
+   checkAddFinish: function () {
+
    },
    removeFriend: function (userId, friendId, callback) {
       this.findUser(friendId, (err, friend) => {

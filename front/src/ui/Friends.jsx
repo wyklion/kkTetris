@@ -113,7 +113,11 @@ class Friends extends React.Component {
                alert(err);
             } else {
                this.handleCloseAdd();
-               console.log('加好友成功:', friend);
+               if (friend) {
+                  console.log('加好友成功:', friend);
+               } else {
+                  console.log('互补好友成功:');
+               }
             }
          });
       }

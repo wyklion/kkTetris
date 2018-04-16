@@ -61,11 +61,19 @@ class HeadBar extends React.Component {
    }
 
    /**
+    * 排行榜
+    */
+   handleRank = () => {
+      this.setState({ anchorElSetting: null });
+      gameManager.app.onRank();
+   }
+
+   /**
     * 打开个人信息
     */
    handleProfile = () => {
       this.setState({ anchorElUser: null });
-      this.props.onProfile(gameManager.userManager.userId);
+      gameManager.app.onProfile(gameManager.userManager.userId);
    }
 
    /**
@@ -110,8 +118,8 @@ class HeadBar extends React.Component {
                      open={Boolean(anchorElSetting)}
                      onClose={this.handleCloseSetting}
                   >
-                     <MenuItem onClick={this.handleCloseSetting}>设置</MenuItem>
-                     <MenuItem onClick={this.handleKeyboardSetting}>键盘</MenuItem>
+                     <MenuItem onClick={this.handleKeyboardSetting}>键盘设置</MenuItem>
+                     <MenuItem onClick={this.handleRank}>排行榜</MenuItem>
                   </Menu>
                   <Typography variant="title" color="inherit" className={classes.flex}>
                      KK俄罗斯方块

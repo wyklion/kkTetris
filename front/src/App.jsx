@@ -11,6 +11,7 @@ import http from './util/http';
 import socket from './socket/GameSocket';
 import Main from './ui/Main';
 import Profile from './ui/Profile';
+import Rank from './ui/Rank';
 import theme from './ui/Theme';
 import gameManager from './game/GameManager';
 
@@ -26,6 +27,7 @@ class App extends Component {
       checked: false, // 检查登录
       logined: false, // 是否登录
       profile: null, // 个人信息页面
+      rank: false, // 排行榜
    }
 
    constructor(props) {
@@ -94,10 +96,20 @@ class App extends Component {
     * 玩家信息页面
     */
    onProfile = (userId) => {
-      this.setState({ profile: userId });
+      this.setState({ profile: userId, rank: null });
    }
    onCloseProfile = () => {
-      this.setState({ profile: null });
+      this.setState({ profile: null, rank: null });
+   }
+
+   /**
+    * 排行榜
+    */
+   onRank = () => {
+      this.setState({ rank: true, profile: null });
+   }
+   onCloseRank = () => {
+      this.setState({ rank: null, profile: null });
    }
 
    render() {
@@ -119,9 +131,10 @@ class App extends Component {
       } else {
          ui = (
             <div style={classes.bg} className="App">
-               <HeadBar onLogout={this.onLogout} onProfile={this.onProfile} />
-               <Main hidden={state.profile} onProfile={this.onProfile} />
+               <HeadBar onLogout={this.onLogout} />
+               <Main hidden={state.profile || state.rank} />
                {state.profile && <Profile userId={state.profile} onReturn={this.onCloseProfile} />}
+               {state.rank && <Rank onReturn={this.onCloseRank} />}
             </div>
          )
       }

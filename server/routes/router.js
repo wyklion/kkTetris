@@ -83,6 +83,16 @@ router.get("/userInfo", function (req, res) {
    })
 });
 
+/**
+ * 排行榜
+ */
+router.route("/rank").get(function (req, res) {
+   mongo.findOption("users", { speed40Best: { $lt: 999 } }, {
+      fields: ["id", "nick", "speed40Best"], limit: 100, sort: { "speed40Best": 1 }
+   }, function (result) {
+      res.send({ result: result });
+   });
+});
 
 //kk admin
 router.route("/admin").get(function (req, res) {
@@ -108,14 +118,5 @@ router.route("/admin").get(function (req, res) {
    });
 });
 
-//normal query
-router.route("/rank").post(function (req, res) {
-   mongo.findOption("users", {}, {
-      fields: ["id", "speed40Best"], limit: 100, sort: { "speed40Best": 1 }
-   }, function (result) {
-      res.send(result);
-      res.status(200);
-   });
-});
 
 module.exports = router;
