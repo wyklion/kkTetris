@@ -3,10 +3,11 @@ import { createMuiTheme } from 'material-ui/styles';
 
 const theme = createMuiTheme({
    palette: {
-      common: {
-         black: "#000",
-         white: "#aaa",
-      },
+      type: 'dark',
+      // common: {
+      //    black: "#000",
+      //    white: "#aaa",
+      // },
       primary: {
          main: '#00acc1',
          // light: '#5ddef4',
@@ -19,10 +20,10 @@ const theme = createMuiTheme({
          // dark: '#b91400',
          contrastText: '#ffee58',
       },
-      background: {
-         paper: "#dddddd",
-         default: "#666666",
-      }
+      // background: {
+      //    paper: "#dddddd",
+      //    default: "#666666",
+      // }
    },
    status: {
       danger: 'orange',

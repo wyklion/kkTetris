@@ -18,7 +18,7 @@ export default class Render {
       renderer.view.style.position = 'absolute';
       renderer.view.style.display = 'block';
       renderer.view.style.zIndex = -1;
-      renderer.backgroundColor = 0x666666;
+      renderer.backgroundColor = 0x1E1E1E;
       this.initMainTetris();
    }
    get renderConfig() {

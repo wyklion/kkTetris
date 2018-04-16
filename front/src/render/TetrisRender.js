@@ -5,48 +5,30 @@
 import * as PIXI from 'pixi.js'
 import config from '../config';
 
-// var layout = {
-//    tetris: {
-//       x: 10,
-//       y: 20,
-//    },
-//    next: {
-//       x: 320,
-//       y: 20,
-//    },
-//    hold: {
-//       x: 410,
-//       y: 20,
-//    },
-//    data: {
-//       x: 320,
-//       y: 260,
-//    }
-// }
 var layout = {
    tetris: {
-      x: 85,
+      x: 79,
       y: 10,
    },
    next: {
-      x: 390,
+      x: 382,
       y: 10,
    },
    hold: {
-      x: 5,
+      x: 2,
       y: 10,
    },
    data: {
       x: 385,
-      y: 250,
+      y: 280,
    }
 }
 
-var bgColor = 0x333333;
-var bgBorderColor = 0x111111;
-var bgLineColor = 0x666666;
-var shadowColor = 0x777777;
-var deadColor = 0x777777;
+var bgColor = 0x111111;
+var bgBorderColor = 0x555555;
+var bgLineColor = 0x333333;
+var shadowColor = 0x444444;
+var deadColor = 0x444444;
 // var colors = [
 //    0x00FFFF, // 'cyan'
 //    0xFFFF00, // 'yellow'
@@ -63,7 +45,16 @@ var colors = [
    0xE35B02, // L
    0x2141C6, // J
    0xD70F37, // Z
-   0x59B101,// S
+   0x59B101, // S
+];
+var colors2 = [
+   0x074D6B, // I
+   0x714F01, // O
+   0x4E1445, // T
+   0x712D01, // L
+   0x102063, // J
+   0x6B071B, // Z
+   0x2C5800, // S
 ];
 
 
@@ -74,7 +65,8 @@ export default class TetrisRender {
       this.container = options.container;
       this.setTetris(options.tetris);
       this.baseSize = options.baseSize || 30;
-      this.smallSize = this.baseSize * 0.6;
+      this.nextSize = this.baseSize * 0.8;
+      this.holdSize = this.baseSize * 0.6;
       this.displayNext = options.displayNext == null ? true : options.displayNext;
 
       this.init();
@@ -169,7 +161,7 @@ export default class TetrisRender {
          stroke: '#FFFFFF',
          strokeThickness: 6
       });
-      nextText.x = 10;
+      nextText.x = 20;
       nextText.scale.set(0.5, 0.5);
       na.addChild(nextText);
       this.nextText.visible = false;
@@ -230,14 +222,14 @@ export default class TetrisRender {
       ]
       var labelStyle = {
          fontWeight: 'bold',
-         fontSize: 12 * 2,
+         fontSize: 15 * 2,
          fontFamily: 'Arial',
          align: 'center',
-         fill: '#111111',
+         fill: '#777777',
       };
       var dataStyle = {
          fontWeight: 'bold',
-         fontSize: 15 * 2,
+         fontSize: 18 * 2,
          fontFamily: 'Arial',
          align: 'center',
          fill: '#DDDDDD',
@@ -245,14 +237,14 @@ export default class TetrisRender {
       this.dataTexts = {};
       for (var i = 0; i < datasOptions.length; i++) {
          var label = new PIXI.Text(datasOptions[i].label, labelStyle);
-         label.x = 10;
-         label.y = 30 + i * 50;
+         label.x = 5;
+         label.y = 30 + i * 40;
          label.scale.set(0.5, 0.5);
          da.addChild(label);
          var dataText = this.dataTexts[datasOptions[i].name] = new PIXI.Text(datasOptions[i].value, dataStyle);
-         dataText.x = 40;
-         dataText.y = 30 + i * 50 - 1;
-         dataText.scale.set(0.5, 0.5);
+         dataText.x = 44;
+         dataText.y = 30 + i * 40 - 3;
+         dataText.scale.set(0.6, 0.6);
          da.addChild(dataText);
       }
    }
@@ -284,7 +276,7 @@ export default class TetrisRender {
    /**
     * 方块区的一块
     */
-   drawTetrisBlock(x, y, color, noLine) {
+   drawTetrisBlock(x, y, color) {
       var graphics = this.tetrisGraphic;
       // if (noLine) {
       //    graphics.lineStyle(0);
@@ -344,7 +336,7 @@ export default class TetrisRender {
       var py;
       var color;
       if (shadow) {
-         color = shadowColor;
+         color = shadowColor; // tetris.playing ? colors2[shape.shapeId - 1] : deadColor;
          py = shape.shadowY;
       }
       else {
@@ -356,7 +348,7 @@ export default class TetrisRender {
          var y = py + shape.shapeModel.cells[shape.rotation][i * 2 + 1];
          if (x < 0 || x >= tetris.col || y < 0 || y >= tetris.row)
             continue;
-         this.drawTetrisBlock(x, tetris.row - 1 - y, color, shadow);
+         this.drawTetrisBlock(x, tetris.row - 1 - y, color);
       }
    }
 
@@ -382,11 +374,11 @@ export default class TetrisRender {
 
    drawNextBlock(idx, shapeId, x, y, color) {
       var graphics = this.nextGraphic;
-      var size = this.smallSize;
+      var size = this.nextSize;
       // graphics.lineStyle(1, 0x111111, 1);
       graphics.beginFill(color);
       var offsetX = shapeId >= 3 ? size / 2 : 0;
-      graphics.drawRect(offsetX + x * size, idx * (size * 4) + y * size, size, size);
+      graphics.drawRect(offsetX + x * size, -10 + idx * (size * 3.5) + y * size, size, size);
       graphics.endFill();
    }
 
@@ -408,7 +400,7 @@ export default class TetrisRender {
    }
    drawHoldBlock(shapeId, x, y, color) {
       var graphics = this.holdGraphic;
-      var size = this.smallSize;
+      var size = this.holdSize;
       // graphics.lineStyle(1, 0x111111, 1);
       graphics.beginFill(color);
       var offsetX = shapeId >= 3 ? size / 2 : 0;

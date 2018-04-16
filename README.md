@@ -28,6 +28,9 @@ yum install -y mongodb-org
 vi /etc/mongod.conf
 创建目录data/db。
 ```
+```
+db.users.update({},{$set:{'keyboard.downDelay':20}},{multi:true})
+```
 
 ### git
 ```

@@ -133,6 +133,7 @@ class KeyboardSetting extends React.Component {
          settingKey: null,
          dasDelay: this.keyboard.dasDelay,
          moveDelay: this.keyboard.moveDelay,
+         downDelay: this.keyboard.downDelay,
       }
    }
 
@@ -144,6 +145,7 @@ class KeyboardSetting extends React.Component {
                settingKey: null,
                dasDelay: this.keyboard.dasDelay,
                moveDelay: this.keyboard.moveDelay,
+               downDelay: this.keyboard.downDelay,
             });
          }
          this.open = props.open;
@@ -158,6 +160,7 @@ class KeyboardSetting extends React.Component {
       }
       this.keyboard.dasDelay = keyboard.dasDelay;
       this.keyboard.moveDelay = keyboard.moveDelay;
+      this.keyboard.downDelay = keyboard.downDelay;
    }
 
    handleClose = () => {
@@ -171,6 +174,9 @@ class KeyboardSetting extends React.Component {
       var moveDelay = parseInt(this.state.moveDelay);
       if (moveDelay < 0) moveDelay = 0; else if (moveDelay > 500) moveDelay = 500;
       this.keyboard.moveDelay = moveDelay;
+      var downDelay = parseInt(this.state.downDelay);
+      if (downDelay < 0) downDelay = 0; else if (downDelay > 500) downDelay = 500;
+      this.keyboard.downDelay = downDelay;
       socket.setKeyboard(this.keyboard);
       this.props.close();
       gameManager.updateKeyboard();
@@ -254,6 +260,22 @@ class KeyboardSetting extends React.Component {
                         }
                         value={this.state.moveDelay}
                         onChange={this.handleChange('moveDelay')}
+                        type="number"
+                     />
+                  </TableCell>
+               </TableRow>
+               <TableRow>
+                  <TableCell>软降延时(0~500ms)</TableCell>
+                  <TableCell>
+                     <Input
+                        inputProps={
+                           {
+                              min: 0,
+                              max: 500
+                           }
+                        }
+                        value={this.state.downDelay}
+                        onChange={this.handleChange('downDelay')}
                         type="number"
                      />
                   </TableCell>

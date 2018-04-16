@@ -30,7 +30,7 @@ export default class GameDouble extends Game {
    input() {
       var keyboard = gameManager.user.keyboard;
       if (!keyboard) {
-         keyboard = { left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 150, moveDelay: 30 };
+         keyboard = { left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 120, moveDelay: 20, downDelay: 20 };
       }
       var _this = this;
       this.keyManager = new KeyManager({

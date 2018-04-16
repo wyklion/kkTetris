@@ -13,6 +13,7 @@ export default class KeyManager {
       var keyboard = options.keyboard;
       this.dasDelay = keyboard.dasDelay;
       this.moveDelay = keyboard.moveDelay;
+      this.downDelay = keyboard.downDelay;
       this.leftKey = keyboard.left;
       this.leftFunc = options.leftFunc;
       this.leftEndFunc = options.leftEndFunc;
@@ -35,7 +36,11 @@ export default class KeyManager {
 
       this.left = new KeyState(this, this.leftFunc, this.leftEndFunc);
       this.right = new KeyState(this, this.rightFunc, this.rightEndFunc);
-      this.down = new KeyState(this, this.downFunc, this.downEndFunc);
+      this.down = new KeyState(this, this.downFunc, this.downEndFunc, true);
+      this.drop = new KeyState(this, this.dropFunc, null, false, true);
+      this.rotate = new KeyState(this, this.rotateFunc, null, false, true);
+      this.rotateRight = new KeyState(this, this.rotateRightFunc, null, false, true);
+      this.rotate180 = new KeyState(this, this.rotate180Func, null, false, true);
    }
    onKeyDown(key) {
       var leftright = false;
@@ -53,16 +58,16 @@ export default class KeyManager {
          this.down.keyDown();
       }
       else if (key === this.dropKey) {
-         this.dropFunc();
+         this.drop.keyDown();
       }
       else if (key === this.rotateKey) {
-         this.rotateFunc();
+         this.rotate.keyDown();
       }
       else if (key === this.rotateRightKey) {
-         this.rotateRightFunc();
+         this.rotateRight.keyDown();
       }
       else if (key === this.rotate180Key) {
-         this.rotate180Func();
+         this.rotate180.keyDown();
       }
       else if (key === this.holdKey) {
          this.holdFunc();
@@ -82,6 +87,18 @@ export default class KeyManager {
       else if (key === this.downKey) {
          this.down.keyUp();
       }
+      else if (key === this.dropKey) {
+         this.drop.keyUp();
+      }
+      else if (key === this.rotateKey) {
+         this.rotate.keyUp();
+      }
+      else if (key === this.rotateRightKey) {
+         this.rotateRight.keyUp();
+      }
+      else if (key === this.rotate180Key) {
+         this.rotate180.keyUp();
+      }
    }
    updateInput() {
       var keyboard = gameManager.user.keyboard;
@@ -97,6 +114,7 @@ export default class KeyManager {
 
       this.dasDelay = keyboard.dasDelay;
       this.moveDelay = keyboard.moveDelay;
+      this.downDelay = keyboard.downDelay;
    }
    stop() {
       this.left.stop();

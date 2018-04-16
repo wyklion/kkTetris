@@ -1,9 +1,10 @@
 
 export default class KeyState {
-   constructor(manager, func, endFunc, isDown) {
+   constructor(manager, func, endFunc, isDown, noDas) {
       this.manager = manager;
       this.func = func;
       this.endFunc = endFunc;
+      this.noDas = noDas;
       this.isDown = isDown;
       this.press = false;
       this.das = false;
@@ -13,23 +14,28 @@ export default class KeyState {
    keyDown() {
       if (!this.press) {
          this.press = true;
-         this.lastTime = Date.now();
-         this.time = 0;
          //console.log("press");
          this.func();
-         if (!this.isDown) {
+         if (this.noDas) {
+            return;
+         }
+         if (this.isDown) {
+            this.moveCall(this.manager.downDelay)
+         } else {
             this.dasHandle = setTimeout(this.dasCall, this.manager.dasDelay);
          }
       }
    }
    dasCall = () => {
       this.das = true;
-      var moveDelay = this.manager.moveDelay;
-      if (moveDelay === 0) {
+      this.moveCall(this.manager.moveDelay);
+   }
+   moveCall(delay) {
+      if (delay === 0) {
          this.endFunc();
       } else {
          this.func();
-         this.moveHandle = setInterval(this.func, moveDelay);
+         this.moveHandle = setInterval(this.func, delay);
       }
    }
    keepDown() {
@@ -39,8 +45,10 @@ export default class KeyState {
    }
    keyUp() {
       this.press = false;
-      this.das = false;
-      this.stop();
+      if (!this.noDas) {
+         this.das = false;
+         this.stop();
+      }
    }
    stop() {
       if (this.dasHandle) {

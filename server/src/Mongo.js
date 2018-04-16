@@ -39,8 +39,8 @@ Mongo.prototype = {
          friends: [],
          // 个人设置
          keyboard: {
-            // left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 150, moveDelay: 30,
-            left: 37, right: 39, down: 32, drop: 40, rotate: 38, rotateRight: null, rotate180: null, hold: null, dasDelay: 150, moveDelay: 30,
+            // left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 120, moveDelay: 20, downDelay: 20
+            left: 37, right: 39, down: 32, drop: 40, rotate: 38, rotateRight: null, rotate180: null, hold: null, dasDelay: 120, moveDelay: 20, downDelay: 20
          },
          setting: {
             theme: 0,
