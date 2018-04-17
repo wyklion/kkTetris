@@ -12,6 +12,7 @@ import Menu, { MenuItem } from 'material-ui/Menu';
 import KeyboardSetting from './KeyboardSetting';
 import http from '../util/http';
 import gameManager from '../game/GameManager';
+import lang from '../util/lang';
 
 const styles = {
    root: {
@@ -50,6 +51,17 @@ class HeadBar extends React.Component {
       this.setState({ anchorElUser: null });
    };
 
+   /**
+    * 语言切换
+    */
+   handleSwitchLang = () => {
+      if (lang.isEn()) {
+         gameManager.changeLang(0);
+      } else {
+         gameManager.changeLang(1);
+      }
+      this.setState({ anchorElSetting: null });
+   }
    /**
     * 键盘设置
     */
@@ -118,11 +130,12 @@ class HeadBar extends React.Component {
                      open={Boolean(anchorElSetting)}
                      onClose={this.handleCloseSetting}
                   >
-                     <MenuItem onClick={this.handleKeyboardSetting}>键盘设置</MenuItem>
-                     <MenuItem onClick={this.handleRank}>排行榜</MenuItem>
+                     <MenuItem onClick={this.handleKeyboardSetting}>{lang.get('Keyboard Setting')}</MenuItem>
+                     <MenuItem onClick={this.handleRank}>{lang.get('Leader Board')}</MenuItem>
+                     <MenuItem onClick={this.handleSwitchLang}>{lang.isEn() ? '切换至中文' : 'Switch To English'}</MenuItem>
                   </Menu>
                   <Typography variant="title" color="inherit" className={classes.flex}>
-                     KK俄罗斯方块
+                     {lang.get('KK Tetris')}
                   </Typography>
                   <div>
                      <span>{gameManager.user.nick}</span>
@@ -148,8 +161,8 @@ class HeadBar extends React.Component {
                         open={Boolean(anchorElUser)}
                         onClose={this.handleCloseUser}
                      >
-                        <MenuItem onClick={this.handleProfile}>个人信息</MenuItem>
-                        <MenuItem onClick={this.handleLogout}>退出登录</MenuItem>
+                        <MenuItem onClick={this.handleProfile}>{lang.get('Profile')}</MenuItem>
+                        <MenuItem onClick={this.handleLogout}>{lang.get('Logout')}</MenuItem>
                      </Menu>
                   </div>
                </Toolbar>

@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { withStyles } from 'material-ui/styles';
 import { MuiThemeProvider } from 'material-ui/styles';
 // import Button from 'material-ui/Button';
 // import teal from 'material-ui/colors/teal';
@@ -14,15 +16,16 @@ import Profile from './ui/Profile';
 import Rank from './ui/Rank';
 import theme from './ui/Theme';
 import gameManager from './game/GameManager';
+import lang from './util/lang';
 
-const classes = {
+const styles = {
    bg: {
       // backgroundColor: color[900],
       width: '100%',
       height: '100%',
    }
 }
-class App extends Component {
+class App extends React.Component {
    state = {
       checked: false, // 检查登录
       logined: false, // 是否登录
@@ -69,7 +72,7 @@ class App extends Component {
     * socket连接成功
     */
    onSocketConnect = () => {
-      gameManager.logined = true;
+      gameManager.login();
       this.setState({ checked: true, logined: true });
       socket.onConnect = null;
    }
@@ -124,13 +127,13 @@ class App extends Component {
       var ui;
       if (!logined) {
          ui = (
-            <div style={classes.bg}>
+            <div className={styles.bg}>
                <Login onLogin={this.onLogin} />
             </div>
          )
       } else {
          ui = (
-            <div style={classes.bg} className="App">
+            <div className='App'>
                <HeadBar onLogout={this.onLogout} />
                <Main hidden={state.profile || state.rank} />
                {state.profile && <Profile userId={state.profile} onReturn={this.onCloseProfile} />}
@@ -146,4 +149,8 @@ class App extends Component {
    }
 }
 
-export default App;
+App.propTypes = {
+   classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(App);

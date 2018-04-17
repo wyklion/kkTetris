@@ -126,7 +126,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.name = instance}
-                     placeholder="帐号"
+                     placeholder="ID"
                      className={classes.input}
                      inputProps={{
                         'aria-label': 'Description',
@@ -141,7 +141,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.password = instance}
-                     placeholder="密码"
+                     placeholder="Password"
                      type="password"
                      className={classes.input}
                      inputProps={{
@@ -156,7 +156,7 @@ class Login extends React.Component {
                onClick={this.onLoginClick}
                variant="raised"
                color="primary">
-               登录
+               登录Login
             </Button>
             <Button
                key="registerUIButton"
@@ -164,7 +164,7 @@ class Login extends React.Component {
                className={classes.button}
                onClick={this.onRegisterUIClick}
             >
-               注册
+               注册Register
             </Button>
          </FormControl>
       )
@@ -182,7 +182,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.id = instance}
-                     placeholder="帐号"
+                     placeholder="ID"
                      className={classes.input}
                      inputProps={{
                         'aria-label': 'Description',
@@ -197,7 +197,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.name = instance}
-                     placeholder="昵称"
+                     placeholder="Nickname"
                      className={classes.input}
                      inputProps={{
                         'aria-label': 'Description',
@@ -212,7 +212,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.password = instance}
-                     placeholder="密码"
+                     placeholder="Password"
                      type="password"
                      className={classes.input}
                      inputProps={{
@@ -228,7 +228,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.password2 = instance}
-                     placeholder="重复密码"
+                     placeholder="Repeat Password"
                      type="password"
                      className={classes.input}
                      inputProps={{
@@ -243,7 +243,7 @@ class Login extends React.Component {
                onClick={this.onRegisterClick}
                variant="raised"
                color="primary">
-               注册
+               注册Register
             </Button>
             <Button
                key="registerUIButton"
@@ -251,7 +251,7 @@ class Login extends React.Component {
                className={classes.button}
                onClick={this.onLoginUIClick}
             >
-               登录
+               登录Login
             </Button>
          </FormControl>
       )

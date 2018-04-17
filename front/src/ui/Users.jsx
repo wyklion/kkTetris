@@ -8,6 +8,7 @@ import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Ta
 
 import gameManager from '../game/GameManager';
 import config from '../config';
+import lang from '../util/lang';
 
 const styles = theme => ({
    root: {
@@ -46,7 +47,7 @@ class Users extends React.Component {
       if (rows.length === 0) {
          rows.push(
             <TableRow key='nothing' className={classes.row}>
-               <TableCell className={classes.nothing}>空无一人</TableCell>
+               <TableCell className={classes.nothing}>{lang.get('Nobody')}</TableCell>
             </TableRow>
          )
       }
@@ -63,7 +64,7 @@ class Users extends React.Component {
                   <TableHead >
                      <TableRow className={classes.row}>
                         <TableCell className={classes.headcell}>ID</TableCell>
-                        <TableCell className={classes.headcell}>昵称</TableCell>
+                        <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
                      </TableRow>
                   </TableHead>
                   <TableBody>

@@ -7,11 +7,13 @@ import CloseIcon from 'material-ui-icons/Close';
 
 import gameManager from '../game/GameManager';
 import theme from './Theme';
+import lang from '../util/lang';
 
 const styles = theme => ({
    button: {
       marginBottom: '10px',
       minWidth: '60px',
+      width: '60px',
    },
 })
 
@@ -74,12 +76,12 @@ class SingleMenu extends React.Component {
          if (!this.props.playing) {
             buttons = (
                <div>
-                  <Button variant="raised" color="primary" title="竞速40行(F2)" className={classes.button} onClick={this.onSpeedGameClick}>
-                     竞速
-               </Button>
-                  <Button variant="raised" color="secondary" title="挖掘20行(F3)" className={classes.button} onClick={this.onDigGameClick}>
-                     挖掘
-               </Button>
+                  <Button variant="raised" color="primary" title={lang.get('Srpint 40L') + '(F2)'} className={classes.button} onClick={this.onSpeedGameClick}>
+                     {lang.get('Sprint')}
+                  </Button>
+                  <Button variant="raised" color="secondary" title={lang.get('Dig 20L') + '(F3)'} className={classes.button} onClick={this.onDigGameClick}>
+                     {lang.get('Dig')}
+                  </Button>
                </div>
             )
          } else {

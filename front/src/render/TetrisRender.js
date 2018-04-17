@@ -4,6 +4,7 @@
 
 import * as PIXI from 'pixi.js'
 import config from '../config';
+import lang from '../util/lang';
 
 var layout = {
    tetris: {
@@ -101,6 +102,10 @@ export default class TetrisRender {
       this.drawTetrisBg();
    }
 
+   onChangeLang() {
+      this.initData();
+   }
+
    drawTetrisBg() {
       var bgGraphics = this.bgGraphics;
       bgGraphics.beginFill(bgColor);
@@ -192,6 +197,9 @@ export default class TetrisRender {
    }
 
    initData() {
+      if (this.dataArea) {
+         this.dataArea.destroy(true);
+      }
       var da = this.dataArea = new PIXI.Container();;
       da.x = layout.data.x;
       da.y = layout.data.y;
@@ -201,28 +209,28 @@ export default class TetrisRender {
       var datasOptions = [
          {
             name: 'time',
-            label: '时间',
+            label: lang.get('Time'),
             value: '0.0',
          },
          {
             name: 'piece',
-            label: '块数',
+            label: lang.get('Pieces'),
             value: '0',
          },
          {
             name: 'speed',
-            label: '速度',
+            label: lang.get('Speed'),
             value: '0.0',
          },
          {
             name: 'lines',
-            label: '行数',
+            label: lang.get('Lines'),
             value: '0',
          }
       ]
       var labelStyle = {
          fontWeight: 'bold',
-         fontSize: 15 * 2,
+         fontSize: 12 * 2,
          fontFamily: 'Arial',
          align: 'center',
          fill: '#777777',
@@ -237,13 +245,13 @@ export default class TetrisRender {
       this.dataTexts = {};
       for (var i = 0; i < datasOptions.length; i++) {
          var label = new PIXI.Text(datasOptions[i].label, labelStyle);
-         label.x = 5;
+         label.x = 3;
          label.y = 30 + i * 40;
          label.scale.set(0.5, 0.5);
          da.addChild(label);
          var dataText = this.dataTexts[datasOptions[i].name] = new PIXI.Text(datasOptions[i].value, dataStyle);
          dataText.x = 44;
-         dataText.y = 30 + i * 40 - 3;
+         dataText.y = 30 + i * 40 - 4;
          dataText.scale.set(0.6, 0.6);
          da.addChild(dataText);
       }
@@ -415,9 +423,13 @@ export default class TetrisRender {
       this.dataArea.visible = true;
       var tetris = this.tetris;
       var hostData = tetris.playData;
-      this.setText('time', hostData.time.toFixed(1));
+      var time = hostData.time;
+      if (time > 100) {
+         this.smallTimeText();
+      }
+      this.setText('time', time.toFixed(1));
       this.setText('piece', hostData.count);
-      this.setText('speed', hostData.time == 0 ? "0.00" : (hostData.count / hostData.time).toFixed(2));
+      this.setText('speed', time == 0 ? "0.00" : (hostData.count / time).toFixed(2));
       this.setText('lines', hostData.lines);
       if (!config.fps60) {
          this.render.render();
@@ -429,5 +441,8 @@ export default class TetrisRender {
          return;
       }
       text.text = value;
+   }
+   smallTimeText() {
+      this.dataTexts['time'].scale.set(0.5, 0.5);
    }
 };

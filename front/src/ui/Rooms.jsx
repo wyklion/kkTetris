@@ -8,6 +8,7 @@ import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Ta
 
 import gameManager from '../game/GameManager';
 import config from '../config';
+import lang from '../util/lang';
 
 const styles = theme => ({
    root: {
@@ -62,13 +63,13 @@ class Rooms extends React.Component {
          var playerStr = '';
          var button;
          if (room.playUsers.length === 1) {
-            playerStr = room.playUsers[0] + " 等待中……";
+            playerStr = room.playUsers[0] + " " + lang.get('Waiting') + "……";
             // 不在房间才能进入
             if (!gameManager.roomManager.isUserInRoom(gameManager.userId, room.id)) {
                button = (
                   <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onEnterClick}>
-                     加入
-               </Button>
+                     {lang.get('Join')}
+                  </Button>
                )
             }
          } else {
@@ -77,8 +78,8 @@ class Rooms extends React.Component {
             if (!gameManager.roomManager.isUserInRoom(gameManager.userId, room.id)) {
                button = (
                   <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onWatchClick}>
-                     观战
-               </Button>
+                     {lang.get('Watch')}
+                  </Button>
                )
             }
          }
@@ -95,7 +96,7 @@ class Rooms extends React.Component {
       if (rows.length === 0) {
          rows.push(
             <TableRow key='nothing' className={classes.row}>
-               <TableCell className={classes.nothing}>空无一房</TableCell>
+               <TableCell className={classes.nothing}>{lang.get('No Rooms')}</TableCell>
             </TableRow>
          )
       }
@@ -108,15 +109,15 @@ class Rooms extends React.Component {
       return (
          <div className={classes.root}>
             <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onCreateClick}>
-               创建房间
+               {lang.get('Create Room')}
             </Button>
             <Paper className={classes.paper}>
                <Table className={classes.table}>
                   <TableHead >
                      <TableRow className={classes.row}>
-                        <TableCell className={classes.headcell}>房间ID</TableCell>
-                        <TableCell className={classes.headcell}>玩家</TableCell>
-                        <TableCell className={classes.headcell}>操作</TableCell>
+                        <TableCell className={classes.headcell}> {lang.get('RoomId')}</TableCell>
+                        <TableCell className={classes.headcell}>{lang.get('Players')}</TableCell>
+                        <TableCell className={classes.headcell}>{lang.get('Operation')}</TableCell>
                      </TableRow>
                   </TableHead>
                   <TableBody>

@@ -5,6 +5,7 @@ import RoomManager from './RoomManager';
 import UserManager from './UserManager';
 import ChatManager from './ChatManager';
 import config from '../config';
+import lang from '../util/lang';
 
 /**
  * 游戏管理
@@ -76,11 +77,28 @@ class GameManager {
       }
    }
    /**
+    * 登录
+    */
+   login() {
+      gameManager.logined = true;
+      lang.init(this.userManager.user.langId);
+      this.render.onChangeLang();
+   }
+   /**
     * 登出处理
     */
    logout() {
       this.logined = false;
       this.reset();
+   }
+   /**
+    * 改语言
+    */
+   changeLang(langId) {
+      lang.init(langId);
+      this.render.onChangeLang();
+      this.app.forceUpdate();
+      socket.changeLang(langId);
    }
 
    /**

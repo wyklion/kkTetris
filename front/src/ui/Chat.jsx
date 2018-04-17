@@ -10,6 +10,7 @@ import Input from 'material-ui/Input';
 import gameManager from '../game/GameManager';
 import config from '../config';
 import Tools from '../util/Tools';
+import lang from '../util/lang';
 
 function TabContainer(props) {
    return (
@@ -50,6 +51,7 @@ const styles = theme => ({
    message: {
       textAlign: 'left',
       padding: '0 8px',
+      color: '#AAAAAA',
    },
    chatInput: {
       height: '30px',
@@ -152,7 +154,7 @@ class Chat extends React.Component {
                   textColor="primary"
                   fullWidth
                >
-                  <Tab label="大厅聊天" />
+                  <Tab label={lang.get('Lobby Chat')} />
                </Tabs>
                <div className={classes.content} >
                   <div ref={instance => this.chatContentRef = instance} className={classes.chatContent} >
@@ -161,7 +163,7 @@ class Chat extends React.Component {
                   <div className={classes.chatInput}>
                      <Input
                         ref={instance => this.inputRef = instance}
-                        placeholder="我说"
+                        placeholder={lang.get('I say')}
                         fullWidth
                         value={this.state.chatInput}
                         onChange={this.handleChange('chatInput')}

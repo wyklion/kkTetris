@@ -150,13 +150,18 @@ class GameSocket {
       mongo.updateAddValue("users", { id: this.userId }, { speed40Times: 1 });
       mongo.updateOne("users", { id: this.userId, speed40Best: { "$gt": data.time } }, { speed40Best: data.time });
    }
+
+   /**
+    * 设置
+    */
    onSetting(data) {
       var socket = this.socket;
       if (data.type === "keyboard") {
          mongo.updateOne("users", { id: this.userId }, { keyboard: data.keyboard });
-      }
-      else if (data.type === "setting") {
+      } else if (data.type === "setting") {
          mongo.updateOne("users", { id: this.userId }, { setting: data.setting });
+      } else if (data.type === "lang") {
+         mongo.updateOne("users", { id: this.userId }, { langId: data.id });
       }
    }
    /**

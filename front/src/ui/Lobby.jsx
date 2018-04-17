@@ -11,6 +11,7 @@ import config from '../config';
 import Rooms from './Rooms';
 import Friends from './Friends';
 import Users from './Users';
+import lang from '../util/lang';
 
 function TabContainer(props) {
    return (
@@ -85,9 +86,9 @@ class Lobby extends React.Component {
                   textColor="primary"
                   fullWidth
                >
-                  <Tab label="房间" />
-                  <Tab label="好友" />
-                  <Tab label={"在线(" + gameManager.userManager.userCount + ")"} />
+                  <Tab label={lang.get('Rooms')} />
+                  <Tab label={lang.get('Friends') + "(" + gameManager.userManager.friendCount + ")"} />
+                  <Tab label={lang.get('Online') + "(" + gameManager.userManager.userCount + ")"} />
                </Tabs>
                <div className={classes.content} >
                   {value === 0 && <Rooms />}

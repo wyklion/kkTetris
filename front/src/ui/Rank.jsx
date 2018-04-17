@@ -7,6 +7,7 @@ import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Ta
 
 import http from '../util/http.js';
 import gameManager from '../game/GameManager.js';
+import lang from '../util/lang';
 
 const styles = theme => ({
    root: {
@@ -66,7 +67,7 @@ class Rank extends React.Component {
       if (rows.length === 0) {
          rows.push(
             <TableRow key='nothing' className={classes.row}>
-               <TableCell className={classes.nothing}>空无一人</TableCell>
+               <TableCell className={classes.nothing}>{lang.get('Nobody')}</TableCell>
             </TableRow>
          )
       }
@@ -88,17 +89,17 @@ class Rank extends React.Component {
                className={classes.button}
                onClick={this.onReturnClick}
             >
-               返回
-               </Button>
+               {lang.get('Return')}
+            </Button>
             <Typography variant="headline" className={classes.title}>
-               排行榜（竞速40行）
-               </Typography>
+               {lang.get('Learder Board') + '(' + lang.get('Sprint 40L') + ')'}
+            </Typography>
             <Table className={classes.table}>
                <TableHead >
                   <TableRow className={classes.row}>
                      <TableCell className={classes.headcell}>ID</TableCell>
-                     <TableCell className={classes.headcell}>昵称</TableCell>
-                     <TableCell className={classes.headcell}>用时</TableCell>
+                     <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
+                     <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>
                   </TableRow>
                </TableHead>
                <TableBody>

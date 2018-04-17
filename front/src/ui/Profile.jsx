@@ -7,6 +7,7 @@ import Button from 'material-ui/Button';
 
 import http from '../util/http.js';
 import gameManager from '../game/GameManager.js';
+import lang from '../util/lang';
 
 const styles = theme => ({
    root: {
@@ -63,11 +64,12 @@ class Profile extends React.Component {
       var speed40Best = parseFloat(user.speed40Best);
       if (speed40Best) {
          if (speed40Best >= 999) {
-            speed40Best = '无';
+            speed40Best = lang.get('None');
          } else {
-            speed40Best = speed40Best.toFixed(1) + '秒';
+            speed40Best = speed40Best.toFixed(1) + lang.get('Secs');
          }
       }
+      var maohao = lang.get(': ');
       return (
          <div className={classes.root}>
             <div className={classes.userDiv} >
@@ -77,30 +79,30 @@ class Profile extends React.Component {
                   className={classes.button}
                   onClick={this.onReturnClick}
                >
-                  返回
+                  {lang.get('Return')}
                </Button>
                <Typography variant="headline" className={classes.title}>
-                  玩家信息
+                  {lang.get('PLAYER INFO')}
                </Typography>
                <Typography variant="subheading" className={classes.item}>
-                  帐号： {user.id}
+                  {lang.get('ID') + maohao + user.id}
                </Typography>
                <Typography variant="subheading" className={classes.item}>
-                  昵称： {user.nick}
+                  {lang.get('Nickname') + maohao + user.nick}
                </Typography>
                <Typography variant="subheading" className={classes.item}>
-                  签名： {user.sign}
+                  {lang.get('Sign') + maohao + (user.sign || '')}
                </Typography>
             </div>
             <div className={classes.statsDiv} >
                <Typography variant="headline" className={classes.title}>
-                  游戏信息
+                  {lang.get('GAME INFO')}
                </Typography>
                <Typography variant="subheading" className={classes.item}>
-                  竞速40行次数： {speed40Times}
+                  {lang.get('Sprint 40L times') + maohao + speed40Times}
                </Typography>
                <Typography variant="subheading" className={classes.item}>
-                  竞速40行最佳： {speed40Best}
+                  {lang.get('Sprint 40L best') + maohao + speed40Best}
                </Typography>
             </div>
          </div>

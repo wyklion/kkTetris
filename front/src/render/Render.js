@@ -67,6 +67,9 @@ export default class Render {
       this.stage.scale.x = this.stage.scale.y = scale;
       this.main.onResize(scale);
    }
+   onChangeLang = () => {
+      this.main.onChangeLang();
+   }
    render() {
       // this.renderer.render(this.stage);
       this.app.render();

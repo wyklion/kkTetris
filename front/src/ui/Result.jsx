@@ -5,6 +5,7 @@ import Paper from 'material-ui/Paper';
 import Fade from 'material-ui/transitions/Fade';
 import Typography from 'material-ui/Typography';
 import gameManager from '../game/GameManager';
+import lang from '../util/lang';
 
 const styles = theme => ({
    root: {
@@ -56,19 +57,19 @@ class Result extends React.Component {
       return (
          <Paper className={classes.root} elevation={4}>
             <Typography variant="display1" gutterBottom className={classes.title}>
-               游戏结束
+               {lang.get('Game Over')}
             </Typography>
             <Typography component="p" gutterBottom className={classes.loseItem}>
-               时间：{data.time.toFixed(1)}
+               {lang.get('Time') + ':' + data.time.toFixed(1)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.loseItem}>
-               速度：{(data.count / data.time).toFixed(2)}
+               {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.loseItem}>
-               块数：{data.count}
+               {lang.get('Pieces') + ':' + data.count}
             </Typography>
             <Typography component="p" gutterBottom className={classes.loseItem}>
-               消行：{data.lines}
+               {lang.get('Lines') + ':' + data.lines}
             </Typography>
          </Paper>
       )
@@ -79,7 +80,7 @@ class Result extends React.Component {
          return this.makeLoseResult(data);
       }
       var classes = this.props.classes;
-      var title = '竞速40行';
+      var title = lang.get('Sprint 40L');
       var best = gameManager.user.speed40Best;
       if (data.time < best) {
          best = data.time;
@@ -90,13 +91,13 @@ class Result extends React.Component {
                {title}
             </Typography>
             <Typography component="p" gutterBottom className={classes.best}>
-               最佳记录：{best.toFixed(1)}
+               {lang.get('Best Recorder') + ':' + best.toFixed(1)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.item}>
-               时间：{data.time.toFixed(1)}
+               {lang.get('Time') + ':' + data.time.toFixed(1)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.item}>
-               速度：{(data.count / data.time).toFixed(2)}
+               {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
             </Typography>
          </Paper>
       )

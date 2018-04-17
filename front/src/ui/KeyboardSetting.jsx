@@ -14,6 +14,7 @@ import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Ta
 
 import socket from '../socket/GameSocket';
 import gameManager from '../game/GameManager';
+import lang from '../util/lang';
 
 var keyName = {
    8: 'Backspace',
@@ -114,14 +115,14 @@ var keyName = {
 };
 
 var keys = [
-   { key: 'left', name: '左移' },
-   { key: 'right', name: '右移' },
-   { key: 'drop', name: '硬降' },
-   { key: 'down', name: '软降' },
-   { key: 'rotate', name: '逆旋' },
-   { key: 'rotateRight', name: '顺旋' },
-   { key: 'rotate180', name: '180度旋' },
-   { key: 'hold', name: '暂存' }
+   { key: 'left', name: 'keyLeft' },
+   { key: 'right', name: 'keyRight' },
+   { key: 'drop', name: 'keyDrop' },
+   { key: 'down', name: 'keyDown' },
+   { key: 'rotate', name: 'keyRotate' },
+   { key: 'rotateRight', name: 'keyRotateRight' },
+   { key: 'rotate180', name: 'keyRotate180' },
+   { key: 'hold', name: 'keyRotateHold' }
 ];
 
 class KeyboardSetting extends React.Component {
@@ -217,7 +218,7 @@ class KeyboardSetting extends React.Component {
          var code = keyboard[key];
          cells.push(
             <TableRow key={'row' + i}>
-               <TableCell>{keys[i].name}</TableCell>
+               <TableCell>{lang.get(keys[i].name)}</TableCell>
                <TableCell onClick={this.onClickKey(keys[i].key)}>{this.state.settingKey === key ? '' : keyName[code]}</TableCell>
             </TableRow>
          );
@@ -226,14 +227,14 @@ class KeyboardSetting extends React.Component {
          <Table style={{ width: '400px' }}>
             <TableHead>
                <TableRow>
-                  <TableCell>操作</TableCell>
-                  <TableCell>键位</TableCell>
+                  <TableCell>{lang.get('Operation')}</TableCell>
+                  <TableCell>{lang.get('Key')}</TableCell>
                </TableRow>
             </TableHead>
             <TableBody>
                {cells}
                <TableRow>
-                  <TableCell>首次延时(10~999ms)</TableCell>
+                  <TableCell>{lang.get('DAS') + '(10~999ms)'}</TableCell>
                   <TableCell>
                      <Input
                         inputProps={
@@ -249,7 +250,7 @@ class KeyboardSetting extends React.Component {
                   </TableCell>
                </TableRow>
                <TableRow>
-                  <TableCell>移动延时(0~500ms)</TableCell>
+                  <TableCell>{lang.get('Move Delay' + '(0~500ms)')}</TableCell>
                   <TableCell>
                      <Input
                         inputProps={
@@ -265,7 +266,7 @@ class KeyboardSetting extends React.Component {
                   </TableCell>
                </TableRow>
                <TableRow>
-                  <TableCell>软降延时(0~500ms)</TableCell>
+                  <TableCell>{lang.get('Soft Down Delay' + '(0~500ms)')}</TableCell>
                   <TableCell>
                      <Input
                         inputProps={
@@ -297,16 +298,16 @@ class KeyboardSetting extends React.Component {
             aria-labelledby="form-dialog-title"
             onKeyDown={this.onKeyDown}
          >
-            <DialogTitle id="form-dialog-title">键盘设置</DialogTitle>
+            <DialogTitle id="form-dialog-title">{lang.get('Keyboard Setting')}</DialogTitle>
             <DialogContent>
                {keyTable}
             </DialogContent>
             <DialogActions>
                <Button onClick={this.handleClose} color="primary">
-                  取消
+                  {lang.get('Cancel')}
                </Button>
                <Button onClick={this.handleSave} color="primary">
-                  保存
+                  {lang.get('Save')}
                </Button>
             </DialogActions>
          </Dialog>

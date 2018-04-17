@@ -17,6 +17,7 @@ import Dialog, {
 import gameManager from '../game/GameManager';
 import socket from '../socket/GameSocket';
 import config from '../config';
+import lang from '../util/lang';
 
 const styles = theme => ({
    root: {
@@ -61,10 +62,10 @@ class Friends extends React.Component {
                <TableCell>{friend.nick}</TableCell>
                <TableCell>
                   <Button color="primary" size="small" className={classes.infoButton} onClick={this.onFriendInfo(id)}>
-                     信息
+                     {lang.get('Info')}
                   </Button>
                   <Button color="primary" size="small" className={classes.infoButton} onClick={this.onRemoveFriend(id)}>
-                     删除
+                     {lang.get('Delete')}
                   </Button>
                </TableCell>
             </TableRow>
@@ -73,7 +74,7 @@ class Friends extends React.Component {
       if (rows.length === 0) {
          rows.push(
             <TableRow key='nothing' className={classes.row}>
-               <TableCell className={classes.nothing}>没朋友</TableCell>
+               <TableCell className={classes.nothing}>{lang.get('No friends')}</TableCell>
             </TableRow>
          )
       }
@@ -106,7 +107,7 @@ class Friends extends React.Component {
    onAddFriend = () => {
       var friendId = this.state.addFriendId;
       if (friendId === '') {
-         alert('请输入好友帐号！')
+         alert(lang.get('inputFriendId'));
       } else {
          socket.addFriend(this.state.addFriendId, (err, friend) => {
             if (err) {
@@ -146,15 +147,15 @@ class Friends extends React.Component {
       return (
          <div className={classes.root}>
             <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onAddFriendClick}>
-               加好友
+               {lang.get('Add Friend')}
             </Button>
             <Paper className={classes.paper}>
                <Table className={classes.table}>
                   <TableHead >
                      <TableRow className={classes.row}>
                         <TableCell className={classes.headcell}>ID</TableCell>
-                        <TableCell className={classes.headcell}>昵称</TableCell>
-                        <TableCell className={classes.headcell}>操作</TableCell>
+                        <TableCell className={classes.headcell}> {lang.get('Nickname')}</TableCell>
+                        <TableCell className={classes.headcell}> {lang.get('Operation')}</TableCell>
                      </TableRow>
                   </TableHead>
                   <TableBody>
@@ -169,7 +170,7 @@ class Friends extends React.Component {
                disableEscapeKeyDown={true}
                aria-labelledby="form-dialog-title"
             >
-               <DialogTitle id="form-dialog-title" style={{ width: '400px' }}>加好友</DialogTitle>
+               <DialogTitle id="form-dialog-title" style={{ width: '400px' }}>{lang.get('Add friend')}</DialogTitle>
                <DialogContent>
                   {/* <DialogContentText>
                      请输入好友帐号
@@ -178,7 +179,7 @@ class Friends extends React.Component {
                      autoFocus
                      margin="dense"
                      id="name"
-                     label="好友帐号"
+                     label={lang.get('friendId')}
                      value={addFriendId}
                      onChange={this.handleChange('addFriendId')}
                      type="email"
@@ -188,10 +189,10 @@ class Friends extends React.Component {
                </DialogContent>
                <DialogActions>
                   <Button onClick={this.handleCloseAdd} color="primary">
-                     取消
+                     {lang.get('Cancel')}
                   </Button>
                   <Button onClick={this.onAddFriend} color="primary">
-                     加好友
+                     {lang.get('Add friend')}
                   </Button>
                </DialogActions>
             </Dialog>

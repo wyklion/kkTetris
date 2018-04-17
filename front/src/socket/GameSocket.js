@@ -291,6 +291,13 @@ class GameSocket {
    }
 
    /**
+    * 改语言
+    */
+   changeLang(langId) {
+      this.socket.emit("setting", { type: "lang", id: langId });
+   }
+
+   /**
     * 键位设置
     */
    setKeyboard(keyboard) {
