@@ -103,7 +103,11 @@ export default class TetrisRender {
    }
 
    onChangeLang() {
-      this.initData();
+      if (this.dataLabels) {
+         for (var k in this.dataLabels) {
+            this.dataLabels[k].text = lang.get(k);
+         }
+      }
    }
 
    drawTetrisBg() {
@@ -197,9 +201,6 @@ export default class TetrisRender {
    }
 
    initData() {
-      if (this.dataArea) {
-         this.dataArea.destroy(true);
-      }
       var da = this.dataArea = new PIXI.Container();;
       da.x = layout.data.x;
       da.y = layout.data.y;
@@ -209,21 +210,25 @@ export default class TetrisRender {
       var datasOptions = [
          {
             name: 'time',
+            key: 'Time',
             label: lang.get('Time'),
             value: '0.0',
          },
          {
             name: 'piece',
+            key: 'Pieces',
             label: lang.get('Pieces'),
             value: '0',
          },
          {
             name: 'speed',
+            key: 'Speed',
             label: lang.get('Speed'),
             value: '0.0',
          },
          {
             name: 'lines',
+            key: 'Lines',
             label: lang.get('Lines'),
             value: '0',
          }
@@ -242,9 +247,10 @@ export default class TetrisRender {
          align: 'center',
          fill: '#DDDDDD',
       };
+      this.dataLabels = {};
       this.dataTexts = {};
       for (var i = 0; i < datasOptions.length; i++) {
-         var label = new PIXI.Text(datasOptions[i].label, labelStyle);
+         var label = this.dataLabels[datasOptions[i].key] = new PIXI.Text(lang.get(datasOptions[i].key), labelStyle);
          label.x = 3;
          label.y = 30 + i * 40;
          label.scale.set(0.5, 0.5);
