@@ -10,6 +10,7 @@ import AccountCircle from 'material-ui-icons/AccountCircle';
 import Menu, { MenuItem } from 'material-ui/Menu';
 
 import KeyboardSetting from './KeyboardSetting';
+import Setting from './Setting';
 import http from '../util/http';
 import gameManager from '../game/GameManager';
 import lang from '../util/lang';
@@ -32,6 +33,7 @@ class HeadBar extends React.Component {
    state = {
       anchorElSetting: null,
       anchorElUser: null,
+      openSetting: false,
       openKeyboard: false
    };
 
@@ -52,6 +54,16 @@ class HeadBar extends React.Component {
    };
 
    /**
+    * 设置
+    */
+   handleSetting = () => {
+      this.setState({ anchorElSetting: null, openSetting: true, openKeyboard: false })
+   }
+   handleCloseSetting = () => {
+      this.setState({ openSetting: false })
+   }
+
+   /**
     * 语言切换
     */
    handleSwitchLang = () => {
@@ -66,7 +78,7 @@ class HeadBar extends React.Component {
     * 键盘设置
     */
    handleKeyboardSetting = () => {
-      this.setState({ anchorElSetting: null, openKeyboard: true })
+      this.setState({ anchorElSetting: null, openSetting: false, openKeyboard: true })
    }
    handleCloseKeyboardSetting = () => {
       this.setState({ openKeyboard: false })
@@ -103,6 +115,10 @@ class HeadBar extends React.Component {
       const { anchorElSetting, anchorElUser } = this.state;
       return (
          <div className={classes.root}>
+            <Setting
+               open={this.state.openSetting}
+               close={this.handleCloseSetting}
+            />
             <KeyboardSetting
                open={this.state.openKeyboard}
                close={this.handleCloseKeyboardSetting}
@@ -130,6 +146,7 @@ class HeadBar extends React.Component {
                      open={Boolean(anchorElSetting)}
                      onClose={this.handleCloseSetting}
                   >
+                     <MenuItem onClick={this.handleSetting}>{lang.get('Setting')}</MenuItem>
                      <MenuItem onClick={this.handleKeyboardSetting}>{lang.get('Keyboard Setting')}</MenuItem>
                      <MenuItem onClick={this.handleRank}>{lang.get('Leader Board')}</MenuItem>
                      <MenuItem onClick={this.handleSwitchLang}>{lang.isEn() ? '切换至中文' : 'Switch To English'}</MenuItem>

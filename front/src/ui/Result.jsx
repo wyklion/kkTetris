@@ -91,7 +91,7 @@ class Result extends React.Component {
                {title}
             </Typography>
             <Typography component="p" gutterBottom className={classes.best}>
-               {lang.get('Best Recorder') + ':' + best.toFixed(1)}
+               {lang.get('Personal Best') + ':' + best.toFixed(1)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.item}>
                {lang.get('Time') + ':' + data.time.toFixed(1)}

@@ -17,13 +17,16 @@ export default class KeyState {
          //console.log("press");
          this.func();
          if (this.noDas) {
-            return;
+            return true;
          }
          if (this.isDown) {
             this.moveCall(this.manager.downDelay)
          } else {
             this.dasHandle = setTimeout(this.dasCall, this.manager.dasDelay);
          }
+         return true;
+      } else {
+         return false;
       }
    }
    dasCall = () => {

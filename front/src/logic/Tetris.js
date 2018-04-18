@@ -6,6 +6,7 @@ import Shape from './Shape';
 import PlayData from './PlayData';
 import socket from '../socket/GameSocket';
 import { OPERTABLE } from '../socket/OperTable';
+import gameManager from '../game/GameManager';
 
 var COL = 10;
 var ROW = 20;
@@ -100,6 +101,11 @@ export default class Tetris {
          this.checkAttack();
       this.newShape();
       this.render();
+      if (this.clearRowCount === 0) {
+         gameManager.soundManager.lock();
+      } else {
+         gameManager.soundManager.linefall();
+      }
    }
    checkOver() {
       for (var i = 0; i < this.col; i++) {

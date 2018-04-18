@@ -6,6 +6,7 @@ import UserManager from './UserManager';
 import ChatManager from './ChatManager';
 import config from '../config';
 import lang from '../util/lang';
+import TetrisSound from '../sound/TetrisSound'
 
 /**
  * 游戏管理
@@ -20,6 +21,8 @@ class GameManager {
       this.roomManager = new RoomManager();
       // 聊天管理
       this.chatManager = new ChatManager();
+      // 音效管理
+      this.soundManager = new TetrisSound();
 
       // 当前游戏
       this.game = null;
@@ -81,7 +84,9 @@ class GameManager {
     */
    login() {
       gameManager.logined = true;
-      lang.init(this.userManager.user.langId);
+      var user = this.userManager.user;
+      lang.init(user.langId);
+      this.soundManager.soundOn = user.setting.sound;
       this.render.onChangeLang();
    }
    /**
@@ -137,6 +142,13 @@ class GameManager {
       return otherUser;
    }
 
+   /**
+    * 设置
+    */
+   setting(settings) {
+      this.soundManager.soundOn = settings.sound;
+      socket.setting(settings);
+   }
    /**
     * 更新键位
     */

@@ -283,18 +283,18 @@ class GameSocket {
    }
 
    /**
-    * 设置
-    */
-   setSetting(setting) {
-      this.userManager.user.setting = setting;
-      this.socket.emit("setting", { type: "setting", setting: setting });
-   }
-
-   /**
     * 改语言
     */
    changeLang(langId) {
       this.socket.emit("setting", { type: "lang", id: langId });
+   }
+
+   /**
+    * 设置
+    */
+   setting(setting) {
+      this.userManager.user.setting = setting;
+      this.socket.emit("setting", { type: "setting", setting: setting });
    }
 
    /**

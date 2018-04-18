@@ -3,6 +3,8 @@ var lang = {}
 
 var table = {
    'KK Tetris': ['KK俄罗斯方块'],
+   'Setting': ['设置'],
+   'Sound': ['音效'],
    'Keyboard Setting': ['键盘设置'],
    'Leader Board': ['排行榜'],
    'Profile': ['个人信息'],
@@ -51,7 +53,7 @@ var table = {
    'Speed': ['速度'],
    'Pieces': ['块数'],
    'Lines': ['消行'],
-   'Best Recorder': ['最佳纪录'],
+   'Personal Best': ['个人最佳'],
    'Game Over': ['游戏结束'],
    'Waiting': ['等待中'],
    'Join': ['加入'],

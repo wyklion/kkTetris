@@ -45,12 +45,16 @@ export default class KeyManager {
    onKeyDown(key) {
       var leftright = false;
       if (key === this.leftKey) {
-         this.left.keyDown();
+         if (this.left.keyDown()) {
+            gameManager.soundManager.move();
+         }
          this.right.keyUp();
          leftright = true;
       }
       else if (key === this.rightKey) {
-         this.right.keyDown();
+         if (this.right.keyDown()) {
+            gameManager.soundManager.move();
+         }
          this.left.keyUp();
          leftright = true;
       }
