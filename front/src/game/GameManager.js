@@ -7,6 +7,7 @@ import ChatManager from './ChatManager';
 import config from '../config';
 import lang from '../util/lang';
 import TetrisSound from '../sound/TetrisSound'
+import TextureManager from '../render/TextureManager';
 
 /**
  * 游戏管理
@@ -23,6 +24,8 @@ class GameManager {
       this.chatManager = new ChatManager();
       // 音效管理
       this.soundManager = new TetrisSound();
+      // 贴图管理
+      this.textureManager = new TextureManager();
 
       // 当前游戏
       this.game = null;
@@ -38,8 +41,8 @@ class GameManager {
    static _instance = null;
    static getInstance() {
       if (!GameManager._instance) {
-         GameManager._instance = new GameManager();
-         GameManager._instance.init();
+         gameManager = GameManager._instance = new GameManager();
+         // GameManager._instance.init();
       }
       return GameManager._instance;
    }
@@ -87,6 +90,8 @@ class GameManager {
       var user = this.userManager.user;
       lang.init(user.langId);
       this.soundManager.soundOn = user.setting.sound;
+      this.textureManager.init(1);
+      // this.textureManager.init(user.settings.pic);
       this.render.onChangeLang();
    }
    /**

@@ -1,12 +1,5 @@
 import SoundManager from './SoundManager';
 
-var pubUrl = process.env.PUBLIC_URL;
-var soundTable = {
-   'linefall1': '/sound/linefall1.wav',
-   'move1': '/sound/move1.wav',
-   'lock1': '/sound/lock1.wav',
-}
-
 export default class TetrisSound {
    constructor() {
       this.soundManager = new SoundManager();

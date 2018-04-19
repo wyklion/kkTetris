@@ -29,6 +29,7 @@ export default class UserManager {
     */
    initUsers(user, users) {
       this.user = user;
+      user.setting = user.setting || {};
       this.users = users;
       this.updateUserCount();
    }

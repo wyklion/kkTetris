@@ -67,8 +67,17 @@ export default class Render {
       this.stage.scale.x = this.stage.scale.y = scale;
       this.main.onResize(scale);
    }
+   /**
+    * 改语言
+    */
    onChangeLang = () => {
       this.main.onChangeLang();
+   }
+   /**
+    * 改贴图
+    */
+   onChangeTexture = () => {
+      this.main.onChangeTexture();
    }
    render() {
       // this.renderer.render(this.stage);

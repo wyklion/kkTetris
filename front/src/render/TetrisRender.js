@@ -5,6 +5,9 @@
 import * as PIXI from 'pixi.js'
 import config from '../config';
 import lang from '../util/lang';
+import gameManager from '../game/GameManager';
+import GraphicRender from './GraphicRender';
+import TextureRender from './TextureRender';
 
 var layout = {
    tetris: {
@@ -61,12 +64,12 @@ var colors2 = [
 
 export default class TetrisRender {
    constructor(options) {
+      this.textureManager = gameManager.textureManager;
       this.scale = 1;
       this.render = options.render;
       this.container = options.container;
       this.setTetris(options.tetris);
       this.baseSize = options.baseSize || 30;
-      this.nextSize = this.baseSize * 0.8;
       this.holdSize = this.baseSize * 0.6;
       this.displayNext = options.displayNext == null ? true : options.displayNext;
 
@@ -83,6 +86,9 @@ export default class TetrisRender {
       this.tetris = tetris;
       if (tetris) {
          this.tetris.renderer = this;
+         if (this.cellRender) {
+            this.cellRender.setTetris(tetris);
+         }
       }
    }
    init() {
@@ -97,16 +103,35 @@ export default class TetrisRender {
       }
    }
 
+   /**
+    * 改大小
+    */
    onResize(scale) {
       this.scale = scale;
       this.drawTetrisBg();
    }
 
+   /**
+    * 改语言
+    */
    onChangeLang() {
       if (this.dataLabels) {
          for (var k in this.dataLabels) {
             this.dataLabels[k].text = lang.get(k);
          }
+      }
+   }
+
+   /**
+    * 改贴图
+    */
+   onChangeTexture() {
+      if (this.cellRender.idx === gameManager.textureManager.idx) {
+         return;
+      }
+      this.initTetris();
+      if (this.displayNext) {
+         this.initNext();
       }
    }
 
@@ -133,6 +158,13 @@ export default class TetrisRender {
       bgCover.drawRect(0, 0, this.baseSize * 10, this.baseSize * 20);
    }
    initTetris() {
+      if (this.tetrisArea) {
+         this.cellRender.dispose();
+         this.tetrisArea.destroy();
+      }
+      this.cellRender = this.textureManager.isGraphic()
+         ? new GraphicRender(this.displayNext, this.baseSize)
+         : new TextureRender(this.displayNext, this.baseSize);
       var tetris = this.tetris;
       var ta = this.tetrisArea = new PIXI.Container();
       ta.width = this.baseSize * 10;
@@ -144,8 +176,7 @@ export default class TetrisRender {
       var bgGraphics = this.bgGraphics = new PIXI.Graphics();
       ta.addChild(bgGraphics);
       // 方块区
-      var graphics = this.tetrisGraphic = new PIXI.Graphics();
-      ta.addChild(graphics);
+      this.cellRender.initTetris(ta);
       // 背景框
       var bgCoverGraphics = this.bgCoverGraphics = new PIXI.Graphics();
       ta.addChild(bgCoverGraphics);
@@ -153,12 +184,14 @@ export default class TetrisRender {
    }
 
    initNext() {
+      if (this.nextArea) {
+         this.nextArea.destroy();
+      }
       var na = this.nextArea = new PIXI.Container();
       na.x = layout.next.x;
       na.y = layout.next.y;
       this.container.addChild(na);
-      var graphics = this.nextGraphic = new PIXI.Graphics();
-      na.addChild(graphics);
+      this.cellRender.initNext(na);
 
       // 下一块文本
       var nextText = this.nextText = new PIXI.Text('Next:', {
@@ -177,6 +210,9 @@ export default class TetrisRender {
    }
 
    initHold() {
+      if (this.holdArea) {
+         this.holdArea.destroy();
+      }
       var ha = this.holdArea = new PIXI.Container();
       ha.x = layout.hold.x;
       ha.y = layout.hold.y;
@@ -279,27 +315,10 @@ export default class TetrisRender {
     * 清空
     */
    reset() {
-      var graphics = this.tetrisGraphic;
-      graphics.clear();
+      this.cellRender.reset();
       if (this.displayNext) {
-         this.nextGraphic.clear();
          this.holdGraphic.clear();
       }
-   }
-
-   /**
-    * 方块区的一块
-    */
-   drawTetrisBlock(x, y, color) {
-      var graphics = this.tetrisGraphic;
-      // if (noLine) {
-      //    graphics.lineStyle(0);
-      // } else {
-      //    graphics.lineStyle(2, 0x222222, 1);
-      // }
-      graphics.beginFill(color);
-      graphics.drawRect(x * this.baseSize, y * this.baseSize, this.baseSize, this.baseSize);
-      graphics.endFill();
    }
 
    /**
@@ -309,91 +328,13 @@ export default class TetrisRender {
       this.reset();
       this.nextText.visible = true;
       this.holdText.visible = true;
-      this.renderTetris();
+      this.cellRender.draw();
       if (this.displayNext) {
-         this.renderNext();
          this.renderHold();
       }
       if (!config.fps60) {
          this.render.render();
       }
-   }
-
-   /**
-    * 主方块区
-    */
-   renderTetris() {
-      var tetris = this.tetris;
-      for (var i = 0; i < tetris.row; i++) {
-         for (var j = 0; j < tetris.col; j++) {
-            if (tetris.board[i][j] > 0) {
-               var color = tetris.playing ? colors[tetris.board[i][j] - 1] : deadColor;
-               this.drawTetrisBlock(j, tetris.row - 1 - i, color);
-            }
-         }
-      }
-
-      // 操作的方块影子
-      if (tetris.playing) {
-         this.renderShape(true);
-      }
-      // 操作的方块
-      this.renderShape();
-   }
-   /**
-    * 当前块
-    */
-   renderShape(shadow) {
-      var tetris = this.tetris;
-      var shape = tetris.shape;
-      var px = shape.x;
-      var py;
-      var color;
-      if (shadow) {
-         color = shadowColor; // tetris.playing ? colors2[shape.shapeId - 1] : deadColor;
-         py = shape.shadowY;
-      }
-      else {
-         color = tetris.playing ? colors[shape.shapeId - 1] : deadColor;
-         py = shape.y;
-      }
-      for (var i = 0; i < 4; i++) {
-         var x = px + shape.shapeModel.cells[shape.rotation][i * 2];
-         var y = py + shape.shapeModel.cells[shape.rotation][i * 2 + 1];
-         if (x < 0 || x >= tetris.col || y < 0 || y >= tetris.row)
-            continue;
-         this.drawTetrisBlock(x, tetris.row - 1 - y, color);
-      }
-   }
-
-   /**
-    * 下一块
-    */
-   renderNext() {
-      var tetris = this.tetris;
-      if (!tetris.nextShapes || tetris.nextShapes.length === 0) return;
-      //this.ctx.clearRect(this.nextPos.x-1,this.nextPos.y-1,121,121);
-      for (var i = 0; i < tetris.nextShapes.length; i++) {
-         var shape = tetris.nextShapes[i];
-         var color = colors[shape.shapeId - 1];
-         if (!tetris.playing)
-            color = shadowColor;
-         for (var j = 0; j < 4; j++) {
-            var x = 1 + shape.shapeModel.cells[0][j * 2];
-            var y = 1 + shape.shapeModel.cells[0][j * 2 + 1];
-            this.drawNextBlock(i, shape.shapeId, x, 4 - y, color);
-         }
-      }
-   }
-
-   drawNextBlock(idx, shapeId, x, y, color) {
-      var graphics = this.nextGraphic;
-      var size = this.nextSize;
-      // graphics.lineStyle(1, 0x111111, 1);
-      graphics.beginFill(color);
-      var offsetX = shapeId >= 3 ? size / 2 : 0;
-      graphics.drawRect(offsetX + x * size, -10 + idx * (size * 3.5) + y * size, size, size);
-      graphics.endFill();
    }
 
    /**

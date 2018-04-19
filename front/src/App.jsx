@@ -40,6 +40,7 @@ class App extends React.Component {
 
    componentDidMount() {
       gameManager.app = this;
+      gameManager.init();
    }
 
    componentWillUnmount() {
