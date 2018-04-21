@@ -88,11 +88,11 @@ class GameManager {
    login() {
       gameManager.logined = true;
       var user = this.userManager.user;
+      // 加载用户设置
       lang.init(user.langId);
-      this.soundManager.soundOn = user.setting.sound;
-      this.textureManager.init(1);
-      // this.textureManager.init(user.settings.pic);
       this.render.onChangeLang();
+      this.soundManager.init(user.setting.sound);
+      this.textureManager.init(user.setting.pic);
    }
    /**
     * 登出处理
@@ -151,7 +151,8 @@ class GameManager {
     * 设置
     */
    setting(settings) {
-      this.soundManager.soundOn = settings.sound;
+      this.soundManager.init(settings.sound);
+      this.textureManager.init(settings.pic);
       socket.setting(settings);
    }
    /**

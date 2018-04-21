@@ -129,10 +129,11 @@ export default class TetrisRender {
       if (this.cellRender.idx === gameManager.textureManager.idx) {
          return;
       }
-      this.initTetris();
-      if (this.displayNext) {
-         this.initNext();
-      }
+      this.cellRender.dispose();
+      this.init();
+      // 新创建要重设tetris
+      this.cellRender.setTetris(this.tetris);
+      this.renderAll();
    }
 
    drawTetrisBg() {
@@ -159,8 +160,7 @@ export default class TetrisRender {
    }
    initTetris() {
       if (this.tetrisArea) {
-         this.cellRender.dispose();
-         this.tetrisArea.destroy();
+         this.tetrisArea.destroy({ children: true });
       }
       this.cellRender = this.textureManager.isGraphic()
          ? new GraphicRender(this.displayNext, this.baseSize)
@@ -185,7 +185,7 @@ export default class TetrisRender {
 
    initNext() {
       if (this.nextArea) {
-         this.nextArea.destroy();
+         this.nextArea.destroy({ children: true });
       }
       var na = this.nextArea = new PIXI.Container();
       na.x = layout.next.x;
@@ -211,14 +211,13 @@ export default class TetrisRender {
 
    initHold() {
       if (this.holdArea) {
-         this.holdArea.destroy();
+         this.holdArea.destroy({ children: true });
       }
       var ha = this.holdArea = new PIXI.Container();
       ha.x = layout.hold.x;
       ha.y = layout.hold.y;
       this.container.addChild(ha);
-      var graphics = this.holdGraphic = new PIXI.Graphics();
-      ha.addChild(graphics);
+      this.cellRender.initHold(ha);
 
       // 暂存文本
       var holdText = this.holdText = new PIXI.Text('Hold:', {
@@ -237,6 +236,9 @@ export default class TetrisRender {
    }
 
    initData() {
+      if (this.dataArea) {
+         this.dataArea.destroy({ children: true });
+      }
       var da = this.dataArea = new PIXI.Container();;
       da.x = layout.data.x;
       da.y = layout.data.y;
@@ -316,9 +318,6 @@ export default class TetrisRender {
     */
    reset() {
       this.cellRender.reset();
-      if (this.displayNext) {
-         this.holdGraphic.clear();
-      }
    }
 
    /**
@@ -329,38 +328,9 @@ export default class TetrisRender {
       this.nextText.visible = true;
       this.holdText.visible = true;
       this.cellRender.draw();
-      if (this.displayNext) {
-         this.renderHold();
-      }
       if (!config.fps60) {
          this.render.render();
       }
-   }
-
-   /**
-    * 暂存
-    */
-   renderHold() {
-      var tetris = this.tetris;
-      var shape = tetris.saveShape;
-      if (!shape) return;
-      var color = colors[shape.shapeId - 1];
-      if (!tetris.playing)
-         color = shadowColor;
-      for (var i = 0; i < 4; i++) {
-         var x = 1 + shape.shapeModel.cells[0][i * 2];
-         var y = 1 + shape.shapeModel.cells[0][i * 2 + 1];
-         this.drawHoldBlock(shape.shapeId, x, 4 - y, color);
-      }
-   }
-   drawHoldBlock(shapeId, x, y, color) {
-      var graphics = this.holdGraphic;
-      var size = this.holdSize;
-      // graphics.lineStyle(1, 0x111111, 1);
-      graphics.beginFill(color);
-      var offsetX = shapeId >= 3 ? size / 2 : 0;
-      graphics.drawRect(offsetX + x * size, y * size, size, size);
-      graphics.endFill();
    }
 
    /**

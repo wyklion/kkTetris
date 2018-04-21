@@ -5,6 +5,7 @@
 import * as PIXI from 'pixi.js'
 
 var shadowColor = 0x444444;
+var trashColor = 0x444444;
 var deadColor = 0x444444;
 var colors = [
    0x0F9BD7, // I
@@ -53,18 +54,29 @@ export default class GraphicRender {
       container.addChild(this.nextGraphic);
    }
 
+   /**
+    * 暂存区
+    */
+   initHold(container) {
+      this.holdGraphic = new PIXI.Graphics();
+      container.addChild(this.holdGraphic);
+   }
+
    reset() {
       var graphics = this.tetrisGraphic;
       graphics.clear();
       if (this.displayNext) {
          this.nextGraphic.clear();
+         this.holdGraphic.clear();
       }
    }
 
    draw() {
+      if (!this.tetris) return;
       this.drawTetris();
       if (this.displayNext) {
          this.drawNext();
+         this.drawHold();
       }
    }
 
@@ -156,6 +168,32 @@ export default class GraphicRender {
       graphics.beginFill(color);
       var offsetX = shapeId >= 3 ? size / 2 : 0;
       graphics.drawRect(offsetX + x * size, -10 + idx * (size * 3.5) + y * size, size, size);
+      graphics.endFill();
+   }
+
+   /**
+    * 暂存
+    */
+   drawHold() {
+      var tetris = this.tetris;
+      var shape = tetris.saveShape;
+      if (!shape) return;
+      var color = colors[shape.shapeId - 1];
+      if (!tetris.playing)
+         color = shadowColor;
+      for (var i = 0; i < 4; i++) {
+         var x = 1 + shape.shapeModel.cells[0][i * 2];
+         var y = 1 + shape.shapeModel.cells[0][i * 2 + 1];
+         this.drawHoldBlock(shape.shapeId, x, 4 - y, color);
+      }
+   }
+   drawHoldBlock(shapeId, x, y, color) {
+      var graphics = this.holdGraphic;
+      var size = this.holdSize;
+      // graphics.lineStyle(1, 0x111111, 1);
+      graphics.beginFill(color);
+      var offsetX = shapeId >= 3 ? size / 2 : 0;
+      graphics.drawRect(offsetX + x * size, y * size, size, size);
       graphics.endFill();
    }
 

@@ -31,6 +31,7 @@ class App extends React.Component {
       logined: false, // 是否登录
       profile: null, // 个人信息页面
       rank: false, // 排行榜
+      width: null, // 内容宽
    }
 
    constructor(props) {
@@ -116,6 +117,10 @@ class App extends React.Component {
       this.setState({ rank: null, profile: null });
    }
 
+   onResize = (width) => {
+      this.setState({ width: width });
+   }
+
    render() {
       var state = this.state;
       var checked = state.checked;
@@ -135,8 +140,8 @@ class App extends React.Component {
       } else {
          ui = (
             <div className='App'>
-               <HeadBar onLogout={this.onLogout} />
-               <Main hidden={state.profile || state.rank} />
+               <HeadBar onLogout={this.onLogout} width={state.width} />
+               <Main hidden={state.profile || state.rank} onResize={this.onResize} />
                {state.profile && <Profile userId={state.profile} onReturn={this.onCloseProfile} />}
                {state.rank && <Rank onReturn={this.onCloseRank} />}
             </div>

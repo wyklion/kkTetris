@@ -8,6 +8,7 @@ import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu';
 import AccountCircle from 'material-ui-icons/AccountCircle';
 import Menu, { MenuItem } from 'material-ui/Menu';
+import Fade from 'material-ui/transitions/Fade';
 
 import KeyboardSetting from './KeyboardSetting';
 import Setting from './Setting';
@@ -27,6 +28,9 @@ const styles = {
       marginLeft: -12,
       marginRight: 20,
    },
+   popperClose: {
+      pointerEvents: 'none',
+   },
 };
 
 class HeadBar extends React.Component {
@@ -45,7 +49,7 @@ class HeadBar extends React.Component {
       this.setState({ anchorElUser: event.currentTarget });
    };
 
-   handleCloseSetting = () => {
+   handleCloseSettingMenu = () => {
       this.setState({ anchorElSetting: null });
    }
 
@@ -113,6 +117,7 @@ class HeadBar extends React.Component {
    render() {
       const { classes } = this.props;
       const { anchorElSetting, anchorElUser } = this.state;
+      var width = this.props.width || '100%';
       return (
          <div className={classes.root}>
             <Setting
@@ -124,52 +129,58 @@ class HeadBar extends React.Component {
                close={this.handleCloseKeyboardSetting}
             />
             <AppBar position="static">
-               <Toolbar>
-                  <IconButton className={classes.menuButton}
-                     color="inherit"
-                     aria-label="Menu"
-                     onClick={this.handleMenuSetting}
-                  >
-                     <MenuIcon />
-                  </IconButton>
-                  <Menu
-                     id="menu-appbar"
-                     anchorEl={anchorElSetting}
-                     anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                     }}
-                     transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                     }}
-                     open={Boolean(anchorElSetting)}
-                     onClose={this.handleCloseSetting}
-                  >
-                     <MenuItem onClick={this.handleSetting}>{lang.get('Setting')}</MenuItem>
-                     <MenuItem onClick={this.handleKeyboardSetting}>{lang.get('Keyboard Setting')}</MenuItem>
-                     <MenuItem onClick={this.handleRank}>{lang.get('Leader Board')}</MenuItem>
-                     <MenuItem onClick={this.handleSwitchLang}>{lang.isEn() ? '切换至中文' : 'Switch To English'}</MenuItem>
-                  </Menu>
+               <Toolbar style={{ width: width, margin: '0 auto', padding: 'unset' }}>
+                  < div >
+                     <IconButton
+                        // className={classes.menuButton}
+                        aria-owns={Boolean(anchorElSetting) ? 'settingmenu' : null}
+                        aria-haspopup="true"
+                        onClick={this.handleMenuSetting}
+                        color="inherit"
+                     >
+                        <MenuIcon />
+                     </IconButton>
+                     <Menu
+                        id="settingmenu"
+                        anchorEl={anchorElSetting}
+                        anchorOrigin={{
+                           vertical: 'top',
+                           horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                           vertical: 'bottom',
+                           horizontal: 'left',
+                        }}
+                        transition={Fade}
+                        open={Boolean(anchorElSetting)}
+                        onClose={this.handleCloseSettingMenu}
+                     >
+                        <MenuItem onClick={this.handleSetting}>{lang.get('Setting')}</MenuItem>
+                        <MenuItem onClick={this.handleKeyboardSetting}>{lang.get('Keyboard Setting')}</MenuItem>
+                        <MenuItem onClick={this.handleRank}>{lang.get('Leaderboard')}</MenuItem>
+                        <MenuItem onClick={this.handleSwitchLang}>{lang.isEn() ? '切换至中文' : 'Switch To English'}</MenuItem>
+                     </Menu>
+                  </div>
+
                   <Typography variant="title" color="inherit" className={classes.flex}>
                      {lang.get('KK Tetris')}
                   </Typography>
                   <div>
                      <span>{gameManager.user.nick}</span>
                      <IconButton
-                        aria-owns={Boolean(anchorElUser) ? 'menu-appbar' : null}
-                        aria-haspopup="true"
+                        aria-owns={Boolean(anchorElUser) ? 'usermenu' : null}
+                        // aria-haspopup="true"
                         onClick={this.handleMenuUser}
                         color="inherit"
                      >
                         <AccountCircle />
                      </IconButton>
                      <Menu
-                        id="menu-appbar"
+                        id="usermenu"
                         anchorEl={anchorElUser}
                         anchorOrigin={{
                            vertical: 'top',
-                           horizontal: 'right',
+                           horizontal: 'left',
                         }}
                         transformOrigin={{
                            vertical: 'top',
@@ -184,7 +195,7 @@ class HeadBar extends React.Component {
                   </div>
                </Toolbar>
             </AppBar>
-         </div>
+         </div >
       );
    }
 }

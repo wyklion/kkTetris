@@ -37,6 +37,7 @@ export default class TextureRender {
          }
       }
    }
+
    /**
     * 预览区
     */
@@ -45,10 +46,30 @@ export default class TextureRender {
       container.addChild(this.nextContainer);
    }
 
+   /**
+    * 暂存区
+    */
+   initHold(container) {
+      this.holdContainer = new PIXI.Container();
+      container.addChild(this.holdContainer);
+   }
+
+   reset() {
+      for (var i = 0; i < 200; i++) {
+         this.tetrisSprites[i].visible = false;
+      }
+      if (this.displayNext) {
+         this.nextContainer.removeChildren();
+         this.holdContainer.removeChildren();
+      }
+   }
+
    draw() {
+      if (!this.tetris) return;
       this.drawTetris();
       if (this.displayNext) {
          this.drawNext();
+         this.drawHold();
       }
    }
 
@@ -61,7 +82,7 @@ export default class TextureRender {
          for (var j = 0; j < tetris.col; j++) {
             var sprite = this.tetrisSprites[i * 10 + j];
             if (tetris.board[i][j] > 0) {
-               var idx = tetris.playing ? tetris.board[i][j] : 0;
+               var idx = tetris.playing ? tetris.board[i][j] : 8;
                sprite.texture = this.textures[idx];
                sprite.tint = 0xFFFFFF;
                sprite.visible = true;
@@ -77,11 +98,7 @@ export default class TextureRender {
       // 操作的方块
       this.drawShape();
    }
-   reset() {
-      for (var i = 0; i < 200; i++) {
-         this.tetrisSprites[i].visible = false;
-      }
-   }
+
    /**
     * 当前块
     */
@@ -90,7 +107,7 @@ export default class TextureRender {
       var shape = tetris.shape;
       var px = shape.x;
       var py = shadow ? shape.shadowY : shape.y;
-      var idx = tetris.playing ? shape.shapeId : 0;
+      var idx = tetris.playing ? shape.shapeId : 8;
       for (var i = 0; i < 4; i++) {
          var x = px + shape.shapeModel.cells[shape.rotation][i * 2];
          var y = py + shape.shapeModel.cells[shape.rotation][i * 2 + 1];
@@ -107,13 +124,13 @@ export default class TextureRender {
     * 下一块
     */
    drawNext() {
+      this.nextContainer.removeChildren();
       var tetris = this.tetris;
       if (!tetris.nextShapes || tetris.nextShapes.length === 0) return;
       //this.ctx.clearRect(this.nextPos.x-1,this.nextPos.y-1,121,121);
-      this.nextContainer.removeChildren();
       for (var i = 0; i < tetris.nextShapes.length; i++) {
          var shape = tetris.nextShapes[i];
-         var idx = tetris.playing ? shape.shapeId : 0;
+         var idx = tetris.playing ? shape.shapeId : 8;
          for (var j = 0; j < 4; j++) {
             var x = 1 + shape.shapeModel.cells[0][j * 2];
             var y = 1 + shape.shapeModel.cells[0][j * 2 + 1];
@@ -132,8 +149,35 @@ export default class TextureRender {
       this.nextContainer.addChild(sprite);
    }
 
+   /**
+    * 暂存
+    */
+   drawHold() {
+      this.holdContainer.removeChildren();
+      var tetris = this.tetris;
+      var shape = tetris.saveShape;
+      if (!shape) return;
+      var idx = tetris.playing ? shape.shapeId : 8;
+      for (var i = 0; i < 4; i++) {
+         var x = 1 + shape.shapeModel.cells[0][i * 2];
+         var y = 1 + shape.shapeModel.cells[0][i * 2 + 1];
+         this.drawHoldSprit(shape.shapeId, x, 4 - y, idx);
+      }
+   }
+   drawHoldSprit(shapeId, x, y, idx) {
+      var sprite = new PIXI.Sprite(this.textures[idx]);
+      var size = this.holdSize;
+      var offsetX = shapeId >= 3 ? size / 2 : 0;
+      sprite.x = offsetX + x * size;
+      sprite.y = y * size;
+      sprite.width = size;
+      sprite.height = size;
+      this.holdContainer.addChild(sprite);
+   }
+
    dispose() {
       this.tetrisContainer.destroy();
       this.nextContainer.destroy();
+      this.holdContainer.destroy();
    }
 }

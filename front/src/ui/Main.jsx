@@ -124,6 +124,7 @@ class Main extends React.Component {
       div.style.marginLeft = -width / 2 + 'px';
       gameManager.render.onResize();
       this.setState({ vertical: h >= w });
+      this.props.onResize(width);
    }
 
    onSpeedGame = () => {

@@ -147,7 +147,7 @@ class Friends extends React.Component {
       return (
          <div className={classes.root}>
             <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onAddFriendClick}>
-               {lang.get('Add Friend')}
+               {lang.get('Add friend')}
             </Button>
             <Paper className={classes.paper}>
                <Table className={classes.table}>
