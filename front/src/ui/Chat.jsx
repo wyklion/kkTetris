@@ -122,6 +122,16 @@ class Chat extends React.Component {
       }
    }
 
+   /**
+    * 焦点事件
+    */
+   onFocus = () => {
+      gameManager.setFocus(false);
+   }
+   onBlur = () => {
+      gameManager.setFocus(true);
+   }
+
    makeMessages() {
       const { classes } = this.props;
       var msgs = [];
@@ -165,6 +175,8 @@ class Chat extends React.Component {
                         ref={instance => this.inputRef = instance}
                         placeholder={lang.get('I say')}
                         fullWidth
+                        onFocus={this.onFocus}
+                        onBlur={this.onBlur}
                         value={this.state.chatInput}
                         onChange={this.handleChange('chatInput')}
                         className={classes.input}

@@ -7,6 +7,7 @@ import PlayData from './PlayData';
 import socket from '../socket/GameSocket';
 import { OPERTABLE } from '../socket/OperTable';
 import gameManager from '../game/GameManager';
+import TrashManager from './TrashManager';
 
 var COL = 10;
 var ROW = 20;
@@ -28,6 +29,7 @@ var Combo = [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5];
 
 export default class Tetris {
    constructor(game, me) {
+      this.trashManager = new TrashManager(this);
       this.game = game;
       this.me = me;
       this.row = ROW;
@@ -38,7 +40,6 @@ export default class Tetris {
       this.renderCount = 0;
       this.init();
    }
-
    init() {
       this.board = [];
       for (var i = 0; i < this.row + 1; i++) {
@@ -77,6 +78,14 @@ export default class Tetris {
       }
 
       this.newShape();
+      // 隐藏的开始时要刷一下
+      if (this.game.single) {
+         this.renderer.renderSpecialData(this.game.lineCount);
+      }
+   }
+   restart(shapes) {
+      this.init();
+      this.start(shapes);
    }
    newShape() {
       this.holded = false;
@@ -92,15 +101,21 @@ export default class Tetris {
          this.gameOver();
       this.render();
    }
+   /**
+    * 冻结当前操作块，出下一块。
+    */
    freeze() {
       this.playData.count++;
       this.attackLines = 0;
       this.shape.freeze();
       this.clearLines();
+      this.game.onLock(this.clearRowCount, this.clearTrashCount);
       if (!this.game.single)
          this.checkAttack();
+      // 首尾相接的地方，出新块
       this.newShape();
       this.render();
+      // 音效
       if (this.clearRowCount === 0) {
          gameManager.soundManager.lock();
       } else {
@@ -124,29 +139,40 @@ export default class Tetris {
       }
       this.render();
    }
-   restart(shapes) {
-      this.init();
-      this.start(shapes);
-   }
+   /**
+    * 检查消除行
+    */
    clearLines() {
       var lines = [];
+      this.clearTrashCount = 0;
       for (var y = 0; y < this.row; y++) {
          var full = true;
+         var hasTrash = false;
          for (var x = 0; x < this.col; x++) {
-            if (this.board[y][x] == 0) {
+            var bid = this.board[y][x];
+            if (bid == 0) {
                full = false;
                break;
+            } else if (bid == 9) {
+               hasTrash = true;
             }
          }
-         if (full)
+         if (full) {
             lines.push(y);
+            if (hasTrash) {
+               // 消了多少垃圾行
+               this.clearTrashCount++;
+            }
+         }
       }
+      // 一共可以消几行
       this.clearRowCount = lines.length;
       if (this.clearRowCount === 0) {
          this.combo = 0;
          return;
       }
 
+      // 攻击行数
       var attackLine = this.checkClear(this.clearRowCount);
 
       var line = lines.shift();
@@ -189,10 +215,12 @@ export default class Tetris {
       this.playData.attack += this.attackLines;
    }
    //both ...
+   // 消行计算，tspin或消4行算一次攻击状态，连续这个状态有加成。
    checkClear(lines) {
       this.combo++;
       this.playData.lines += lines;
       var attackLine;
+      // 先检查T-Spin
       if (this.checkTspin()) {
          if (this.lastClear)
             attackLine = lines === 3 ? 8 : lines * 2 + 1;
@@ -200,6 +228,7 @@ export default class Tetris {
             attackLine = lines * 2;
          this.lastClear = true;
       }
+      // 攻击状态。
       else if (this.game.setting.attackMode === "0124") {
          if (lines >= 2) {
             if (lines === 4) {
@@ -220,6 +249,9 @@ export default class Tetris {
       attackLine += this.combo >= 11 ? 5 : Combo[this.combo];
       return attackLine;
    }
+   /**
+    * T-Spin检查
+    */
    checkTspin() {
       if (this.game.setting.tspinMode === "3T") {
          if (!this.lastRotate || this.shape.shapeId !== 3) return false;
@@ -247,6 +279,9 @@ export default class Tetris {
       }
       return false;
    }
+   /**
+    * 暂存
+    */
    holdShape() {
       if (this.holded) return;
       if (this.saveShape) {
@@ -265,6 +300,9 @@ export default class Tetris {
       this.operate(OPERTABLE.hold);
       this.render();
    }
+   /**
+    * 旋转
+    */
    rotate(anti) {
       var ok = this.shape.rotate(anti);
       if (ok) {
@@ -277,6 +315,9 @@ export default class Tetris {
          this.render();
       }
    }
+   /**
+    * 旋转180度
+    */
    rotate180() {
       var ok = this.shape.rotate180();
       if (ok) {
@@ -286,6 +327,18 @@ export default class Tetris {
          this.render();
       }
    }
+   /**
+    * 硬降
+    */
+   drop() {
+      this.attackLines = 0;
+      this.operate(OPERTABLE.drop);
+      this.shape.drop();
+      this.render();
+   }
+   /**
+    * 各种移动
+    */
    move(offX, offY) {
       // console.log(offX, offY);
       var ok = this.shape.move(offX, offY);
@@ -357,28 +410,68 @@ export default class Tetris {
          this.render();
       }
    }
+   /**
+    * 自然下落
+    */
    moveDownNature() {
       this.operate(OPERTABLE.downNature);
       this.move(0, -1);
       this.render();
    }
-   drop() {
-      this.attackLines = 0;
-      this.operate(OPERTABLE.drop);
-      this.shape.drop();
-      this.render();
-   }
+   /**
+    * 检查在地面可以操作多少次
+    */
    checkFloor() {
+      // 已经在地上了操作时可以清除自然下落计时。最多15次。
       if (this.shape.floor) {
          if (this.shape.floorCount < 15) {
             this.shape.floorCount++;
             this.game.clearFloorTime();
          }
       }
+      // 刚落地，记录状态
       else if (!this.shape.checkDown()) {
          this.shape.floor = true;
          this.shape.floorCount = 0;
          this.game.clearFloorTime();
+      }
+   }
+   /**
+    * 上涨垃圾行
+    */
+   raiseTrash(lines = 1) {
+      var trashDatas = this.trashManager.makeTrash(lines);
+      this.moveBoardUp(lines);
+      this.fillTrash(trashDatas);
+      this.render();
+   }
+   /**
+    * 整体向上移几行
+    */
+   moveBoardUp(lines) {
+      // 超出的一行也要移，之后再判断gameOver。
+      for (var y = this.row; y >= lines; y--) {
+         for (var x = 0; x < this.col; x++) {
+            this.board[y][x] = this.board[y - lines][x];
+         }
+      }
+   }
+   /**
+    * 填充垃圾行
+    */
+   fillTrash(datas) {
+      var len = datas.length;
+      for (var i = 0; i < len; i++) {
+         var blank = datas[i];
+         for (var col = 0; col < COL; col++) {
+            if (col === blank) {
+               this.board[len - 1 - i][col] = 0;
+            }
+            else {
+               // 垃圾9，死亡8
+               this.board[len - 1 - i][col] = 9;
+            }
+         }
       }
    }
    //=============== for vs game =================

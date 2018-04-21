@@ -281,6 +281,14 @@ class GameSocket {
          time: time,
       });
    }
+   /**
+    * 挖掘记录
+    */
+   sendDigScore(lines, time) {
+      this.socket.emit('dig' + lines, {
+         time: time,
+      });
+   }
 
    /**
     * 改语言

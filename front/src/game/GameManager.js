@@ -1,5 +1,6 @@
 import Render from '../render/Render';
 import SpeedGame from './SpeedGame';
+import DigGame from './DigGame';
 import socket from '../socket/GameSocket';
 import RoomManager from './RoomManager';
 import UserManager from './UserManager';
@@ -164,7 +165,16 @@ class GameManager {
       }
    }
    /**
-    * 40行游戏
+    * 游戏焦点事件
+    */
+   setFocus(focus) {
+      if (this.game) {
+         this.game.setFocus(focus);
+      }
+   }
+
+   /**
+    * 开始竞速游戏
     */
    startSpeedGame() {
       this.reset();
@@ -172,12 +182,31 @@ class GameManager {
       this.render.main.setTetris(game.tetris);
       game.start();
    }
+   /**
+    * 开始挖掘游戏
+    */
+   startDigGame(lines) {
+      this.reset();
+      var game = this.game = new DigGame(lines);
+      this.render.main.setTetris(game.tetris);
+      game.start();
+   }
+
+   /**
+    * 游戏结束，由各Game通知
+    */
    onGameOver(win, data) {
       this.main.onGameOver(win, data);
    }
+   /**
+    * 主动结束游戏，由main界面通知
+    */
    endGame() {
       this.reset();
    }
+   /**
+    * 主动重开游戏
+    */
    restart() {
       if (this.game) {
          this.game.restart();

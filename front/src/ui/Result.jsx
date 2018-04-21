@@ -75,6 +75,9 @@ class Result extends React.Component {
       )
    }
 
+   /**
+    * 竞速结果
+    */
    makeSpeedResult(data) {
       if (!data.win) {
          return this.makeLoseResult(data);
@@ -94,10 +97,48 @@ class Result extends React.Component {
                {lang.get('Personal Best') + ':' + best.toFixed(1)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.item}>
-               {lang.get('Time') + ':' + data.time.toFixed(1)}
+               {lang.get('Time') + ':' + data.time.toFixed(2)}
             </Typography>
             <Typography component="p" gutterBottom className={classes.item}>
                {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
+            </Typography>
+         </Paper>
+      )
+   }
+
+   /**
+    * 挖掘结果
+    */
+   makeDigResult(data) {
+      if (!data.win) {
+         return this.makeLoseResult(data);
+      }
+      var classes = this.props.classes;
+      var title = '';
+      var best = 1000;
+      if (data.lineCount === 18) {
+         title = lang.get('Dig Race 18L');
+         best = gameManager.user.dig18Best;
+         if (data.time < best) {
+            best = data.time;
+         }
+      }
+      return (
+         <Paper className={classes.root} elevation={4}>
+            <Typography variant="display1" gutterBottom className={classes.title}>
+               {title}
+            </Typography>
+            <Typography component="p" gutterBottom className={classes.best}>
+               {lang.get('Personal Best') + ':' + best.toFixed(2)}
+            </Typography>
+            <Typography component="p" gutterBottom className={classes.item}>
+               {lang.get('Time') + ':' + data.time.toFixed(2)}
+            </Typography>
+            <Typography component="p" gutterBottom className={classes.item}>
+               {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
+            </Typography>
+            <Typography component="p" gutterBottom className={classes.item}>
+               {lang.get('Pieces') + ':' + data.count}
             </Typography>
          </Paper>
       )
@@ -111,6 +152,9 @@ class Result extends React.Component {
       switch (data.gameType) {
          case 'speed':
             result = this.makeSpeedResult(data);
+            break;
+         case 'dig':
+            result = this.makeDigResult(data);
             break;
          default:
             break;

@@ -10,6 +10,11 @@ import theme from './Theme';
 import lang from '../util/lang';
 
 const styles = theme => ({
+   labelButton: {
+      marginBottom: '10px',
+      minWidth: '70px',
+      width: '100%',
+   },
    button: {
       marginBottom: '10px',
       minWidth: '60px',
@@ -76,23 +81,30 @@ class SingleMenu extends React.Component {
          if (!this.props.playing) {
             buttons = (
                <div>
-                  <Button variant="raised" color="primary" title={lang.get('Srpint 40L') + '(F2)'} className={classes.button} onClick={this.onSpeedGameClick}>
-                     {lang.get('Sprint')}
+                  <Button variant="raised" color="primary" title={lang.get('Srpint 40L') + ' (F2)'} className={classes.labelButton} onClick={this.onSpeedGameClick}>
+                     {lang.get('Sprint') + '(F2)'}
                   </Button>
-                  <Button variant="raised" color="secondary" title={lang.get('Dig 20L') + '(F3)'} className={classes.button} onClick={this.onDigGameClick}>
-                     {lang.get('Dig')}
+                  <Button variant="raised" color="primary" title={lang.get('Dig Race 18L') + ' (F3)'} className={classes.labelButton} onClick={this.onDigGameClick}>
+                     {lang.get('Dig') + '(F3)'}
                   </Button>
                </div>
             )
          } else {
             buttons = (
                <div>
-                  <Button variant="fab" color="primary" title="重来(F2)" aria-label="add" className={classes.button} onClick={this.onRestartClick}>
+                  <Button variant="raised" color="primary" title={lang.get('Restart') + ' (F2)'} className={classes.labelButton} onClick={this.onSpeedGameClick}>
+                     {lang.get('Restart') + '(F2)'}
+                  </Button>
+                  <Button variant="raised" color="secondary" title={lang.get('End') + ' (ESC)'} className={classes.labelButton} onClick={this.onDigGameClick}>
+                     {lang.get('End') + '(ESC)'}
+                  </Button>
+                  {/* <Button variant="fab" color="primary" title={lang.get('Restart') + '(F2)'} aria-label="add" className={classes.button} onClick={this.onRestartClick}>
                      <RefreshIcon />
                   </Button>
-                  <Button variant="fab" color="secondary" title="结束(ESC)" aria-label="add" className={classes.button} onClick={this.onEndGameClick}>
+                  <Button variant="fab" color="secondary" title={lang.get('End') + '(ESC)'} aria-label="add" className={classes.button} onClick={this.onEndGameClick}>
+                     {lang.get('End') + '(ESC)'}
                      <CloseIcon />
-                  </Button>
+                  </Button> */}
                </div>
             )
          }

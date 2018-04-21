@@ -73,25 +73,48 @@ router.get("/logout", function (req, res) {
  */
 router.get("/userInfo", function (req, res) {
    var id = req.query.id;
-   mongo.findUser(id, (err, user) => {
+   mongo.findOption('users', { id: id }, {
+      fields: ['id', 'nick', 'sign', 'keyboard',
+         'speed40Times', 'speed40Best', 'speed40Date',
+         'dig18Times', 'dig18Best', 'dig18Date',
+      ]
+   }, function (err, result) {
       if (err) {
+         res.send({ err: err });
+      } else if (result.length === 0) {
          res.send({ err: '找不到用户！' });
+      } else {
+         res.send({ result: result[0] });
       }
-      else {
-         res.send({ result: { id: id, nick: user.nick, sign: user.sign, speed40Times: user.speed40Times, speed40Best: user.speed40Best } });
-      }
-   })
+   });
+   // mongo.findUser(id, (err, user) => {
+   //    if (err) {
+   //       res.send({ err: '找不到用户！' });
+   //    }
+   //    else {
+   //       res.send({ result: { id: id, nick: user.nick, sign: user.sign, speed40Times: user.speed40Times, speed40Best: user.speed40Best } });
+   //    }
+   // })
 });
 
 /**
  * 排行榜
  */
 router.route("/rank").get(function (req, res) {
-   mongo.findOption("users", { speed40Best: { $lt: 999 } }, {
-      fields: ["id", "nick", "speed40Best"], limit: 100, sort: { "speed40Best": 1 }
-   }, function (result) {
-      res.send({ result: result });
-   });
+   var type = req.query.type;
+   if (type === 'speed40') {
+      mongo.findOption("users", { speed40Best: { $lt: 999 } }, {
+         fields: ['id', 'nick', 'speed40Best', 'speed40Date'], limit: 100, sort: { 'speed40Best': 1 }
+      }, function (err, result) {
+         res.send({ result: result });
+      });
+   } else if (type === 'dig18') {
+      mongo.findOption("users", { dig18Best: { $lt: 999 } }, {
+         fields: ['id', 'nick', 'dig18Best', 'dig18BestDate'], limit: 100, sort: { 'dig18Best': 1 }
+      }, function (err, result) {
+         res.send({ result: result });
+      });
+   }
 });
 
 //kk admin

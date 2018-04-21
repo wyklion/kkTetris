@@ -8,6 +8,7 @@ import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Ta
 import http from '../util/http.js';
 import gameManager from '../game/GameManager.js';
 import lang from '../util/lang';
+import Tools from '../util/Tools';
 
 const styles = theme => ({
    root: {
@@ -32,11 +33,12 @@ const styles = theme => ({
 
 class Rank extends React.Component {
    state = {
+      type: 'speed40',
       rank: null,
    };
 
    componentDidMount() {
-      http.get({ url: 'rank' }, (err, result) => {
+      http.get({ url: 'rank', data: { type: this.state.type } }, (err, result) => {
          if (err) {
             alert(err);
          } else {
@@ -49,17 +51,46 @@ class Rank extends React.Component {
       this.props.onReturn();
    }
 
-   makeRows() {
+   makeSpeedRows() {
       const { classes } = this.props;
       var rank = this.state.rank;
       var rows = [];
       for (var i = 0; i < rank.length; i++) {
          var record = rank[i];
          var best = parseFloat(record.speed40Best).toFixed(1);
+         var date = record.date ? Tools.formatTime(record.date, 'yyyy-MM-DD hh:mm:ss') : '';
          rows.push(
             <TableRow key={record.id} className={classes.row}>
                <TableCell>{record.id}</TableCell>
                <TableCell>{record.nick}</TableCell>
+               <TableCell>{date}</TableCell>
+               <TableCell>{best}</TableCell>
+            </TableRow>
+         )
+      }
+      if (rows.length === 0) {
+         rows.push(
+            <TableRow key='nothing' className={classes.row}>
+               <TableCell className={classes.nothing}>{lang.get('Nobody')}</TableCell>
+            </TableRow>
+         )
+      }
+      return rows;
+   }
+
+   makeDigRows() {
+      const { classes } = this.props;
+      var rank = this.state.rank;
+      var rows = [];
+      for (var i = 0; i < rank.length; i++) {
+         var record = rank[i];
+         var best = parseFloat(record.speed40Best).toFixed(1);
+         var date = record.date ? Tools.formatTime(record.date, 'yyyy-MM-DD hh:mm:ss') : '';
+         rows.push(
+            <TableRow key={record.id} className={classes.row}>
+               <TableCell>{record.id}</TableCell>
+               <TableCell>{record.nick}</TableCell>
+               <TableCell>{date}</TableCell>
                <TableCell>{best}</TableCell>
             </TableRow>
          )
@@ -80,7 +111,9 @@ class Rank extends React.Component {
       if (!rank) {
          return null;
       }
-      var rows = this.makeRows();
+      var rows = this.makeSpeedRows();
+      // var digRows = this.makeDigRows();
+
       return (
          <div className={classes.root}>
             <Button
@@ -92,7 +125,7 @@ class Rank extends React.Component {
                {lang.get('Return')}
             </Button>
             <Typography variant="headline" className={classes.title}>
-               {lang.get('Learder Board') + '(' + lang.get('Sprint 40L') + ')'}
+               {lang.get('Learderboard') + '(' + lang.get('Sprint 40L') + ')'}
             </Typography>
             <Table className={classes.table}>
                <TableHead >
@@ -100,12 +133,29 @@ class Rank extends React.Component {
                      <TableCell className={classes.headcell}>ID</TableCell>
                      <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
                      <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>
+                     <TableCell className={classes.headcell}>{lang.get('Date')}</TableCell>
                   </TableRow>
                </TableHead>
                <TableBody>
                   {rows}
                </TableBody>
             </Table>
+            {/* <Typography variant="headline" className={classes.title}>
+               {lang.get('Learderboard') + '(' + lang.get('Dig Race 18L') + ')'}
+            </Typography>
+            <Table className={classes.table}>
+               <TableHead >
+                  <TableRow className={classes.row}>
+                     <TableCell className={classes.headcell}>ID</TableCell>
+                     <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
+                     <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>
+                     <TableCell className={classes.headcell}>{lang.get('Date')}</TableCell>
+                  </TableRow>
+               </TableHead>
+               <TableBody>
+                  {digRows}
+               </TableBody>
+            </Table> */}
          </div>
       );
    }

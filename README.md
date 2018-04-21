@@ -30,6 +30,7 @@ vi /etc/mongod.conf
 ```
 ```
 db.users.update({},{$set:{'keyboard.downDelay':20}},{multi:true})
+db.users.update({},{$set:{'speed40Date':0,dig18Best:1000,dig18Times:0,dig18Date:0}},{multi:true})
 ```
 
 ### git

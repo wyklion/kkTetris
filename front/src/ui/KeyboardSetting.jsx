@@ -250,7 +250,7 @@ class KeyboardSetting extends React.Component {
                   </TableCell>
                </TableRow>
                <TableRow>
-                  <TableCell>{lang.get('Move Delay' + '(0~500ms)')}</TableCell>
+                  <TableCell>{lang.get('Move Delay') + '(0~500ms)'}</TableCell>
                   <TableCell>
                      <Input
                         inputProps={
@@ -266,7 +266,7 @@ class KeyboardSetting extends React.Component {
                   </TableCell>
                </TableRow>
                <TableRow>
-                  <TableCell>{lang.get('Soft Down Delay' + '(0~500ms)')}</TableCell>
+                  <TableCell>{lang.get('Soft Down Delay') + '(0~500ms)'}</TableCell>
                   <TableCell>
                      <Input
                         inputProps={

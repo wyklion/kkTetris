@@ -9,6 +9,11 @@ export default class SpeedGame extends Game {
       this.gameType = 'speed';
       this.lineCount = lineCount;
    }
+   onLock(clearLine, clearTrash) {
+      if (clearLine > 0) {
+         this.tetris.renderer.renderSpecialData(this.lineCount - this.tetris.playData.lines);
+      }
+   }
    checkOver() {
       if (this.tetris.playData.lines >= this.lineCount) {
          this.tetris.gameOver(true);

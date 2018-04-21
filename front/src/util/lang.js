@@ -49,6 +49,8 @@ var table = {
    'Sprint 40L times': ['竞速40行次数'],
    'Sprint 40L best': ['竞速40行最佳'],
    'Sprint 40L': ['竞速40行'],
+   'Dig Race 18L times': ['挖掘18行次数'],
+   'Dig Race 18L best': ['挖掘18行最佳'],
    ID: ['帐号'],
    Sign: ['签名'],
    ': ': ['： '],
@@ -58,6 +60,7 @@ var table = {
    'Speed': ['速度'],
    'Pieces': ['块数'],
    'Lines': ['消行'],
+   'Remain': ['剩余'],
    'Personal Best': ['个人最佳'],
    'Game Over': ['游戏结束'],
    'Waiting': ['等待中'],
@@ -71,7 +74,9 @@ var table = {
    'Secs': ['秒'],
    'Sprint': ['竞速'],
    'Dig': ['挖掘'],
-   'Dig 20L': ['挖掘20行'],
+   'Dig Race 18L': ['挖掘18行'],
+   'Restart': ['重来'],
+   'End': ['结束']
 }
 
 /**

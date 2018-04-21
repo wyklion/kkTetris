@@ -35,6 +35,10 @@ Mongo.prototype = {
          // 单人信息
          speed40Times: 0, // 40行次数
          speed40Best: 1000, // 40行最佳
+         speed40Date: 0,
+         dig18Times: 0,
+         dig18Best: 1000,
+         dig18Date: 0,
          // 好友
          friends: [],
          // 个人设置
@@ -153,11 +157,12 @@ Mongo.prototype = {
       var c = this.db.collection(collection);
       c.find(query, options).toArray(function (err, result) {
          if (err) {
+            callback(err);
             console.log('Error:' + err);
             return;
          }
          else
-            callback(result);
+            callback(null, result);
       });
    },
    find: function (collection, query, callback) {

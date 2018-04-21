@@ -51,10 +51,10 @@ const styles = theme => ({
       position: 'absolute',
    },
    singleMenu: {
-      left: '85%',
+      left: '80%',
       position: 'absolute',
       top: '70%',
-      width: '10%',
+      width: '18%',
    }
 });
 
@@ -134,8 +134,9 @@ class Main extends React.Component {
    }
 
    onDigGame = () => {
-      console.log('dig20');
+      console.log('dig18');
       this.setState({ singlePlaying: true, showResult: false });
+      gameManager.startDigGame(18);
    }
 
    onRestartGame = () => {
@@ -145,7 +146,7 @@ class Main extends React.Component {
    }
 
    /**
-    * 游戏胜利或失败
+    * 游戏胜利或失败，由gameManager通知
     */
    onGameOver = (win, data) => {
       console.log('onGameOver', win, data);

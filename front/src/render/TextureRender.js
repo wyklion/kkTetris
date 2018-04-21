@@ -105,6 +105,9 @@ export default class TextureRender {
    drawShape(shadow) {
       var tetris = this.tetris;
       var shape = tetris.shape;
+      if (!shape) {
+         return;
+      }
       var px = shape.x;
       var py = shadow ? shape.shadowY : shape.y;
       var idx = tetris.playing ? shape.shapeId : 8;

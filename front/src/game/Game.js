@@ -17,6 +17,7 @@ export default class Game {
       this.watch = false;
       this.playing = false;
       this.ready = false;
+      this.focus = true;
 
       this.single = true;
       this.isPaused = false;
@@ -32,6 +33,9 @@ export default class Game {
    }
    updateKeyboard() {
       this.keyManager.updateInput();
+   }
+   setFocus(focus) {
+      this.focus = focus;
    }
    input() {
       var keyboard = gameManager.user.keyboard;
@@ -55,20 +59,20 @@ export default class Game {
          holdFunc: function () { _this.tetris.holdShape(); },
       });
 
-      this.onKeyDown = function (e) {
+      this.onKeyDown = (e) => {
          // if (e.keyCode === 113) { // F2
-         //    _this.start();
+         //    this.start();
          // }
          //else if(e.keyCode === 80) // P
-         //    _this.pause();
-         if (!_this.isPaused && _this.tetris.playing) {
-            _this.keyManager.onKeyDown(e.keyCode);
+         //    this.pause();
+         if (this.focus && !this.isPaused && this.tetris.playing) {
+            this.keyManager.onKeyDown(e.keyCode);
+            if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 32)
+               e.preventDefault();
          }
-         if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 32)
-            e.preventDefault();
       }
-      this.onKeyUp = function (e) {
-         _this.keyManager.onKeyUp(e.keyCode);
+      this.onKeyUp = (e) => {
+         this.keyManager.onKeyUp(e.keyCode);
       }
 
       document.body.addEventListener("keydown", this.onKeyDown, false);

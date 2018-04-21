@@ -122,6 +122,9 @@ export default class GraphicRender {
    drawShape(shadow) {
       var tetris = this.tetris;
       var shape = tetris.shape;
+      if (!shape) {
+         return;
+      }
       var px = shape.x;
       var py;
       var color;

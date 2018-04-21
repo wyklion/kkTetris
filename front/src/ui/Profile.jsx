@@ -60,13 +60,23 @@ class Profile extends React.Component {
       if (!user) {
          return null;
       }
+      // console.log('profile', user);
       var speed40Times = user.speed40Times;
       var speed40Best = parseFloat(user.speed40Best);
       if (speed40Best) {
          if (speed40Best >= 999) {
             speed40Best = lang.get('None');
          } else {
-            speed40Best = speed40Best.toFixed(1) + lang.get('Secs');
+            speed40Best = speed40Best.toFixed(2) + ' ' + lang.get('Secs');
+         }
+      }
+      var dig18Times = user.dig18Times;
+      var dig18Best = parseFloat(user.dig18Best);
+      if (dig18Best) {
+         if (dig18Best >= 999) {
+            dig18Best = lang.get('None');
+         } else {
+            dig18Best = dig18Best.toFixed(2) + ' ' + lang.get('Secs');
          }
       }
       var maohao = lang.get(': ');
@@ -103,6 +113,12 @@ class Profile extends React.Component {
                </Typography>
                <Typography variant="subheading" className={classes.item}>
                   {lang.get('Sprint 40L best') + maohao + speed40Best}
+               </Typography>
+               <Typography variant="subheading" className={classes.item}>
+                  {lang.get('Dig Race 18L times') + maohao + dig18Times}
+               </Typography>
+               <Typography variant="subheading" className={classes.item}>
+                  {lang.get('Dig Race 18L best') + maohao + dig18Best}
                </Typography>
             </div>
          </div>

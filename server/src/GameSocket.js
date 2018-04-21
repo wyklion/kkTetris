@@ -39,6 +39,7 @@ class GameSocket {
       socket.on('operation', this.onPlaying.bind(this));
 
       socket.on('speed40', this.onSpeed.bind(this));
+      socket.on('dig18', this.onDig18.bind(this));
       socket.on('setting', this.onSetting.bind(this));
       socket.on('chat', this.onChat.bind(this));
       socket.on('friend', this.onFriend.bind(this));
@@ -145,10 +146,20 @@ class GameSocket {
          this.roomManager.userReady(socket);
       }
    }
+   /**
+    * 竞速记录
+    */
    onSpeed(data) {
       var socket = this.socket;
       mongo.updateAddValue("users", { id: this.userId }, { speed40Times: 1 });
-      mongo.updateOne("users", { id: this.userId, speed40Best: { "$gt": data.time } }, { speed40Best: data.time });
+      mongo.updateOne("users", { id: this.userId, speed40Best: { "$gt": data.time } }, { speed40Best: data.time, speed40Date: Date.now() });
+   }
+   /**
+    * 挖掘记录
+    */
+   onDig18(data) {
+      mongo.updateAddValue("users", { id: this.userId }, { dig18Times: 1 });
+      mongo.updateOne("users", { id: this.userId, dig18Best: { "$gt": data.time } }, { dig18Best: data.time, dig18Date: Date.now() });
    }
 
    /**

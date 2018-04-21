@@ -25,6 +25,10 @@ var layout = {
    data: {
       x: 385,
       y: 280,
+   },
+   specialData: {
+      x: 2,
+      y: 280,
    }
 }
 
@@ -100,6 +104,7 @@ export default class TetrisRender {
          this.initNext();
          this.initHold();
          this.initData();
+         this.initSpecialData();
       }
    }
 
@@ -119,6 +124,9 @@ export default class TetrisRender {
          for (var k in this.dataLabels) {
             this.dataLabels[k].text = lang.get(k);
          }
+      }
+      if (this.specialDataLabel) {
+         this.specialDataLabel.text = lang.get('Remain');
       }
    }
 
@@ -302,6 +310,47 @@ export default class TetrisRender {
    }
 
    /**
+    * 显示剩余多少行
+    */
+   initSpecialData() {
+      if (this.specialDataArea) {
+         this.specialDataArea.destroy({ children: true });
+      }
+      var sa = this.specialDataArea = new PIXI.Container();;
+      sa.x = layout.specialData.x;
+      sa.y = layout.specialData.y;
+      sa.visible = false;
+      this.container.addChild(sa);
+
+      var labelStyle = {
+         fontWeight: 'bold',
+         fontSize: 12 * 2,
+         fontFamily: 'Arial',
+         align: 'center',
+         fill: '#777777',
+      };
+      var dataStyle = {
+         fontWeight: 'bold',
+         fontSize: 25 * 2,
+         fontFamily: 'Arial',
+         align: 'center',
+         fill: '#DDDDDD',
+      };
+      var label = this.specialDataLabel = new PIXI.Text(lang.get('Remain'), labelStyle);
+      label.x = 34;
+      label.y = 30;
+      label.anchor.set(0.5, 0.5);
+      label.scale.set(0.6, 0.6);
+      sa.addChild(label);
+      var dataText = this.specialDataText = new PIXI.Text(0, dataStyle);
+      dataText.x = 17;
+      dataText.y = 60;
+      label.anchor.set(0.5, 0.5);
+      dataText.scale.set(0.7, 0.7);
+      sa.addChild(dataText);
+   }
+
+   /**
     * 清空并隐藏状态
     */
    clear() {
@@ -310,6 +359,7 @@ export default class TetrisRender {
          this.nextText.visible = false;
          this.holdText.visible = false;
          this.dataArea.visible = false;
+         this.specialDataArea.visible = false;
       }
    }
 
@@ -361,5 +411,18 @@ export default class TetrisRender {
    }
    smallTimeText() {
       this.dataTexts['time'].scale.set(0.5, 0.5);
+   }
+   /**
+    * 特殊数据
+    */
+   renderSpecialData(num) {
+      this.specialDataArea.visible = true;
+      var text = this.specialDataText;
+      num = num < 0 ? 0 : num;
+      text.text = num;
+      text.style.fill = (num > 0 && num <= 3) ? '#FF0000' : '#FFFFFF';
+      if (!config.fps60) {
+         this.render.render();
+      }
    }
 };
