@@ -35,7 +35,7 @@ export default class DigGame extends Game {
          if (this.addedCount + this.delayAddTrash > this.lineCount) {
             this.delayAddTrash = this.lineCount - this.addedCount;
          }
-      } else {
+      } else if (clearLine === 0) {
          if (this.delayAddTrash > 0) {
             this.tetris.raiseTrash(this.delayAddTrash);
             this.addedCount += this.delayAddTrash;
