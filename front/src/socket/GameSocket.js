@@ -9,6 +9,12 @@ import Listeners from '../util/Listeners';
 
 class GameSocket {
    constructor() {
+      // // 确保gameManager先创建。
+      // gameManager.reset();
+      this.userManager = gameManager.userManager;
+      this.roomManager = gameManager.roomManager;
+      this.chatManager = gameManager.chatManager;
+
       this.socket = io(config.server, {
          autoConnect: false
       });
@@ -56,9 +62,6 @@ class GameSocket {
       this.reconnectListeners.execute();
    }
    onConnection = (data) => {
-      this.userManager = gameManager.userManager;
-      this.roomManager = gameManager.roomManager;
-      this.chatManager = gameManager.chatManager;
       if (!data.err) {
          // 初始化不触发刷新
          this.userManager.initUsers(data.user, data.users);

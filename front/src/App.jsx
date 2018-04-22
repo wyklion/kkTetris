@@ -11,12 +11,12 @@ import './App.css';
 import HeadBar from './ui/HeadBar';
 import Login from './ui/Login';
 import http from './util/http';
-import socket from './socket/GameSocket';
 import Main from './ui/Main';
 import Profile from './ui/Profile';
 import Rank from './ui/Rank';
 import theme from './ui/Theme';
 import gameManager from './game/GameManager';
+import socket from './socket/GameSocket';
 import lang from './util/lang';
 
 const styles = {
@@ -43,6 +43,7 @@ class App extends React.Component {
    componentDidMount() {
       gameManager.app = this;
       gameManager.init();
+      socket.disconnectListeners.add(this.onDisconnect);
    }
 
    componentWillUnmount() {
@@ -96,6 +97,14 @@ class App extends React.Component {
       gameManager.logout();
       this.setState({ logined: false });
       socket.disconnect();
+   }
+
+   /**
+    * 被断开连接
+    */
+   onDisconnect = () => {
+      console.log('你已被断开连接。。。')
+      this.setState({ logined: false });
    }
 
    /**

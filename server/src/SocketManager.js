@@ -29,7 +29,7 @@ class SocketManager {
       this.roomManager = new RoomManager();
       this.chatManager = new ChatManager();
 
-      this.gameSockets = [];
+      this.gameSockets = {};
    }
    init() {
       var _this = this;
@@ -107,24 +107,20 @@ class SocketManager {
                socket.disconnect(true);
                console.log(userId, 'is not exists...');
             } else {
-               if (this.userManager.has(userId)) {
-                  console.log(userId, 'already connected...');
-                  socket.emit('onConnection', { err: '该用户已登录！' });
-                  socket.disconnect(true);
-               } else {
-                  console.log(userId, "connected... " + socket.id);
-                  var gameSocket = new GameSocket(this, socket, user);
-                  this.gameSockets.push(gameSocket);
+               if (this.gameSockets[userId]) {
+                  this.gameSockets[userId].dispose();
                }
+               console.log(userId, "connected... " + socket.id);
+               var gameSocket = new GameSocket(this, socket, user);
+               this.gameSockets[userId] = gameSocket;
             }
          });
       });
    }
-   removeSocket(socket) {
-      var idx = this.gameSockets.indexOf(socket);
-      if (idx > -1) {
-         this.gameSockets.splice(idx, 1);
-      }
+   removeSocket(userId) {
+      var gs = this.gameSockets[userId];
+      gs.disconnect();
+      delete this.gameSockets[userId];
    }
 }
 

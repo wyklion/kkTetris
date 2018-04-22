@@ -23,14 +23,7 @@ class GameSocket {
       var userId = this.userId = user.id;
       this.roomId = null;
 
-      // 加用户
-      if (this.userManager.has(userId)) {
-         socket.emit('onConnection', { err: '该用户已登录！' });
-         socket.disconnect();
-         this.socketManager.removeSocket(this);
-         return;
-      }
-      this.userManager.add(userId);
+      this.userManager.add(userId, this);
 
       socket.on('disconnect', this.onDisconnect.bind(this));
       socket.on('createRoom', this.onCreateRoom.bind(this));
@@ -48,14 +41,13 @@ class GameSocket {
       socket.emit('onConnection', { err: null, user: user, users: this.userManager.getUsers(), rooms: this.roomManager.getRooms(), chat: this.chatManager.getMessages() });
       socket.broadcast.emit('lobbyInfo', { err: null, type: 'setUser', user: this.userManager.get(userId) });
    }
-   onDisconnect(reason) {
-      var socket = this.socket;
+   dispose() {
       var userId = this.userId;
-      console.log(userId, "disconnect for reason:", reason);
+      console.log("dispose gamesocket...", userId);
       var roomId = this.userManager.getRoom(userId);
       this.userManager.remove(userId);
       if (roomId != null) {
-         this.roomManager.userLeave(roomId, userId, socket);
+         this.roomManager.userLeave(roomId, userId, this.socket);
          var room = this.roomManager.getRoom(roomId);
          if (room) {
             this.io.emit('lobbyInfo', { err: null, type: 'setRoom', room: room });
@@ -64,7 +56,16 @@ class GameSocket {
          }
       }
       this.io.emit('lobbyInfo', { err: null, type: 'removeUser', userId: userId });
-      this.socketManager.removeSocket(this);
+      this.socketManager.removeSocket(userId);
+      this.disconnect('dispose...');
+   }
+   disconnect(reason) {
+      if (this.socket.connected) {
+         this.socket.disconnect(reason);
+      }
+   }
+   onDisconnect(reason) {
+      this.dispose();
    }
    onCreateRoom(data) {
       var socket = this.socket;

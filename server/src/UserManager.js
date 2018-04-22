@@ -10,8 +10,12 @@ class UserManager {
          roomId: null,
       };
    }
+   /**
+    * 删掉
+    */
    remove(userId) {
-      if (this.users[userId]) {
+      var user = this.get(userId);
+      if (user) {
          delete this.users[userId];
       }
    }
