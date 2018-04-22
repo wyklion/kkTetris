@@ -114,7 +114,6 @@ export default class Tetris {
          this.checkAttack();
       // 首尾相接的地方，出新块
       this.newShape();
-      this.render();
       // 音效
       if (this.clearRowCount === 0) {
          gameManager.soundManager.lock();
@@ -138,6 +137,7 @@ export default class Tetris {
          this.game.gameOver(win);
       }
       this.render();
+      this.renderer.renderData();
    }
    /**
     * 检查消除行

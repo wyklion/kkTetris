@@ -9,6 +9,7 @@ import config from '../config';
 import lang from '../util/lang';
 import TetrisSound from '../sound/TetrisSound'
 import TextureManager from '../render/TextureManager';
+import LayoutManager from '../render/LayoutManager';
 
 /**
  * 游戏管理
@@ -27,6 +28,8 @@ class GameManager {
       this.soundManager = new TetrisSound();
       // 贴图管理
       this.textureManager = new TextureManager();
+      // 布局管理
+      this.layoutManager = new LayoutManager();
 
       // 当前游戏
       this.game = null;

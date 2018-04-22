@@ -73,10 +73,10 @@ class Friends extends React.Component {
                <TableCell style={style}>{friend.id}</TableCell>
                <TableCell style={style}>{friend.nick}</TableCell>
                <TableCell>
-                  <Button color="primary" size="small" className={classes.infoButton} onClick={this.onFriendInfo(id)}>
+                  <Button color="primary" size="small" className={classes.infoButton} onClick={this.onFriendInfo(friend.id)}>
                      {lang.get('Info')}
                   </Button>
-                  <Button color="primary" size="small" className={classes.infoButton} onClick={this.onRemoveFriend(id)}>
+                  <Button color="primary" size="small" className={classes.infoButton} onClick={this.onRemoveFriend(friend.id)}>
                      {lang.get('Delete')}
                   </Button>
                </TableCell>
