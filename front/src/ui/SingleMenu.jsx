@@ -92,10 +92,10 @@ class SingleMenu extends React.Component {
          } else {
             buttons = (
                <div>
-                  <Button variant="raised" color="primary" title={lang.get('Restart') + ' (F2)'} className={classes.labelButton} onClick={this.onSpeedGameClick}>
+                  <Button variant="raised" color="primary" title={lang.get('Restart') + ' (F2)'} className={classes.labelButton} onClick={this.onRestartClick}>
                      {lang.get('Restart') + '(F2)'}
                   </Button>
-                  <Button variant="raised" color="secondary" title={lang.get('End') + ' (ESC)'} className={classes.labelButton} onClick={this.onDigGameClick}>
+                  <Button variant="raised" color="secondary" title={lang.get('End') + ' (ESC)'} className={classes.labelButton} onClick={this.onEndGameClick}>
                      {lang.get('End') + '(ESC)'}
                   </Button>
                   {/* <Button variant="fab" color="primary" title={lang.get('Restart') + '(F2)'} aria-label="add" className={classes.button} onClick={this.onRestartClick}>

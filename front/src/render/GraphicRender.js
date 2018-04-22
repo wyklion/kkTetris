@@ -15,6 +15,7 @@ var colors = [
    0x2141C6, // J
    0xD70F37, // Z
    0x59B101, // S
+   0x888888, // trash
 ];
 var colors2 = [
    0x074D6B, // I
@@ -24,6 +25,7 @@ var colors2 = [
    0x102063, // J
    0x6B071B, // Z
    0x2C5800, // S
+   0x222222, // trash
 ];
 
 export default class GraphicRender {

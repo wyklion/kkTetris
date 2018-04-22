@@ -16,19 +16,19 @@ var layout = {
    },
    next: {
       x: 382,
-      y: 10,
+      y: 0,
    },
    hold: {
       x: 2,
-      y: 10,
+      y: 0,
    },
    data: {
-      x: 385,
+      x: 32,
       y: 280,
    },
    specialData: {
-      x: 2,
-      y: 280,
+      x: 430,
+      y: 450,
    }
 }
 
@@ -201,20 +201,20 @@ export default class TetrisRender {
       this.container.addChild(na);
       this.cellRender.initNext(na);
 
-      // 下一块文本
-      var nextText = this.nextText = new PIXI.Text('Next:', {
-         fontWeight: 'bold',
-         fontSize: 15 * 2,
-         fontFamily: 'Arial',
-         fill: '#f4511e',
-         align: 'center',
-         stroke: '#FFFFFF',
-         strokeThickness: 6
-      });
-      nextText.x = 20;
-      nextText.scale.set(0.5, 0.5);
-      na.addChild(nextText);
-      this.nextText.visible = false;
+      // // 下一块文本
+      // var nextText = this.nextText = new PIXI.Text('Next:', {
+      //    fontWeight: 'bold',
+      //    fontSize: 15 * 2,
+      //    fontFamily: 'Arial',
+      //    fill: '#f4511e',
+      //    align: 'center',
+      //    stroke: '#FFFFFF',
+      //    strokeThickness: 6
+      // });
+      // nextText.x = 20;
+      // nextText.scale.set(0.5, 0.5);
+      // na.addChild(nextText);
+      // this.nextText.visible = false;
    }
 
    initHold() {
@@ -227,20 +227,20 @@ export default class TetrisRender {
       this.container.addChild(ha);
       this.cellRender.initHold(ha);
 
-      // 暂存文本
-      var holdText = this.holdText = new PIXI.Text('Hold:', {
-         fontWeight: 'bold',
-         fontSize: 15 * 2,
-         fontFamily: 'Arial',
-         fill: '#f4511e',
-         align: 'center',
-         stroke: '#FFFFFF',
-         strokeThickness: 6
-      });
-      holdText.x = 10;
-      holdText.scale.set(0.5, 0.5);
-      ha.addChild(holdText);
-      this.holdText.visible = false;
+      // // 暂存文本
+      // var holdText = this.holdText = new PIXI.Text('Hold:', {
+      //    fontWeight: 'bold',
+      //    fontSize: 15 * 2,
+      //    fontFamily: 'Arial',
+      //    fill: '#f4511e',
+      //    align: 'center',
+      //    stroke: '#FFFFFF',
+      //    strokeThickness: 6
+      // });
+      // holdText.x = 10;
+      // holdText.scale.set(0.5, 0.5);
+      // ha.addChild(holdText);
+      // this.holdText.visible = false;
    }
 
    initData() {
@@ -288,7 +288,7 @@ export default class TetrisRender {
       };
       var dataStyle = {
          fontWeight: 'bold',
-         fontSize: 18 * 2,
+         fontSize: 16 * 2,
          fontFamily: 'Arial',
          align: 'center',
          fill: '#DDDDDD',
@@ -297,13 +297,13 @@ export default class TetrisRender {
       this.dataTexts = {};
       for (var i = 0; i < datasOptions.length; i++) {
          var label = this.dataLabels[datasOptions[i].key] = new PIXI.Text(lang.get(datasOptions[i].key), labelStyle);
-         label.x = 3;
-         label.y = 30 + i * 40;
+         label.y = i * 60;
+         label.anchor.set(0.5, 0.5);
          label.scale.set(0.5, 0.5);
          da.addChild(label);
          var dataText = this.dataTexts[datasOptions[i].name] = new PIXI.Text(datasOptions[i].value, dataStyle);
-         dataText.x = 44;
-         dataText.y = 30 + i * 40 - 4;
+         dataText.y = 23 + i * 60;
+         dataText.anchor.set(0.5, 0.5);
          dataText.scale.set(0.6, 0.6);
          da.addChild(dataText);
       }
@@ -337,15 +337,12 @@ export default class TetrisRender {
          fill: '#DDDDDD',
       };
       var label = this.specialDataLabel = new PIXI.Text(lang.get('Remain'), labelStyle);
-      label.x = 34;
-      label.y = 30;
       label.anchor.set(0.5, 0.5);
       label.scale.set(0.6, 0.6);
       sa.addChild(label);
       var dataText = this.specialDataText = new PIXI.Text(0, dataStyle);
-      dataText.x = 17;
-      dataText.y = 60;
-      label.anchor.set(0.5, 0.5);
+      dataText.y = 30;
+      dataText.anchor.set(0.5, 0.5);
       dataText.scale.set(0.7, 0.7);
       sa.addChild(dataText);
    }
@@ -356,8 +353,8 @@ export default class TetrisRender {
    clear() {
       this.reset();
       if (this.displayNext) {
-         this.nextText.visible = false;
-         this.holdText.visible = false;
+         // this.nextText.visible = false;
+         // this.holdText.visible = false;
          this.dataArea.visible = false;
          this.specialDataArea.visible = false;
       }
@@ -375,8 +372,8 @@ export default class TetrisRender {
     */
    renderAll() {
       this.reset();
-      this.nextText.visible = true;
-      this.holdText.visible = true;
+      // this.nextText.visible = true;
+      // this.holdText.visible = true;
       this.cellRender.draw();
       if (!config.fps60) {
          this.render.render();

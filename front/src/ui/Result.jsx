@@ -11,33 +11,40 @@ const styles = theme => ({
    root: {
       width: '100%',
       height: '100%',
+      userSelect: 'none',
    },
    paper: {
-      background: 'rgba(255, 255, 255, 0.8)',
-      margin: theme.spacing.unit,
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      backgroundColor: 'rgba(90,90,90,0.8)',
+   },
+   content: {
+      margin: 'auto',
    },
    title: {
       padding: '15px',
-      color: '#4e6bd8',
-      fontSize: '20px',
+      color: '#00acc1',
+      fontSize: '30px',
       fontFamily: 'Arial Bold',
       fontWeight: 'bolder',
+      marginBottom: '20px',
    },
    best: {
-      fontSize: '28px',
-      color: '#f3ad53',
+      fontSize: '20px',
+      color: '#ffee58',
       fontFamily: 'Arial Bold',
       fontWeight: 'bolder',
    },
    item: {
       fontSize: '28px',
-      color: '#777777',
+      color: '#f4511e',
       fontFamily: 'Arial Bold',
       fontWeight: 'bolder',
    },
    loseItem: {
-      fontSize: '20px',
-      color: '#777777',
+      fontSize: '28px',
+      color: '#111111',
       fontFamily: 'Arial Bold',
       fontWeight: 'bolder',
    }
@@ -55,22 +62,24 @@ class Result extends React.Component {
    makeLoseResult(data) {
       var classes = this.props.classes;
       return (
-         <Paper className={classes.root} elevation={4}>
-            <Typography variant="display1" gutterBottom className={classes.title}>
-               {lang.get('Game Over')}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.loseItem}>
-               {lang.get('Time') + ':' + data.time.toFixed(1)}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.loseItem}>
-               {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.loseItem}>
-               {lang.get('Pieces') + ':' + data.count}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.loseItem}>
-               {lang.get('Lines') + ':' + data.lines}
-            </Typography>
+         <Paper className={classes.paper} elevation={4}>
+            <div className={classes.content}>
+               <Typography variant="display1" gutterBottom className={classes.title}>
+                  {lang.get('Game Over')}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.loseItem}>
+                  {lang.get('Time') + ':' + data.time.toFixed(1)}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.loseItem}>
+                  {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.loseItem}>
+                  {lang.get('Pieces') + ':' + data.count}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.loseItem}>
+                  {lang.get('Lines') + ':' + data.lines}
+               </Typography>
+            </div>
          </Paper>
       )
    }
@@ -89,19 +98,21 @@ class Result extends React.Component {
          best = data.time;
       }
       return (
-         <Paper className={classes.root} elevation={4}>
-            <Typography variant="display1" gutterBottom className={classes.title}>
-               {title}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.best}>
-               {lang.get('Personal Best') + ':' + best.toFixed(1)}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.item}>
-               {lang.get('Time') + ':' + data.time.toFixed(2)}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.item}>
-               {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
-            </Typography>
+         <Paper className={classes.paper} elevation={4}>
+            <div className={classes.content}>
+               <Typography variant="display1" gutterBottom className={classes.title}>
+                  {title}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.best}>
+                  {lang.get('Personal Best') + ':' + best.toFixed(1)}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.item}>
+                  {lang.get('Time') + ':' + data.time.toFixed(2)}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.item}>
+                  {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
+               </Typography>
+            </div>
          </Paper>
       )
    }
@@ -124,22 +135,24 @@ class Result extends React.Component {
          }
       }
       return (
-         <Paper className={classes.root} elevation={4}>
-            <Typography variant="display1" gutterBottom className={classes.title}>
-               {title}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.best}>
-               {lang.get('Personal Best') + ':' + best.toFixed(2)}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.item}>
-               {lang.get('Time') + ':' + data.time.toFixed(2)}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.item}>
-               {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
-            </Typography>
-            <Typography component="p" gutterBottom className={classes.item}>
-               {lang.get('Pieces') + ':' + data.count}
-            </Typography>
+         <Paper className={classes.paper} elevation={4}>
+            <div className={classes.content}>
+               <Typography variant="display1" gutterBottom className={classes.title}>
+                  {title}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.best}>
+                  {lang.get('Personal Best') + ':' + best.toFixed(2)}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.item}>
+                  {lang.get('Time') + ':' + data.time.toFixed(2)}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.item}>
+                  {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.item}>
+                  {lang.get('Pieces') + ':' + data.count}
+               </Typography>
+            </div>
          </Paper>
       )
    }

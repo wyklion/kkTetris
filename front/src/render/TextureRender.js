@@ -82,7 +82,7 @@ export default class TextureRender {
          for (var j = 0; j < tetris.col; j++) {
             var sprite = this.tetrisSprites[i * 10 + j];
             if (tetris.board[i][j] > 0) {
-               var idx = tetris.playing ? tetris.board[i][j] : 8;
+               var idx = tetris.playing ? tetris.board[i][j] : 9;
                sprite.texture = this.textures[idx];
                sprite.tint = 0xFFFFFF;
                sprite.visible = true;
@@ -110,7 +110,7 @@ export default class TextureRender {
       }
       var px = shape.x;
       var py = shadow ? shape.shadowY : shape.y;
-      var idx = tetris.playing ? shape.shapeId : 8;
+      var idx = tetris.playing ? shape.shapeId : 9;
       for (var i = 0; i < 4; i++) {
          var x = px + shape.shapeModel.cells[shape.rotation][i * 2];
          var y = py + shape.shapeModel.cells[shape.rotation][i * 2 + 1];
@@ -133,7 +133,7 @@ export default class TextureRender {
       //this.ctx.clearRect(this.nextPos.x-1,this.nextPos.y-1,121,121);
       for (var i = 0; i < tetris.nextShapes.length; i++) {
          var shape = tetris.nextShapes[i];
-         var idx = tetris.playing ? shape.shapeId : 8;
+         var idx = tetris.playing ? shape.shapeId : 9;
          for (var j = 0; j < 4; j++) {
             var x = 1 + shape.shapeModel.cells[0][j * 2];
             var y = 1 + shape.shapeModel.cells[0][j * 2 + 1];
@@ -146,7 +146,7 @@ export default class TextureRender {
       var size = this.nextSize;
       var offsetX = shapeId >= 3 ? size / 2 : 0;
       sprite.x = offsetX + x * size;
-      sprite.y = -10 + i * (size * 3.5) + y * size;
+      sprite.y = -30 + i * (size * 3.5) + y * size;
       sprite.width = size;
       sprite.height = size;
       this.nextContainer.addChild(sprite);
@@ -160,7 +160,7 @@ export default class TextureRender {
       var tetris = this.tetris;
       var shape = tetris.saveShape;
       if (!shape) return;
-      var idx = tetris.playing ? shape.shapeId : 8;
+      var idx = tetris.playing ? shape.shapeId : 9;
       for (var i = 0; i < 4; i++) {
          var x = 1 + shape.shapeModel.cells[0][i * 2];
          var y = 1 + shape.shapeModel.cells[0][i * 2 + 1];

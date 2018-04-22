@@ -41,7 +41,8 @@ export default class TextureManager {
    }
    setTexture(resource) {
       var baseTexture = this.baseTexture = resource.texture.baseTexture;
-      var colorTable = [8, 9, 6, 4, 2, 7, 1, 5, 3];
+      // 8垃圾9死亡
+      var colorTable = [9, 8, 6, 4, 2, 7, 1, 5, 3];
       for (var i = 0; i < 9; i++) {
          var rect = new PIXI.Rectangle(32 * i, 0, 32, 32);
          this.textures[colorTable[i]] = new PIXI.Texture(baseTexture, rect);

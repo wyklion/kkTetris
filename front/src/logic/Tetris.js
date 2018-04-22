@@ -72,7 +72,7 @@ export default class Tetris {
       }
       else
          this.shapes = RandomGenerator();
-      for (var j = 0; j < 3; j++) {
+      for (var j = 0; j < 5; j++) {
          var shapeId = this.shapes.shift();
          this.nextShapes[j] = new Shape(this, shapeId);
       }
@@ -153,7 +153,7 @@ export default class Tetris {
             if (bid == 0) {
                full = false;
                break;
-            } else if (bid == 9) {
+            } else if (bid == 8) {
                hasTrash = true;
             }
          }
@@ -468,8 +468,8 @@ export default class Tetris {
                this.board[len - 1 - i][col] = 0;
             }
             else {
-               // 垃圾9，死亡8
-               this.board[len - 1 - i][col] = 9;
+               // 垃圾8，死亡9
+               this.board[len - 1 - i][col] = 8;
             }
          }
       }
