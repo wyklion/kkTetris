@@ -172,7 +172,7 @@ export default class GraphicRender {
       // graphics.lineStyle(1, 0x111111, 1);
       graphics.beginFill(color);
       var offsetX = shapeId >= 3 ? size / 2 : 0;
-      graphics.drawRect(offsetX + x * size, -10 + idx * (size * 3.5) + y * size, size, size);
+      graphics.drawRect(offsetX + x * size, -30 + idx * (size * 3.5) + y * size, size, size);
       graphics.endFill();
    }
 
