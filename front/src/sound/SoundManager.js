@@ -58,7 +58,7 @@ class AudioLoader {
 export default class SoundManager {
    constructor() {
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
-      this.context = new window.AudioContext();
+      // this.context = new window.AudioContext();
       this.isReady = true;
       this.sounds = {};
    }

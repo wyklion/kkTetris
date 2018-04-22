@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { MuiThemeProvider } from 'material-ui/styles';
+import 'typeface-roboto'
 // import Button from 'material-ui/Button';
 // import teal from 'material-ui/colors/teal';
 // var color = teal;
@@ -30,7 +31,7 @@ class App extends React.Component {
       checked: false, // 检查登录
       logined: false, // 是否登录
       profile: null, // 个人信息页面
-      rank: false, // 排行榜
+      rank: null, // 排行榜
       width: null, // 内容宽
    }
 
@@ -110,8 +111,8 @@ class App extends React.Component {
    /**
     * 排行榜
     */
-   onRank = () => {
-      this.setState({ rank: true, profile: null });
+   onRank = (rankType) => {
+      this.setState({ rank: rankType, profile: null });
    }
    onCloseRank = () => {
       this.setState({ rank: null, profile: null });
@@ -143,7 +144,7 @@ class App extends React.Component {
                <HeadBar onLogout={this.onLogout} width={state.width} />
                <Main hidden={state.profile || state.rank} onResize={this.onResize} />
                {state.profile && <Profile userId={state.profile} onReturn={this.onCloseProfile} />}
-               {state.rank && <Rank onReturn={this.onCloseRank} />}
+               {state.rank && <Rank rankType={state.rank} onReturn={this.onCloseRank} />}
             </div>
          )
       }

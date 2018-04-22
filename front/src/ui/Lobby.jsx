@@ -48,11 +48,15 @@ const styles = theme => ({
 class Lobby extends React.Component {
    state = {
       userCount: 0,
+      friendCount: 0,
+      friendOnline: 0,
       value: 0,
    };
 
    componentWillMount() {
       this.state.userCount = gameManager.userManager.userCount;
+      this.state.friendOnline = gameManager.userManager.friendOnlineCount;
+      this.state.friendCount = gameManager.userManager.friendCount;
    }
    componentDidMount() {
       gameManager.userManager.updateUsersListeners.add(this.onUpdateUser);
@@ -62,7 +66,11 @@ class Lobby extends React.Component {
    }
 
    onUpdateUser = () => {
-      this.setState({ userCount: gameManager.userManager.userCount });
+      this.setState({
+         userCount: gameManager.userManager.userCount,
+         friendOnline: gameManager.userManager.friendOnlineCount,
+         friendCount: gameManager.userManager.friendCount,
+      });
    }
 
    handleChangeTab = (event, value) => {
@@ -71,7 +79,7 @@ class Lobby extends React.Component {
 
    render() {
       const { classes, theme, show } = this.props;
-      const { value } = this.state;
+      const { value, userCount, friendCount, friendOnline } = this.state;
       if (!show) {
          return null;
       }
@@ -87,8 +95,8 @@ class Lobby extends React.Component {
                   fullWidth
                >
                   <Tab label={lang.get('Rooms')} />
-                  <Tab label={lang.get('Friends') + "(" + gameManager.userManager.friendCount + ")"} />
-                  <Tab label={lang.get('Online') + "(" + gameManager.userManager.userCount + ")"} />
+                  <Tab label={lang.get('Friends') + "(" + friendOnline + '/' + friendCount + ")"} />
+                  <Tab label={lang.get('Online') + "(" + userCount + ")"} />
                </Tabs>
                <div className={classes.content} >
                   {value === 0 && <Rooms />}

@@ -2,7 +2,7 @@
 var lang = {}
 
 var table = {
-   'KK Tetris': ['KK俄罗斯方块'],
+   'KK TETRIS': ['KK俄罗斯方块'],
    'Setting': ['设置'],
    'Style': ['样式'],
    'Sound': ['音效'],
@@ -51,6 +51,7 @@ var table = {
    'Sprint 40L': ['竞速40行'],
    'Dig Race 18L times': ['挖掘18行次数'],
    'Dig Race 18L best': ['挖掘18行最佳'],
+   'Dig Race 18L': ['挖掘18行'],
    ID: ['帐号'],
    Sign: ['签名'],
    ': ': ['： '],

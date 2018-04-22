@@ -53,13 +53,25 @@ class Friends extends React.Component {
    makeUsers() {
       const { classes } = this.props;
       var friends = gameManager.userManager.friends;
-      var rows = [];
+      var temp = [];
       for (var id in friends) {
-         var friend = friends[id];
+         temp.push({ id: id, nick: friends[id].nick, online: gameManager.userManager.isUserOnline(id) ? 1 : 0 });
+      }
+      temp.sort((a, b) => {
+         if (a.online !== b.online) {
+            return b.online - a.online;
+         } else {
+            return a.id > b.id ? 1 : -1;
+         }
+      })
+      var rows = [];
+      for (var id in temp) {
+         var friend = temp[id];
+         var style = friend.online ? { color: '#1ef91e' } : null;
          rows.push(
             <TableRow key={friend.id} className={classes.row}>
-               <TableCell>{friend.id}</TableCell>
-               <TableCell>{friend.nick}</TableCell>
+               <TableCell style={style}>{friend.id}</TableCell>
+               <TableCell style={style}>{friend.nick}</TableCell>
                <TableCell>
                   <Button color="primary" size="small" className={classes.infoButton} onClick={this.onFriendInfo(id)}>
                      {lang.get('Info')}

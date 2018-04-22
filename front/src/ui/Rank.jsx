@@ -12,7 +12,8 @@ import Tools from '../util/Tools';
 
 const styles = theme => ({
    root: {
-      width: '500px',
+      height: '100%',
+      maxWidth: '700px',
       margin: '0 auto',
    },
    // button: {
@@ -22,6 +23,10 @@ const styles = theme => ({
    // },
    title: {
       margin: '20px 0',
+   },
+   tableDiv: {
+      height: 'calc(100% - 200px)',
+      overflowY: 'auto',
    },
    row: {
       height: '30px',
@@ -33,12 +38,22 @@ const styles = theme => ({
 
 class Rank extends React.Component {
    state = {
-      type: 'speed40',
       rank: null,
    };
 
    componentDidMount() {
-      http.get({ url: 'rank', data: { type: this.state.type } }, (err, result) => {
+      this.getRankData(this.props.rankType);
+   }
+
+   componentWillUpdate(nextProps) {
+      if (nextProps.rankType === this.props.rankType) {
+         return;
+      }
+      this.getRankData(nextProps.rankType);
+   }
+
+   getRankData(rankType) {
+      http.get({ url: 'rank', data: { type: rankType } }, (err, result) => {
          if (err) {
             alert(err);
          } else {
@@ -52,19 +67,19 @@ class Rank extends React.Component {
    }
 
    makeSpeedRows() {
-      const { classes } = this.props;
+      const { classes, rankType } = this.props;
       var rank = this.state.rank;
       var rows = [];
       for (var i = 0; i < rank.length; i++) {
          var record = rank[i];
          var best = parseFloat(record.speed40Best).toFixed(1);
-         var date = record.date ? Tools.formatTime(record.date, 'yyyy-MM-DD hh:mm:ss') : '';
+         var date = record.speed40Date ? Tools.formatTime(record.speed40Date, 'yyyy-MM-dd hh:mm:ss') : '';
          rows.push(
-            <TableRow key={record.id} className={classes.row}>
+            <TableRow key={rankType + record.id} className={classes.row}>
                <TableCell>{record.id}</TableCell>
                <TableCell>{record.nick}</TableCell>
-               <TableCell>{date}</TableCell>
                <TableCell>{best}</TableCell>
+               <TableCell>{date}</TableCell>
             </TableRow>
          )
       }
@@ -79,19 +94,19 @@ class Rank extends React.Component {
    }
 
    makeDigRows() {
-      const { classes } = this.props;
+      const { classes, rankType } = this.props;
       var rank = this.state.rank;
       var rows = [];
       for (var i = 0; i < rank.length; i++) {
          var record = rank[i];
-         var best = parseFloat(record.speed40Best).toFixed(1);
-         var date = record.date ? Tools.formatTime(record.date, 'yyyy-MM-DD hh:mm:ss') : '';
+         var best = parseFloat(record.dig18Best).toFixed(1);
+         var date = record.dig18Date ? Tools.formatTime(record.dig18Date, 'yyyy-MM-dd hh:mm:ss') : '';
          rows.push(
-            <TableRow key={record.id} className={classes.row}>
+            <TableRow key={rankType + record.id} className={classes.row}>
                <TableCell>{record.id}</TableCell>
                <TableCell>{record.nick}</TableCell>
-               <TableCell>{date}</TableCell>
                <TableCell>{best}</TableCell>
+               <TableCell>{date}</TableCell>
             </TableRow>
          )
       }
@@ -106,56 +121,50 @@ class Rank extends React.Component {
    }
 
    render() {
-      const { classes } = this.props;
+      const { classes, rankType } = this.props;
       const { rank } = this.state;
       if (!rank) {
          return null;
       }
-      var rows = this.makeSpeedRows();
-      // var digRows = this.makeDigRows();
+      var rows;
+      var title;
+      if (rankType === 'speed40') {
+         rows = this.makeSpeedRows();
+         title = lang.get('Sprint 40L');
+      } else if (rankType === 'dig18') {
+         rows = this.makeDigRows();
+         title = lang.get('Dig Race 18L');
+      }
 
       return (
          <div className={classes.root}>
             <Button
                color="primary"
                size="large"
+               variant="raised"
                className={classes.button}
                onClick={this.onReturnClick}
             >
                {lang.get('Return')}
             </Button>
             <Typography variant="headline" className={classes.title}>
-               {lang.get('Learderboard') + '(' + lang.get('Sprint 40L') + ')'}
+               {lang.get('Learderboard') + '(' + title + ')'}
             </Typography>
-            <Table className={classes.table}>
-               <TableHead >
-                  <TableRow className={classes.row}>
-                     <TableCell className={classes.headcell}>ID</TableCell>
-                     <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
-                     <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>
-                     <TableCell className={classes.headcell}>{lang.get('Date')}</TableCell>
-                  </TableRow>
-               </TableHead>
-               <TableBody>
-                  {rows}
-               </TableBody>
-            </Table>
-            {/* <Typography variant="headline" className={classes.title}>
-               {lang.get('Learderboard') + '(' + lang.get('Dig Race 18L') + ')'}
-            </Typography>
-            <Table className={classes.table}>
-               <TableHead >
-                  <TableRow className={classes.row}>
-                     <TableCell className={classes.headcell}>ID</TableCell>
-                     <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
-                     <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>
-                     <TableCell className={classes.headcell}>{lang.get('Date')}</TableCell>
-                  </TableRow>
-               </TableHead>
-               <TableBody>
-                  {digRows}
-               </TableBody>
-            </Table> */}
+            <div className={classes.tableDiv}>
+               <Table className={classes.table}>
+                  <TableHead >
+                     <TableRow className={classes.row}>
+                        <TableCell className={classes.headcell}>ID</TableCell>
+                        <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
+                        <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>
+                        <TableCell className={classes.headcell}>{lang.get('Date')}</TableCell>
+                     </TableRow>
+                  </TableHead>
+                  <TableBody>
+                     {rows}
+                  </TableBody>
+               </Table>
+            </div>
          </div>
       );
    }

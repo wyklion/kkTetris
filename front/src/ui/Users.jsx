@@ -31,6 +31,13 @@ class Users extends React.Component {
    onUpdate = () => {
       this.forceUpdate();
    }
+
+   onUserInfo(id) {
+      return () => {
+         gameManager.app.onProfile(id);
+      }
+   }
+
    makeUsers() {
       const { classes } = this.props;
       var users = gameManager.users;
@@ -41,6 +48,11 @@ class Users extends React.Component {
             <TableRow key={user.id} className={classes.row}>
                <TableCell>{user.id}</TableCell>
                <TableCell>{user.id}</TableCell>
+               <TableCell>
+                  <Button color="primary" size="small" className={classes.infoButton} onClick={this.onUserInfo(id)}>
+                     {lang.get('Info')}
+                  </Button>
+               </TableCell>
             </TableRow>
          )
       }
@@ -65,6 +77,7 @@ class Users extends React.Component {
                      <TableRow className={classes.row}>
                         <TableCell className={classes.headcell}>ID</TableCell>
                         <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
+                        <TableCell className={classes.headcell}> {lang.get('Operation')}</TableCell>
                      </TableRow>
                   </TableHead>
                   <TableBody>

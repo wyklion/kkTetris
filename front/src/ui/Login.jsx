@@ -118,7 +118,7 @@ class Login extends React.Component {
       const { classes } = this.props;
       return (
          <FormControl fullWidth={true} component="fieldset">
-            <FormLabel className={classes.formLabel} component="legend">KK Tetris</FormLabel>
+            <FormLabel className={classes.formLabel} component="legend">KK TETRIS</FormLabel>
             <FormControlLabel
                key="loginId"
                className={classes.controlLabel}
@@ -174,7 +174,7 @@ class Login extends React.Component {
       const { classes } = this.props;
       return (
          <FormControl fullWidth={true} component="fieldset">
-            <FormLabel className={classes.formLabel} component="legend">KK Tetris</FormLabel>
+            <FormLabel className={classes.formLabel} component="legend">KK TETRIS</FormLabel>
             <FormControlLabel
                key="regesterId"
                className={classes.controlLabel}

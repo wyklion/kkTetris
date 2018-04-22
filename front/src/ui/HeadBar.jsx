@@ -7,8 +7,10 @@ import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu';
 import AccountCircle from 'material-ui-icons/AccountCircle';
+import LanguageIcon from 'material-ui-icons/Language';
 import Menu, { MenuItem } from 'material-ui/Menu';
 import Fade from 'material-ui/transitions/Fade';
+import Button from 'material-ui/Button';
 
 import KeyboardSetting from './KeyboardSetting';
 import Setting from './Setting';
@@ -22,15 +24,18 @@ const styles = {
    },
    flex: {
       flex: 1,
-      fontFamily: 'SimHei',
+      fontFamily: 'Roboto,SimHei',
    },
    menuButton: {
-      marginLeft: -12,
+      // marginLeft: -12,
       marginRight: 20,
    },
    popperClose: {
       pointerEvents: 'none',
    },
+   name: {
+      lineHeight: '50px',
+   }
 };
 
 class HeadBar extends React.Component {
@@ -41,21 +46,16 @@ class HeadBar extends React.Component {
       openKeyboard: false
    };
 
-   handleMenuSetting = event => {
-      this.setState({ anchorElSetting: event.currentTarget });
+   handleMenuOpen(name) {
+      return (event) => {
+         this.setState({ [name]: event.currentTarget });
+      }
    }
-
-   handleMenuUser = event => {
-      this.setState({ anchorElUser: event.currentTarget });
-   };
-
-   handleCloseSettingMenu = () => {
-      this.setState({ anchorElSetting: null });
+   handleMenuClose(name) {
+      return (event) => {
+         this.setState({ [name]: null });
+      }
    }
-
-   handleCloseUser = () => {
-      this.setState({ anchorElUser: null });
-   };
 
    /**
     * 设置
@@ -67,17 +67,6 @@ class HeadBar extends React.Component {
       this.setState({ openSetting: false })
    }
 
-   /**
-    * 语言切换
-    */
-   handleSwitchLang = () => {
-      if (lang.isEn()) {
-         gameManager.changeLang(0);
-      } else {
-         gameManager.changeLang(1);
-      }
-      this.setState({ anchorElSetting: null });
-   }
    /**
     * 键盘设置
     */
@@ -91,11 +80,24 @@ class HeadBar extends React.Component {
    /**
     * 排行榜
     */
-   handleRank = () => {
-      this.setState({ anchorElSetting: null });
-      gameManager.app.onRank();
+   handleRank = (rankType) => {
+      return () => {
+         this.setState({ anchorElRank: null });
+         gameManager.app.onRank(rankType);
+      }
    }
 
+   /**
+    * 语言切换
+    */
+   handleSwitchLang = () => {
+      if (lang.isEn()) {
+         gameManager.changeLang(0);
+      } else {
+         gameManager.changeLang(1);
+      }
+      this.setState({ anchorElLang: null });
+   }
    /**
     * 打开个人信息
     */
@@ -116,7 +118,7 @@ class HeadBar extends React.Component {
 
    render() {
       const { classes } = this.props;
-      const { anchorElSetting, anchorElUser } = this.state;
+      const { anchorElSetting, anchorElRank, anchorElLang, anchorElUser } = this.state;
       var width = this.props.width || '100%';
       return (
          <div className={classes.root}>
@@ -130,69 +132,128 @@ class HeadBar extends React.Component {
             />
             <AppBar position="static">
                <Toolbar style={{ width: width, margin: '0 auto', padding: 'unset' }}>
-                  < div >
-                     <IconButton
-                        // className={classes.menuButton}
-                        aria-owns={Boolean(anchorElSetting) ? 'settingmenu' : null}
-                        aria-haspopup="true"
-                        onClick={this.handleMenuSetting}
-                        color="inherit"
-                     >
-                        <MenuIcon />
-                     </IconButton>
-                     <Menu
-                        id="settingmenu"
-                        anchorEl={anchorElSetting}
-                        anchorOrigin={{
-                           vertical: 'top',
-                           horizontal: 'right',
-                        }}
-                        transformOrigin={{
-                           vertical: 'bottom',
-                           horizontal: 'left',
-                        }}
-                        transition={Fade}
-                        open={Boolean(anchorElSetting)}
-                        onClose={this.handleCloseSettingMenu}
-                     >
-                        <MenuItem onClick={this.handleSetting}>{lang.get('Setting')}</MenuItem>
-                        <MenuItem onClick={this.handleKeyboardSetting}>{lang.get('Keyboard Setting')}</MenuItem>
-                        <MenuItem onClick={this.handleRank}>{lang.get('Leaderboard')}</MenuItem>
-                        <MenuItem onClick={this.handleSwitchLang}>{lang.isEn() ? '切换至中文' : 'Switch To English'}</MenuItem>
-                     </Menu>
-                  </div>
+                  <IconButton
+                     // className={classes.menuButton}
+                     aria-owns={Boolean(anchorElSetting) ? 'settingmenu' : null}
+                     aria-haspopup="true"
+                     onClick={this.handleMenuOpen('anchorElSetting')}
+                     color="inherit"
+                  >
+                     <MenuIcon />
+                  </IconButton>
+                  <Menu
+                     id="settingmenu"
+                     anchorEl={anchorElSetting}
+                     getContentAnchorEl={null}
+                     anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                     }}
+                     transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                     }}
+                     transition={Fade}
+                     open={Boolean(anchorElSetting)}
+                     onClose={this.handleMenuClose('anchorElSetting')}
+                  >
+                     <MenuItem onClick={this.handleSetting}>{lang.get('Setting')}</MenuItem>
+                     <MenuItem onClick={this.handleKeyboardSetting}>{lang.get('Keyboard Setting')}</MenuItem>
+                  </Menu>
+
+                  <Button
+                     // className={classes.menuButton}
+                     size="large"
+                     aria-owns={Boolean(anchorElRank) ? 'rankmenu' : null}
+                     aria-haspopup="true"
+                     onClick={this.handleMenuOpen('anchorElRank')}
+                     color="inherit"
+                  >
+                     <Typography variant="subheading" color="inherit" >
+                        {lang.get('Leaderboard')}
+                     </Typography>
+                  </Button>
+                  <Menu
+                     id="rankmenu"
+                     anchorEl={anchorElRank}
+                     getContentAnchorEl={null}
+                     anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                     }}
+                     transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                     }}
+                     transition={Fade}
+                     open={Boolean(anchorElRank)}
+                     onClose={this.handleMenuClose('anchorElRank')}
+                  >
+                     <MenuItem onClick={this.handleRank('speed40')}>{lang.get('Sprint 40L')}</MenuItem>
+                     <MenuItem onClick={this.handleRank('dig18')}>{lang.get('Dig Race 18L')}</MenuItem>
+                  </Menu>
 
                   <Typography variant="title" color="inherit" className={classes.flex}>
-                     {lang.get('KK Tetris')}
+                     {lang.get('KK TETRIS')}
                   </Typography>
-                  <div>
-                     <span>{gameManager.user.nick}</span>
-                     <IconButton
-                        aria-owns={Boolean(anchorElUser) ? 'usermenu' : null}
-                        // aria-haspopup="true"
-                        onClick={this.handleMenuUser}
-                        color="inherit"
-                     >
-                        <AccountCircle />
-                     </IconButton>
-                     <Menu
-                        id="usermenu"
-                        anchorEl={anchorElUser}
-                        anchorOrigin={{
-                           vertical: 'top',
-                           horizontal: 'left',
-                        }}
-                        transformOrigin={{
-                           vertical: 'top',
-                           horizontal: 'right',
-                        }}
-                        open={Boolean(anchorElUser)}
-                        onClose={this.handleCloseUser}
-                     >
-                        <MenuItem onClick={this.handleProfile}>{lang.get('Profile')}</MenuItem>
-                        <MenuItem onClick={this.handleLogout}>{lang.get('Logout')}</MenuItem>
-                     </Menu>
-                  </div>
+
+                  <IconButton
+                     className={classes.menuButton}
+                     aria-owns={Boolean(anchorElLang) ? 'langmenu' : null}
+                     aria-haspopup="true"
+                     onClick={this.handleMenuOpen('anchorElLang')}
+                     color="inherit"
+                  >
+                     <LanguageIcon />
+                  </IconButton>
+                  <Menu
+                     id="langmenu"
+                     anchorEl={anchorElLang}
+                     getContentAnchorEl={null}
+                     anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                     }}
+                     transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                     }}
+                     transition={Fade}
+                     open={Boolean(anchorElLang)}
+                     onClose={this.handleMenuClose('anchorElLang')}
+                  >
+                     <MenuItem onClick={this.handleSwitchLang}>{lang.isEn() ? '切换至中文' : 'Switch To English'}</MenuItem>
+                  </Menu>
+
+                  <Typography variant="subheading" color="inherit" className={classes.name}>
+                     {gameManager.user.nick}
+                  </Typography>
+                  <IconButton
+                     aria-owns={Boolean(anchorElUser) ? 'usermenu' : null}
+                     // aria-haspopup="true"
+                     onClick={this.handleMenuOpen('anchorElUser')}
+                     color="inherit"
+                  >
+                     <AccountCircle />
+                  </IconButton>
+                  <Menu
+                     id="usermenu"
+                     anchorEl={anchorElUser}
+                     getContentAnchorEl={null}
+                     anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'right',
+                     }}
+                     transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                     }}
+                     open={Boolean(anchorElUser)}
+                     onClose={this.handleMenuClose('anchorElUser')}
+                  >
+                     <MenuItem onClick={this.handleProfile}>{lang.get('Profile')}</MenuItem>
+                     <MenuItem onClick={this.handleLogout}>{lang.get('Logout')}</MenuItem>
+                  </Menu>
                </Toolbar>
             </AppBar>
          </div >

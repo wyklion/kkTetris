@@ -24,6 +24,9 @@ export default class UserManager {
       }
       return null;
    }
+   isUserOnline(id) {
+      return this.users[id] ? true : false;
+   }
    /**
     * 初始化在线玩家和好友
     */

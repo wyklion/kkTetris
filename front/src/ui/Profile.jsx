@@ -8,6 +8,7 @@ import Button from 'material-ui/Button';
 import http from '../util/http.js';
 import gameManager from '../game/GameManager.js';
 import lang from '../util/lang';
+import keyName from '../util/keyName';
 
 const styles = theme => ({
    root: {
@@ -28,6 +29,16 @@ const styles = theme => ({
    userDiv: {
       textAlign: 'left',
       height: '200px',
+   },
+   keyboard: {
+      textAlign: 'left',
+      height: '160px',
+   },
+   keys: {
+      display: 'flex',
+   },
+   keyName: {
+      color: 'orange',
    },
    statsDiv: {
       height: '300px',
@@ -80,12 +91,14 @@ class Profile extends React.Component {
          }
       }
       var maohao = lang.get(': ');
+      var keyboard = user.keyboard;
       return (
          <div className={classes.root}>
             <div className={classes.userDiv} >
                <Button
                   color="primary"
                   size="large"
+                  variant="raised"
                   className={classes.button}
                   onClick={this.onReturnClick}
                >
@@ -103,6 +116,50 @@ class Profile extends React.Component {
                <Typography variant="subheading" className={classes.item}>
                   {lang.get('Sign') + maohao + (user.sign || '')}
                </Typography>
+            </div>
+            <div className={classes.keyboard} >
+               <Typography variant="headline" className={classes.title}>
+                  {lang.get('Keyboard Setting')}
+               </Typography>
+               <div className={classes.keys}>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('keyLeft') + maohao}<span className={classes.keyName} >{keyName[keyboard.left]}</span>
+                  </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('keyRight') + maohao}<span className={classes.keyName} >{keyName[keyboard.right]}</span>
+                  </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('keyDrop') + maohao}<span className={classes.keyName} >{keyName[keyboard.drop]}</span>
+                  </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('keyDown') + maohao}<span className={classes.keyName} >{keyName[keyboard.down]}</span>
+                  </Typography>
+               </div>
+               <div className={classes.keys}>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('keyRotate') + maohao}<span className={classes.keyName} >{keyName[keyboard.rotate]}</span>
+                  </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('keyRotateRight') + maohao}<span className={classes.keyName} >{keyName[keyboard.rotateRight]}</span>
+                  </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('keyRotate180') + maohao}<span className={classes.keyName} >{keyName[keyboard.rotate180]}</span>
+                  </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('keyRotateHold') + maohao}<span className={classes.keyName} >{keyName[keyboard.hold]}</span>
+                  </Typography>
+               </div>
+               <div className={classes.keys}>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('DAS') + maohao}<span className={classes.keyName} >{keyboard.dasDelay}</span>
+                  </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('Move Delay') + maohao}<span className={classes.keyName} >{keyboard.moveDelay}</span>
+                  </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('Soft Down Delay') + maohao}<span className={classes.keyName} >{keyboard.downDelay}</span>
+                  </Typography>
+               </div>
             </div>
             <div className={classes.statsDiv} >
                <Typography variant="headline" className={classes.title}>
