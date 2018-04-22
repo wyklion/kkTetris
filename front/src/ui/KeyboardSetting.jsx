@@ -25,7 +25,8 @@ var keys = [
    { key: 'rotate', name: 'keyRotate' },
    { key: 'rotateRight', name: 'keyRotateRight' },
    { key: 'rotate180', name: 'keyRotate180' },
-   { key: 'hold', name: 'keyRotateHold' }
+   { key: 'hold', name: 'keyRotateHold' },
+   { key: 'start', name: 'keyStart' }
 ];
 
 class KeyboardSetting extends React.Component {

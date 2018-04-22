@@ -39,6 +39,7 @@ var table = {
    keyRotateRight: ['顺旋', 'CW Rotate'],
    keyRotate180: ['180度旋', '180 Rotate'],
    keyRotateHold: ['暂存', 'Hold'],
+   keyStart: ['重来/准备', 'Restart/Ready'],
 
    Rooms: ['房间'],
    Friends: ['好友'],

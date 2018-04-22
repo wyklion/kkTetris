@@ -8,6 +8,7 @@ import CloseIcon from 'material-ui-icons/Close';
 import gameManager from '../game/GameManager';
 import theme from './Theme';
 import lang from '../util/lang';
+import keyName from '../util/keyName';
 
 const styles = theme => ({
    labelButton: {
@@ -26,14 +27,28 @@ class SingleMenu extends React.Component {
    state = {
       anchorElSetting: null,
       anchorElUser: null,
-      openKeyboard: false
+      openKeyboard: false,
+      startKeyCode: 113, // 默认F2
    };
 
+   componentWillMount() {
+      this.state.startKeyCode = gameManager.userManager.user.keyboard.start || 113;
+   }
    componentDidMount() {
+      gameManager.keySettingListener.add(this.onKeyChange);
       document.body.addEventListener("keydown", this.onKeyDown, false);
    }
    componentWillUnmount() {
+      gameManager.keySettingListener.remove(this.onKeyChange);
       document.body.removeEventListener("keydown", this.onKeyDown, false);
+   }
+
+   /**
+    * 改键
+    */
+   onKeyChange = () => {
+      var keyCode = gameManager.userManager.user.keyboard.start || 113;
+      this.setState({ startKeyCode: keyCode });
    }
 
    onKeyDown = (event) => {
@@ -46,7 +61,7 @@ class SingleMenu extends React.Component {
                this.onDigGameClick();
             }
          } else {
-            if (keyCode === 113) { // F2
+            if (keyCode === this.state.startKeyCode) {
                this.onRestartClick();
             } else if (keyCode === 27) { // ESC
                this.onEndGameClick();
@@ -92,8 +107,8 @@ class SingleMenu extends React.Component {
          } else {
             buttons = (
                <div>
-                  <Button variant="raised" color="primary" title={lang.get('Restart') + ' (F2)'} className={classes.labelButton} onClick={this.onRestartClick}>
-                     {lang.get('Restart') + '(F2)'}
+                  <Button variant="raised" color="primary" title={lang.get('Restart') + ' (' + keyName[this.state.startKeyCode] + ')'} className={classes.labelButton} onClick={this.onRestartClick}>
+                     {lang.get('Restart') + '(' + keyName[this.state.startKeyCode] + ')'}
                   </Button>
                   <Button variant="raised" color="secondary" title={lang.get('End') + ' (ESC)'} className={classes.labelButton} onClick={this.onEndGameClick}>
                      {lang.get('End') + '(ESC)'}

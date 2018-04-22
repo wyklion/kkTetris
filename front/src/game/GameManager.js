@@ -10,6 +10,7 @@ import lang from '../util/lang';
 import TetrisSound from '../sound/TetrisSound'
 import TextureManager from '../render/TextureManager';
 import LayoutManager from '../render/LayoutManager';
+import Listeners from '../util/Listeners';
 
 /**
  * 游戏管理
@@ -41,6 +42,8 @@ class GameManager {
       // 登录状态
       this.logined = false;
 
+      // 监听
+      this.keySettingListener = new Listeners();
    }
    static _instance = null;
    static getInstance() {
@@ -166,6 +169,7 @@ class GameManager {
       if (this.game) {
          this.game.updateKeyboard();
       }
+      this.keySettingListener.execute();
    }
    /**
     * 游戏焦点事件

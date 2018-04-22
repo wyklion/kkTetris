@@ -12,7 +12,11 @@ import keyName from '../util/keyName';
 
 const styles = theme => ({
    root: {
-      width: '500px',
+      // width: '500px',
+      // margin: '0 auto',
+      display: 'flex',
+   },
+   main: {
       margin: '0 auto',
    },
    button: {
@@ -94,89 +98,91 @@ class Profile extends React.Component {
       var keyboard = user.keyboard;
       return (
          <div className={classes.root}>
-            <div className={classes.userDiv} >
-               <Button
-                  color="primary"
-                  size="large"
-                  variant="raised"
-                  className={classes.button}
-                  onClick={this.onReturnClick}
-               >
-                  {lang.get('Return')}
-               </Button>
-               <Typography variant="headline" className={classes.title}>
-                  {lang.get('PLAYER INFO')}
-               </Typography>
-               <Typography variant="subheading" className={classes.item}>
-                  {lang.get('ID') + maohao + user.id}
-               </Typography>
-               <Typography variant="subheading" className={classes.item}>
-                  {lang.get('Nickname') + maohao + user.nick}
-               </Typography>
-               <Typography variant="subheading" className={classes.item}>
-                  {lang.get('Sign') + maohao + (user.sign || '')}
-               </Typography>
-            </div>
-            <div className={classes.keyboard} >
-               <Typography variant="headline" className={classes.title}>
-                  {lang.get('Keyboard Setting')}
-               </Typography>
-               <div className={classes.keys}>
-                  <Typography variant="subheading" className={classes.item}>
-                     {lang.get('keyLeft') + maohao}<span className={classes.keyName} >{keyName[keyboard.left]}</span>
+            <div className={classes.main}>
+               <div className={classes.userDiv} >
+                  <Button
+                     color="primary"
+                     size="large"
+                     variant="raised"
+                     className={classes.button}
+                     onClick={this.onReturnClick}
+                  >
+                     {lang.get('Return')}
+                  </Button>
+                  <Typography variant="headline" className={classes.title}>
+                     {lang.get('PLAYER INFO')}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('keyRight') + maohao}<span className={classes.keyName} >{keyName[keyboard.right]}</span>
+                     {lang.get('ID') + maohao + user.id}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('keyDrop') + maohao}<span className={classes.keyName} >{keyName[keyboard.drop]}</span>
+                     {lang.get('Nickname') + maohao + user.nick}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('keyDown') + maohao}<span className={classes.keyName} >{keyName[keyboard.down]}</span>
+                     {lang.get('Sign') + maohao + (user.sign || '')}
                   </Typography>
                </div>
-               <div className={classes.keys}>
-                  <Typography variant="subheading" className={classes.item}>
-                     {lang.get('keyRotate') + maohao}<span className={classes.keyName} >{keyName[keyboard.rotate]}</span>
+               <div className={classes.keyboard} >
+                  <Typography variant="headline" className={classes.title}>
+                     {lang.get('Keyboard Setting')}
+                  </Typography>
+                  <div className={classes.keys}>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('keyLeft') + maohao}<span className={classes.keyName} >{keyName[keyboard.left]}</span>
+                     </Typography>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('keyRight') + maohao}<span className={classes.keyName} >{keyName[keyboard.right]}</span>
+                     </Typography>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('keyDrop') + maohao}<span className={classes.keyName} >{keyName[keyboard.drop]}</span>
+                     </Typography>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('keyDown') + maohao}<span className={classes.keyName} >{keyName[keyboard.down]}</span>
+                     </Typography>
+                  </div>
+                  <div className={classes.keys}>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('keyRotate') + maohao}<span className={classes.keyName} >{keyName[keyboard.rotate]}</span>
+                     </Typography>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('keyRotateRight') + maohao}<span className={classes.keyName} >{keyName[keyboard.rotateRight]}</span>
+                     </Typography>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('keyRotate180') + maohao}<span className={classes.keyName} >{keyName[keyboard.rotate180]}</span>
+                     </Typography>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('keyRotateHold') + maohao}<span className={classes.keyName} >{keyName[keyboard.hold]}</span>
+                     </Typography>
+                  </div>
+                  <div className={classes.keys}>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('DAS') + maohao}<span className={classes.keyName} >{keyboard.dasDelay}</span>
+                     </Typography>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('Move Delay') + maohao}<span className={classes.keyName} >{keyboard.moveDelay}</span>
+                     </Typography>
+                     <Typography variant="subheading" className={classes.item}>
+                        {lang.get('Soft Down Delay') + maohao}<span className={classes.keyName} >{keyboard.downDelay}</span>
+                     </Typography>
+                  </div>
+               </div>
+               <div className={classes.statsDiv} >
+                  <Typography variant="headline" className={classes.title}>
+                     {lang.get('GAME INFO')}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('keyRotateRight') + maohao}<span className={classes.keyName} >{keyName[keyboard.rotateRight]}</span>
+                     {lang.get('Sprint 40L times') + maohao + speed40Times}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('keyRotate180') + maohao}<span className={classes.keyName} >{keyName[keyboard.rotate180]}</span>
+                     {lang.get('Sprint 40L best') + maohao + speed40Best}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('keyRotateHold') + maohao}<span className={classes.keyName} >{keyName[keyboard.hold]}</span>
+                     {lang.get('Dig Race 18L times') + maohao + dig18Times}
+                  </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('Dig Race 18L best') + maohao + dig18Best}
                   </Typography>
                </div>
-               <div className={classes.keys}>
-                  <Typography variant="subheading" className={classes.item}>
-                     {lang.get('DAS') + maohao}<span className={classes.keyName} >{keyboard.dasDelay}</span>
-                  </Typography>
-                  <Typography variant="subheading" className={classes.item}>
-                     {lang.get('Move Delay') + maohao}<span className={classes.keyName} >{keyboard.moveDelay}</span>
-                  </Typography>
-                  <Typography variant="subheading" className={classes.item}>
-                     {lang.get('Soft Down Delay') + maohao}<span className={classes.keyName} >{keyboard.downDelay}</span>
-                  </Typography>
-               </div>
-            </div>
-            <div className={classes.statsDiv} >
-               <Typography variant="headline" className={classes.title}>
-                  {lang.get('GAME INFO')}
-               </Typography>
-               <Typography variant="subheading" className={classes.item}>
-                  {lang.get('Sprint 40L times') + maohao + speed40Times}
-               </Typography>
-               <Typography variant="subheading" className={classes.item}>
-                  {lang.get('Sprint 40L best') + maohao + speed40Best}
-               </Typography>
-               <Typography variant="subheading" className={classes.item}>
-                  {lang.get('Dig Race 18L times') + maohao + dig18Times}
-               </Typography>
-               <Typography variant="subheading" className={classes.item}>
-                  {lang.get('Dig Race 18L best') + maohao + dig18Best}
-               </Typography>
             </div>
          </div>
       );
