@@ -46,7 +46,7 @@ var table = {
    'Today': ['今天'],
    'Yestoday': ['昨天'],
    'speed40Score': ['%1完成了一次竞速40行，用时%2秒', '%1 finish sprint 40L use time: %2'],
-   'dig18Score': ['%1完成了一次挖掘18行，用时%2秒', '%1 finish sprint 40L use time: %2'],
+   'dig18Score': ['%1完成了一次挖掘18行，用时%2秒', '%1 finish dig race 18L use time: %2'],
    // 键位
    keyLeft: ['左移', 'Move Left'],
    keyRight: ['右移', 'Move Right'],
