@@ -53,6 +53,15 @@ const styles = theme => ({
       padding: '0 8px',
       color: '#AAAAAA',
    },
+   date: {
+      color: '#2486ad',
+   },
+   sysMsg: {
+      color: '#ff59ff',
+   },
+   scoreMsg: {
+      color: '#ff6543',
+   },
    chatInput: {
       height: '30px',
    },
@@ -132,16 +141,92 @@ class Chat extends React.Component {
       gameManager.setFocus(true);
    }
 
+   getDiffDays(dateNow, msgDate) {
+      msgDate.setHours(1);
+      msgDate.setMinutes(0);
+      msgDate.setSeconds(0);
+      return parseInt(Math.abs(dateNow - msgDate) / 86400000);
+   }
+
+   /**
+    * 系统消息
+    */
+   makeSystemMessage(time, data) {
+      const { classes } = this.props;
+      // 系统消息
+      var msg;
+      if (data.msg === 'enter') {
+         msg = data.user + ' ' + lang.get('enter...');
+      } else if (data.msg === 'left') {
+         msg = data.user + ' ' + lang.get('left...');
+      } else {
+         msg = lang.get('System message') + ': ' + decodeURI(data.msg);
+      }
+      return (
+         <div key={data.idx} className={classes.message}><span>{time}</span><span className={classes.sysMsg}>{msg}</span></div >
+      )
+   }
+
+   /**
+    * 成绩消息
+    */
+   makeScoreMessage(time, data) {
+      const { classes } = this.props;
+      // 系统消息
+      var msg;
+      if (data.type === 'speed40') {
+         msg = lang.get('speed40Score', data.user, data.msg);
+      } else if (data.type === 'dig18') {
+         msg = lang.get('dig18Score', data.user, data.msg);
+      }
+      return (
+         <div key={data.idx} className={classes.message}><span>{time}</span><span className={classes.scoreMsg}>{msg}</span></div >
+      )
+   }
+
+   /**
+    * 消息内容
+    */
    makeMessages() {
       const { classes } = this.props;
       var msgs = [];
       var messages = this.state.messages;
+      var dateNow = new Date();
+      dateNow.setHours(0);
+      dateNow.setMinutes(0);
+      dateNow.setSeconds(0);
+      var longest = 999;
       for (var i = 0; i < messages.length; i++) {
          var data = messages[i];
          var time = Tools.formatTime(data.time, '[hh:mm:ss]');
-         msgs.push(
-            <div key={data.idx} className={classes.message}><span>{time}</span><span>{data.user}:</span> <span>{decodeURI(data.msg)}</span></div >
-         )
+         var msgDate = new Date(data.time);
+         var diffDays = this.getDiffDays(dateNow, msgDate);
+         if (diffDays < longest) {
+            longest = diffDays;
+            // if (i !== 0) {//&& diffDays === 0
+            var dateStr;
+            if (diffDays === 0) {
+               dateStr = lang.get('Today');
+            } else if (diffDays === 1) {
+               dateStr = lang.get('Yestoday');
+            } else {
+               dateStr = Tools.formatTime(data.time, 'yyyy-MM-dd');
+            }
+            msgs.push(
+               <div key={'date' + data.idx} className={classes.date}><span>{dateStr}</span></div >
+            )
+            // }
+         }
+         if (data.type === 'sys') {
+            msgs.push(this.makeSystemMessage(time, data))
+         } else if (data.type === 'speed40' || data.type === 'dig18') {
+            msgs.push(this.makeScoreMessage(time, data))
+         } else {
+            // 用户聊天
+            msgs.push(
+               <div key={data.idx} className={classes.message}><span>{time}</span><span>{data.user}:</span> <span>{decodeURI(data.msg)}</span></div >
+            )
+         }
       }
       return msgs;
    }

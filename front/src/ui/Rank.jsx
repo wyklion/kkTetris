@@ -76,6 +76,7 @@ class Rank extends React.Component {
          var date = record.speed40Date ? Tools.formatTime(record.speed40Date, 'yyyy-MM-dd hh:mm:ss') : '';
          rows.push(
             <TableRow key={rankType + record.id} className={classes.row}>
+               <TableCell>{i + 1}</TableCell>
                <TableCell>{record.id}</TableCell>
                <TableCell>{record.nick}</TableCell>
                <TableCell>{best}</TableCell>
@@ -103,6 +104,7 @@ class Rank extends React.Component {
          var date = record.dig18Date ? Tools.formatTime(record.dig18Date, 'yyyy-MM-dd hh:mm:ss') : '';
          rows.push(
             <TableRow key={rankType + record.id} className={classes.row}>
+               <TableCell>{i + 1}</TableCell>
                <TableCell>{record.id}</TableCell>
                <TableCell>{record.nick}</TableCell>
                <TableCell>{best}</TableCell>
@@ -154,6 +156,7 @@ class Rank extends React.Component {
                <Table className={classes.table}>
                   <TableHead >
                      <TableRow className={classes.row}>
+                        <TableCell className={classes.headcell}>{lang.get('Place')}</TableCell>
                         <TableCell className={classes.headcell}>ID</TableCell>
                         <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
                         <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>

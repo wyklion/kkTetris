@@ -97,6 +97,8 @@ class SocketManager {
       });
    }
    start() {
+      // 取出聊天记录
+      this.chatManager.init();
       this.io.on('connection', (socket) => {
          var session = socket.request.headers.session;
          if (!session || !session.user) return;

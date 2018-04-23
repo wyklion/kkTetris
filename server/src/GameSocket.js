@@ -40,6 +40,9 @@ class GameSocket {
       // 通知
       socket.emit('onConnection', { err: null, user: user, users: this.userManager.getUsers(), rooms: this.roomManager.getRooms(), chat: this.chatManager.getMessages() });
       socket.broadcast.emit('lobbyInfo', { err: null, type: 'setUser', user: this.userManager.get(userId) });
+
+      // 聊天区发系统消息
+      socket.broadcast.emit("chat", { time: Date.now(), type: 'sys', user: this.userId, msg: 'enter' });
    }
    dispose() {
       var userId = this.userId;
@@ -56,7 +59,11 @@ class GameSocket {
          }
       }
       this.io.emit('lobbyInfo', { err: null, type: 'removeUser', userId: userId });
+      // 聊天区发系统消息
+      this.io.emit("chat", { time: Date.now(), type: 'sys', user: this.userId, msg: 'left' });
+      // socket管理移除
       this.socketManager.removeSocket(userId);
+      // 主动断开
       this.disconnect('dispose...');
    }
    disconnect(reason) {
@@ -154,6 +161,9 @@ class GameSocket {
       var socket = this.socket;
       mongo.updateAddValue("users", { id: this.userId }, { speed40Times: 1 });
       mongo.updateOne("users", { id: this.userId, speed40Best: { "$gt": data.time } }, { speed40Best: data.time, speed40Date: Date.now() });
+      var msg = { time: Date.now(), type: 'speed40', user: this.userId, msg: data.time.toFixed(2) };
+      this.io.emit("chat", msg);
+      this.chatManager.add(msg);
    }
    /**
     * 挖掘记录
@@ -161,6 +171,9 @@ class GameSocket {
    onDig18(data) {
       mongo.updateAddValue("users", { id: this.userId }, { dig18Times: 1 });
       mongo.updateOne("users", { id: this.userId, dig18Best: { "$gt": data.time } }, { dig18Best: data.time, dig18Date: Date.now() });
+      var msg = { time: Date.now(), type: 'dig18', user: this.userId, msg: data.time.toFixed(2) };
+      this.io.emit("chat", msg);
+      this.chatManager.add(msg);
    }
 
    /**
