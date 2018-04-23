@@ -13,7 +13,7 @@ import Tools from '../util/Tools';
 const styles = theme => ({
    root: {
       height: '100%',
-      maxWidth: '700px',
+      maxWidth: '800px',
       margin: '0 auto',
    },
    // button: {
