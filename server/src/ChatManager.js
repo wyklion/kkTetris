@@ -3,15 +3,15 @@
 class ChatManager {
    constructor() {
       this.messages = [];
-      this.maxSaveCount = 50;
+      this.maxSaveCount = 150;
    }
    init() {
       // 从数据库取出最后50条。
       mongo.findOption("chat", {}, {
-         limit: 50, sort: { '_id': 1 }
+         limit: 150, sort: { '_id': -1 }
       }, (err, result) => {
          if (!err) {
-            this.messages = result;
+            this.messages = result.reverse();
          }
       });
    }

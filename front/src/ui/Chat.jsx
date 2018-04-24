@@ -192,7 +192,7 @@ class Chat extends React.Component {
       var msgs = [];
       var messages = this.state.messages;
       var dateNow = new Date();
-      dateNow.setHours(0);
+      dateNow.setHours(24);
       dateNow.setMinutes(0);
       dateNow.setSeconds(0);
       var longest = 999;
