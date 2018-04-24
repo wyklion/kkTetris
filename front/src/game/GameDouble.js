@@ -72,13 +72,7 @@ export default class GameDouble extends Game {
       if (this.single) {
          this.ui.readyOrPlay();
          this.tetris.playData.reset();
-         if (this.firstGame) {
-            this.firstGame = false;
-            this.tetris.start();
-         }
-         else {
-            this.tetris.restart();
-         }
+         this.tetris.start();
       }
       else {
          if (!this.playing && !this.ready) {
@@ -106,8 +100,8 @@ export default class GameDouble extends Game {
       this.ready = false;
       this.tetris.playData.reset();
       this.otherTetris.playData.reset();
-      this.tetris.restart(shapes);
-      this.otherTetris.restart(shapes);
+      this.tetris.start(shapes);
+      this.otherTetris.start(shapes);
    }
    gameOver(result) {
       console.log(result);

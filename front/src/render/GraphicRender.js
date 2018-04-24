@@ -90,7 +90,7 @@ export default class GraphicRender {
       for (var i = 0; i < tetris.row; i++) {
          for (var j = 0; j < tetris.col; j++) {
             if (tetris.board[i][j] > 0) {
-               var color = tetris.playing ? colors[tetris.board[i][j] - 1] : deadColor;
+               var color = tetris.game.state === 0 ? deadColor : colors[tetris.board[i][j] - 1];
                this.drawTetrisBlock(j, tetris.row - 1 - i, color);
             }
          }
@@ -156,9 +156,7 @@ export default class GraphicRender {
       //this.ctx.clearRect(this.nextPos.x-1,this.nextPos.y-1,121,121);
       for (var i = 0; i < tetris.nextShapes.length; i++) {
          var shape = tetris.nextShapes[i];
-         var color = colors[shape.shapeId - 1];
-         if (!tetris.playing)
-            color = shadowColor;
+         var color = tetris.game.state === 0 ? shadowColor : colors[shape.shapeId - 1];
          for (var j = 0; j < 4; j++) {
             var x = 1 + shape.shapeModel.cells[0][j * 2];
             var y = 1 + shape.shapeModel.cells[0][j * 2 + 1];

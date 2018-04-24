@@ -4,7 +4,9 @@ import config from '../config';
 
 export default class Render {
    constructor() {
+      this._dirty = false;
       this.vertical = false;
+
       var app = this.app = new PIXI.Application({
          width: this.renderConfig.width,         // default: 800
          height: this.renderConfig.height,        // default: 600
@@ -81,6 +83,12 @@ export default class Render {
    }
    render() {
       // this.renderer.render(this.stage);
+      // if (this._dirty) {
+      //    this._dirty = true;
       this.app.render();
+      // }
+   }
+   dirty() {
+      this._dirty = true;
    }
 }

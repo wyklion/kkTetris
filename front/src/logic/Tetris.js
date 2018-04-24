@@ -41,6 +41,7 @@ export default class Tetris {
       this.init();
    }
    init() {
+      this.playData.reset();
       this.board = [];
       for (var i = 0; i < this.row + 1; i++) {
          this.board[i] = [];
@@ -64,8 +65,8 @@ export default class Tetris {
    render() {
       this.renderer.renderAll();
    }
-   start(shapes) {
-      this.playing = true;
+   ready(shapes) {
+      this.init();
       if (shapes) {
          for (var i = 0; i < shapes.length; i++)
             this.shapes.push(shapes[i]);
@@ -76,16 +77,33 @@ export default class Tetris {
          var shapeId = this.shapes.shift();
          this.nextShapes[j] = new Shape(this, shapeId);
       }
-
-      this.newShape();
-      // 隐藏的开始时要刷一下
       if (this.game.single) {
+         // 剩余多少刷新
          this.renderer.renderSpecialData(this.game.lineCount);
       }
+      // 数据刷新
+      this.renderer.renderData();
+      // 画图
+      this.render();
    }
-   restart(shapes) {
-      this.init();
-      this.start(shapes);
+   start(shapes) {
+      this.playing = true;
+      // if (shapes) {
+      //    for (var i = 0; i < shapes.length; i++)
+      //       this.shapes.push(shapes[i]);
+      // }
+      // else
+      //    this.shapes = RandomGenerator();
+      // for (var j = 0; j < 5; j++) {
+      //    var shapeId = this.shapes.shift();
+      //    this.nextShapes[j] = new Shape(this, shapeId);
+      // }
+
+      this.newShape();
+      // // 隐藏的开始时要刷一下
+      // if (this.game.single) {
+      //    this.renderer.renderSpecialData(this.game.lineCount);
+      // }
    }
    newShape() {
       this.holded = false;

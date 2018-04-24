@@ -18,7 +18,7 @@ export default class TetrisSound {
       }
       this.idx = idx;
       var files = [];
-      var soundNames = ['move', 'lock', 'linefall'];
+      var soundNames = ['move', 'lock', 'linefall', 'go'];
       var pubUrl = process.env.PUBLIC_URL;
       for (var i = 0; i < soundNames.length; i++) {
          var url = pubUrl + '/sound/' + soundNames[i] + idx + '.wav';

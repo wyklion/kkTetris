@@ -10,16 +10,14 @@ export default class DigGame extends Game {
       this.lineCount = lineCount;
    }
    start() {
+      super.start();
       // 延时上涨行
       this.delayAddTrash = 0;
       // 已清垃圾行
       this.clearTrashCount = 0;
       // 已涨垃圾行，起始为9
       this.addedCount = 9;
-      this.tetris.playData.reset();
-      this.tetris.init();
       this.tetris.raiseTrash(9);
-      this.tetris.start();
    }
    onLock(clearLine, clearTrash) {
       if (clearTrash > 0) {

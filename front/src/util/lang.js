@@ -83,6 +83,8 @@ var table = {
    'Restart': ['重来'],
    'End': ['结束'],
    // 游戏
+   'READY': ['准备'],
+   'GO': ['开始'],
    'Time': ['时间'],
    'Speed': ['速度'],
    'Pieces': ['块数'],

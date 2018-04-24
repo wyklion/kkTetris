@@ -216,7 +216,7 @@ class GameManager {
     */
    restart() {
       if (this.game) {
-         this.game.restart();
+         this.game.start();
       }
    }
    /**

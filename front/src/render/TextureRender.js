@@ -82,7 +82,7 @@ export default class TextureRender {
          for (var j = 0; j < tetris.col; j++) {
             var sprite = this.tetrisSprites[i * 10 + j];
             if (tetris.board[i][j] > 0) {
-               var idx = tetris.playing ? tetris.board[i][j] : 9;
+               var idx = tetris.game.state === 0 ? 9 : tetris.board[i][j];
                sprite.texture = this.textures[idx];
                sprite.tint = 0xFFFFFF;
                sprite.visible = true;
@@ -133,7 +133,7 @@ export default class TextureRender {
       //this.ctx.clearRect(this.nextPos.x-1,this.nextPos.y-1,121,121);
       for (var i = 0; i < tetris.nextShapes.length; i++) {
          var shape = tetris.nextShapes[i];
-         var idx = tetris.playing ? shape.shapeId : 9;
+         var idx = tetris.game.state === 0 ? 9 : shape.shapeId;
          for (var j = 0; j < 4; j++) {
             var x = 1 + shape.shapeModel.cells[0][j * 2];
             var y = 1 + shape.shapeModel.cells[0][j * 2 + 1];

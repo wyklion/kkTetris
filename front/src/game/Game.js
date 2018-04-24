@@ -15,15 +15,14 @@ export default class Game {
       this.interval = 1;
       this.time = 0;
       this.watch = false;
-      this.playing = false;
-      this.ready = false;
       this.focus = true;
 
       this.single = true;
-      this.isPaused = false;
       this.firstGame = true;
       this.tetris = new Tetris(this, true);
       this.hostUser = gameManager.user.id;
+
+      this.state = 0; //0 没事 1 准备Go 2 游戏中
       this.init();
       gameManager.addUpdate(this);
    }
@@ -65,7 +64,7 @@ export default class Game {
          // }
          //else if(e.keyCode === 80) // P
          //    this.pause();
-         if (this.focus && !this.isPaused && this.tetris.playing) {
+         if (this.focus && this.state === 2 && this.tetris.playing) {
             this.keyManager.onKeyDown(e.keyCode);
             if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 32)
                e.preventDefault();
@@ -78,18 +77,33 @@ export default class Game {
       document.body.addEventListener("keydown", this.onKeyDown, false);
       document.body.addEventListener("keyup", this.onKeyUp, false);
    }
+   /**
+    * 开始游戏
+    */
    start() {
-      this.tetris.playData.reset();
-      if (this.firstGame) {
-         this.firstGame = false;
-         this.tetris.start();
+      // 取消准备状态
+      if (this.readyHandle) {
+         clearTimeout(this.readyHandle);
+         this.readyHandle = null;
       }
-      else {
-         this.tetris.restart();
-      }
+      this.state = 1;
+      // this.tetris.playData.reset();
+      this.tetris.ready();
+      this.ready();
    }
-   restart() {
-      this.start();
+   /**
+    * 准备
+    */
+   ready() {
+      this.tetris.renderer.ready();
+      this.readyHandle = setTimeout(() => {
+         this.tetris.renderer.go();
+         this.go();
+      }, 1000);
+   }
+   go = () => {
+      this.state = 2;
+      this.tetris.start();
    }
    //for watch
    userReady(userId) {
@@ -105,15 +119,12 @@ export default class Game {
     */
    gameOver(win = false) {
       console.log(win ? 'win' : 'lose');
+      this.state = 0;
       this.reset();
-      // this.ui.gameOver(result.win);
    }
    reset() {
-      // this.ui.reset();
       if (!this.watch)
          this.keyManager.stop();
-      this.playing = false;
-      this.tetris.playing = false;
    }
    trashPool(trash) {
       this.tetris.hurt(trash);
@@ -122,8 +133,7 @@ export default class Game {
       this.time = 0;
    }
    update = (dt) => {
-      if (this.isPaused) return;
-      if (this.tetris.playing) {
+      if (this.state === 2 && this.tetris.playing) {
          this.tetris.playData.time += dt;
          this.time += dt;
          if (!this.watch) {
@@ -138,9 +148,6 @@ export default class Game {
    }
    checkOver() {
       return false;
-   }
-   pause() {
-      this.isPaused = !this.isPaused;
    }
    dispose() {
       document.body.removeEventListener("keydown", this.onKeyDown, false);

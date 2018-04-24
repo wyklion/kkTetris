@@ -10,6 +10,10 @@ import GraphicRender from './GraphicRender';
 import TextureRender from './TextureRender';
 
 var layout = {
+   tetrisCenter: {
+      x: 229,
+      y: 310,
+   },
    tetris: {
       x: 79,
       y: 10,
@@ -105,6 +109,8 @@ export default class TetrisRender {
          this.initHold();
          this.initData();
          this.initSpecialData();
+         // 准备GO
+         this.initReadyGo();
       }
    }
 
@@ -127,6 +133,10 @@ export default class TetrisRender {
       }
       if (this.specialDataLabel) {
          this.specialDataLabel.text = lang.get('Remain');
+      }
+      if (this.readyText) {
+         this.readyText.text = lang.get('READY');
+         this.goText.text = lang.get('GO');
       }
    }
 
@@ -348,6 +358,86 @@ export default class TetrisRender {
    }
 
    /**
+    * 准备Go
+    */
+   initReadyGo() {
+      var readyText = this.readyText = new PIXI.Text(lang.get('READY'), {
+         fontWeight: 'bold',
+         fontSize: 30 * 2,
+         fontFamily: 'Arial',
+         align: 'center',
+         fill: '#DDDDDD',
+      });
+      readyText.x = layout.tetrisCenter.x;
+      readyText.y = layout.tetrisCenter.y;
+      readyText.scale.set(0.6, 0.6);
+      readyText.anchor.set(0.5, 0.5);
+      readyText.visible = false;
+      this.container.addChild(readyText);
+      var goText = this.goText = new PIXI.Text(lang.get('GO'), {
+         fontWeight: 'bold',
+         fontSize: 30 * 2,
+         fontFamily: 'Arial',
+         align: 'center',
+         fill: '#DDDDDD',
+      });
+      goText.x = layout.tetrisCenter.x;
+      goText.y = layout.tetrisCenter.y;
+      goText.scale.set(0.6, 0.6);
+      goText.anchor.set(0.5, 0.5);
+      goText.visible = false;
+      this.container.addChild(goText);
+   }
+
+   /**
+    * 准备GO的动画
+    */
+   update = (dt) => {
+      this.readyTime += dt;
+      if (this.readyTime > 0.6 && this.readyText.visible) {
+         gameManager.soundManager.play('go');
+         this.readyText.visible = false;
+         this.goText.visible = true;
+         // var s = this.readyText.scale.x;
+         // console.log(dt);
+         // s -= dt;
+         // if (s < 0) {
+         //    this.readyText.visible = false;
+         //    this.readyState = 1;
+         //    this.goText.
+         // }
+      }
+      // else if(this.readyTime>0.8){
+      //    this.readyText.visible = false;
+      //    this.goText.visible = true;
+
+      // } else if(this.readyTime)
+      // if (s <= 0) {
+      //    gameManager.removeUpdate(this);
+      // }
+   }
+
+   /**
+    * 准备~
+    */
+   ready() {
+      gameManager.removeUpdate(this);
+      this.readyTime = 0;
+      this.readyText.visible = true;
+      this.goText.visible = false;
+      // this.readyText.scale.set(1, 1);
+      gameManager.addUpdate(this);
+   }
+
+   /**
+    * 开始！
+    */
+   go() {
+      this.goText.visible = false;
+      gameManager.removeUpdate(this);
+   }
+
+   /**
     * 清空并隐藏状态
     */
    clear() {
@@ -358,6 +448,7 @@ export default class TetrisRender {
          this.dataArea.visible = false;
          this.specialDataArea.visible = false;
       }
+      gameManager.removeUpdate(this);
    }
 
    /**
