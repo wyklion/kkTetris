@@ -50,7 +50,7 @@ class Lobby extends React.Component {
       userCount: 0,
       friendCount: 0,
       friendOnline: 0,
-      value: 0,
+      value: 2,
    };
 
    componentWillMount() {
