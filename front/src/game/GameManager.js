@@ -220,6 +220,14 @@ class GameManager {
       }
    }
    /**
+    * 回放
+    */
+   replay() {
+      if (this.game) {
+         this.game.replay()
+      }
+   }
+   /**
     * 创建房间
     */
    createRoom() {

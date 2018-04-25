@@ -8,6 +8,7 @@ import KeyState from './KeyState';
 export default class KeyManager {
    constructor(options) {
       var _this = this;
+      this.enable = true;
       this.socket = options.socket;
 
       var keyboard = options.keyboard;
@@ -43,6 +44,7 @@ export default class KeyManager {
       this.rotate180 = new KeyState(this, this.rotate180Func, null, false, true);
    }
    onKeyDown(key) {
+      if (!this.enable) return;
       var leftright = false;
       if (key === this.leftKey) {
          if (this.left.keyDown()) {
@@ -82,6 +84,7 @@ export default class KeyManager {
       }
    }
    onKeyUp(key) {
+      if (!this.enable) return;
       if (key === this.leftKey) {
          this.left.keyUp();
       }
@@ -120,7 +123,7 @@ export default class KeyManager {
       this.moveDelay = keyboard.moveDelay;
       this.downDelay = keyboard.downDelay;
    }
-   stop() {
+   reset() {
       this.left.stop();
       this.right.stop();
       this.down.stop();

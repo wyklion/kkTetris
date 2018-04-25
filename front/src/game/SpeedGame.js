@@ -8,6 +8,7 @@ export default class SpeedGame extends Game {
       super();
       this.gameType = 'speed';
       this.lineCount = lineCount;
+      this.hasReplay = true;
    }
    onLock(clearLine, clearTrash) {
       if (clearLine > 0) {
@@ -17,7 +18,9 @@ export default class SpeedGame extends Game {
    checkOver() {
       if (this.tetris.playData.lines >= this.lineCount) {
          this.tetris.gameOver(true);
-         socket.sendSpeed40(this.tetris.playData.time);
+         if (!this.isReplay) {
+            socket.sendSpeed40(this.tetris.playData.time);
+         }
          return true;
       }
       return false;
@@ -28,6 +31,7 @@ export default class SpeedGame extends Game {
       data.gameType = this.gameType;
       data.win = win;
       data.lineCount = this.lineCount;
+      data.hasReplay = this.hasReplay;
       gameManager.onGameOver(win, data);
    }
 }

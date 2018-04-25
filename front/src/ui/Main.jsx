@@ -145,6 +145,12 @@ class Main extends React.Component {
       this.setState({ showResult: false });
    }
 
+   onReplayGame = () => {
+      console.log('onReplayGame');
+      gameManager.replay();
+      this.setState({ showResult: false });
+   }
+
    /**
     * 游戏胜利或失败，由gameManager通知
     */

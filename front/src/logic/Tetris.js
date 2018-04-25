@@ -8,6 +8,8 @@ import socket from '../socket/GameSocket';
 import { OPERTABLE } from '../socket/OperTable';
 import gameManager from '../game/GameManager';
 import TrashManager from './TrashManager';
+import SeedRandom from '../util/SeedRandom';
+import OperEnum from '../enum/OperEnum';
 
 var COL = 10;
 var ROW = 20;
@@ -29,6 +31,7 @@ var Combo = [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5];
 
 export default class Tetris {
    constructor(game, me) {
+      this.rand = new SeedRandom();
       this.trashManager = new TrashManager(this);
       this.game = game;
       this.me = me;
@@ -36,7 +39,6 @@ export default class Tetris {
       this.col = COL;
       this.playData = new PlayData();
       this.renderer = null;
-      this.operateCount = 0;
       this.renderCount = 0;
       this.init();
    }
@@ -65,14 +67,23 @@ export default class Tetris {
    render() {
       this.renderer.renderAll();
    }
-   ready(shapes) {
-      this.init();
-      if (shapes) {
-         for (var i = 0; i < shapes.length; i++)
-            this.shapes.push(shapes[i]);
+   generateShapes() {
+      var bag = [1, 2, 3, 4, 5, 6, 7];
+      for (var i = 0; i < 7; i++) {
+         var idx = this.rand.get(0, bag.length - 1);
+         this.shapes.push(bag[idx])
+         bag.splice(idx, 1);
       }
-      else
-         this.shapes = RandomGenerator();
+   }
+   ready(seed) {
+      this.init();
+      // 随机种子和生成器
+      this.seed = seed || Math.floor(Math.random() * 50000);
+      this.rand.seed = this.seed;
+      // 初始化方块队列只成生一个包7块。
+      this.shapes = [];
+      this.generateShapes();
+      // 五个预览块
       for (var j = 0; j < 5; j++) {
          var shapeId = this.shapes.shift();
          this.nextShapes[j] = new Shape(this, shapeId);
@@ -88,28 +99,17 @@ export default class Tetris {
    }
    start(shapes) {
       this.playing = true;
-      // if (shapes) {
-      //    for (var i = 0; i < shapes.length; i++)
-      //       this.shapes.push(shapes[i]);
-      // }
-      // else
-      //    this.shapes = RandomGenerator();
-      // for (var j = 0; j < 5; j++) {
-      //    var shapeId = this.shapes.shift();
-      //    this.nextShapes[j] = new Shape(this, shapeId);
-      // }
-
       this.newShape();
-      // // 隐藏的开始时要刷一下
-      // if (this.game.single) {
-      //    this.renderer.renderSpecialData(this.game.lineCount);
-      // }
    }
    newShape() {
       this.holded = false;
       this.shape = this.nextShapes.shift();
       //var shapeId = Math.ceil(Math.random()*7);
       var shapeId = this.shapes.shift();
+      // 方块队列少于7块要补充
+      if (this.shapes.length < 7) {
+         this.generateShapes();
+      }
       if (!shapeId) {
          this.gameOver();
          return;
@@ -151,7 +151,7 @@ export default class Tetris {
    gameOver(win = false) {
       this.playing = false;
       if (this.me) {
-         this.operate(OPERTABLE.dead);
+         // this.operate(OPERTABLE.dead);
          this.game.gameOver(win);
       }
       this.render();
@@ -305,6 +305,7 @@ export default class Tetris {
       if (this.saveShape) {
          if (!this.saveShape.check(4, 19, 0))
             return;
+         this.operate(OperEnum.hold);
          var shapeId = this.shape.shapeId;
          this.shape.init(this.saveShape.shapeId);
          this.shape.makeShadow();
@@ -315,7 +316,6 @@ export default class Tetris {
          this.newShape();
       }
       this.holded = true;
-      this.operate(OPERTABLE.hold);
       this.render();
    }
    /**
@@ -325,9 +325,9 @@ export default class Tetris {
       var ok = this.shape.rotate(anti);
       if (ok) {
          if (anti)
-            this.operate(OPERTABLE.rotateL);
+            this.operate(OperEnum.rotateL);
          else
-            this.operate(OPERTABLE.rotateR);
+            this.operate(OperEnum.rotateR);
          this.lastRotate = true;
          this.checkFloor();
          this.render();
@@ -339,7 +339,7 @@ export default class Tetris {
    rotate180() {
       var ok = this.shape.rotate180();
       if (ok) {
-         this.operate(OPERTABLE.rotate180);
+         this.operate(OperEnum.rotate180);
          this.lastRotate = true;
          this.checkFloor();
          this.render();
@@ -350,7 +350,7 @@ export default class Tetris {
     */
    drop() {
       this.attackLines = 0;
-      this.operate(OPERTABLE.drop);
+      this.operate(OperEnum.drop);
       this.shape.drop();
       this.render();
    }
@@ -367,13 +367,12 @@ export default class Tetris {
       if (ok) {
          this.lastRotate = false;
          this.checkFloor();
-         this.operate(OPERTABLE.left);
+         this.operate(OperEnum.left);
          this.render();
       }
       return ok;
    }
    moveLeftToEnd() {
-      this.operate(OPERTABLE.leftEnd);
       var ok = false;
       while (this.move(-1, 0)) {
          ok = true;
@@ -381,6 +380,7 @@ export default class Tetris {
          this.checkFloor();
       }
       if (ok) {
+         this.operate(OperEnum.leftEnd);
          this.render();
       }
    }
@@ -389,13 +389,12 @@ export default class Tetris {
       if (ok) {
          this.lastRotate = false;
          this.checkFloor();
-         this.operate(OPERTABLE.right);
+         this.operate(OperEnum.right);
          this.render();
       }
       return ok;
    }
    moveRightToEnd() {
-      this.operate(OPERTABLE.rightEnd);
       var ok = false;
       while (this.move(1, 0)) {
          ok = true;
@@ -403,20 +402,20 @@ export default class Tetris {
          this.checkFloor();
       }
       if (ok) {
+         this.operate(OperEnum.rightEnd);
          this.render();
       }
    }
    moveDown() {
       if (!this.shape.checkDown())
          return;
-      this.operate(OPERTABLE.down);
+      this.operate(OperEnum.down);
       this.move(0, -1);
       this.lastRotate = false;
       this.checkFloor();
       this.render();
    }
    moveDownToEnd() {
-      this.operate(OPERTABLE.downEnd);
       var ok = false;
       while (this.shape.checkDown()) {
          ok = true;
@@ -425,6 +424,7 @@ export default class Tetris {
          this.checkFloor();
       }
       if (ok) {
+         this.operate(OperEnum.downEnd);
          this.render();
       }
    }
@@ -432,9 +432,15 @@ export default class Tetris {
     * 自然下落
     */
    moveDownNature() {
-      this.operate(OPERTABLE.downNature);
-      this.move(0, -1);
-      this.render();
+      var ok = this.move(0, -1);
+      if (ok) {
+         // 这是落下未锁定
+         this.operate(OperEnum.down);
+         this.render();
+      } else {
+         // 落下锁定相当于drop
+         this.operate(OperEnum.drop);
+      }
    }
    /**
     * 检查在地面可以操作多少次
@@ -492,114 +498,116 @@ export default class Tetris {
          }
       }
    }
+   operate(oper) {
+      this.game.onOperate(oper);
+   }
    //=============== for vs game =================
    //only me
-   operate(oper, data) {
-      this.operateCount++;
-      if (!this.me) return;
-      if (!this.game.single)
-         socket.operate(oper, data);
-   }
-   //both, but only me send operate
-   checkAttack() {
-      if (this.game.setting.useBuffer) {
-         if (this.clearRowCount === 0) {
-            if (this.trashes.length > 0) {
-               this.riseRow(this.trashes);
-               //console.log("tell other i got trash...");
-               this.trashes = [];
-            }
-         }
-         else if (this.trashes.length >= this.attackLines) {
-            this.trashes.splice(0, this.attackLines);
-         }
-         else {
-            this.attack(this.attackLines - this.trashes.length);
-            this.trashes = [];
-         }
-      }
-      else {
-         this.attack(this.attackLines);
-      }
-      //if(!this.me)
-      //    console.log("other trash:", this.trashes);
-   }
-   //only me...
-   attack(lines) {
-      if (!this.me) return;
-      var trash = [];
-      var hole = Math.floor(Math.random() * COL);
-      for (var i = 0; i < lines; i++)
-         trash.push(hole);
-      this.operate(OPERTABLE.attack, trash);
-   }
-   //both...
-   hurt(trash) {
-      if (this.game.setting.useBuffer) {
-         this.trashes = this.trashes.concat(trash);
-         this.operate(OPERTABLE.hurt, trash);
-         //if(!this.me)
-         //    console.log("other trash:", this.trashes);
-      }
-      else {
-         if (this.me)
-            this.realHurt(trash);
-      }
-   }
-   //only me... useBuffer = false
-   realHurt(trash) {
-      var dead = this.riseRow(trash);
+   // operate(oper, data) {
+   //    if (!this.me) return;
+   //    if (!this.game.single)
+   //       socket.operate(oper, data);
+   // }
+   // //both, but only me send operate
+   // checkAttack() {
+   //    if (this.game.setting.useBuffer) {
+   //       if (this.clearRowCount === 0) {
+   //          if (this.trashes.length > 0) {
+   //             this.riseRow(this.trashes);
+   //             //console.log("tell other i got trash...");
+   //             this.trashes = [];
+   //          }
+   //       }
+   //       else if (this.trashes.length >= this.attackLines) {
+   //          this.trashes.splice(0, this.attackLines);
+   //       }
+   //       else {
+   //          this.attack(this.attackLines - this.trashes.length);
+   //          this.trashes = [];
+   //       }
+   //    }
+   //    else {
+   //       this.attack(this.attackLines);
+   //    }
+   //    //if(!this.me)
+   //    //    console.log("other trash:", this.trashes);
+   // }
+   // //only me...
+   // attack(lines) {
+   //    if (!this.me) return;
+   //    var trash = [];
+   //    var hole = Math.floor(Math.random() * COL);
+   //    for (var i = 0; i < lines; i++)
+   //       trash.push(hole);
+   //    this.operate(OPERTABLE.attack, trash);
+   // }
+   // //both...
+   // hurt(trash) {
+   //    if (this.game.setting.useBuffer) {
+   //       this.trashes = this.trashes.concat(trash);
+   //       this.operate(OPERTABLE.hurt, trash);
+   //       //if(!this.me)
+   //       //    console.log("other trash:", this.trashes);
+   //    }
+   //    else {
+   //       if (this.me)
+   //          this.realHurt(trash);
+   //    }
+   // }
+   // //only me... useBuffer = false
+   // realHurt(trash) {
+   //    var dead = this.riseRow(trash);
 
-      var ok = this.shape.check(this.shape.x, this.shape.y, this.shape.rotation);
-      var offY = 0;
-      while (!ok && this.shape.y < 19) {
-         offY++;
-         this.shape.y++;
-         ok = this.shape.check(this.shape.x, this.shape.y, this.shape.rotation);
-      }
+   //    var ok = this.shape.check(this.shape.x, this.shape.y, this.shape.rotation);
+   //    var offY = 0;
+   //    while (!ok && this.shape.y < 19) {
+   //       offY++;
+   //       this.shape.y++;
+   //       ok = this.shape.check(this.shape.x, this.shape.y, this.shape.rotation);
+   //    }
 
-      this.shape.makeShadow();
+   //    this.shape.makeShadow();
 
-      //console.log("tell other i got trash...");
-      this.operate(OPERTABLE.trash, { trash: trash, offY: offY });
+   //    //console.log("tell other i got trash...");
+   //    this.operate(OPERTABLE.trash, { trash: trash, offY: offY });
 
-      if (!ok)
-         dead = true;
-      if (dead) {
-         this.gameOver();
-      }
-   }
-   //both use...
-   riseRow(trash) {
-      var dead = false;
-      var trashLengh = trash.length;
-      for (var y = this.row; y >= trashLengh; y--) {
-         for (var x = 0; x < this.col; x++) {
-            if (y >= this.row - trashLengh && this.board[y][x] > 0)
-               dead = true;
-            this.board[y][x] = this.board[y - trashLengh][x];
-         }
-      }
-      for (var i = 0; i < trashLengh; i++) {
-         var blank = trash[i];
-         var id = 1 + Math.floor(Math.random() * 7);
-         for (var col = 0; col < COL; col++) {
-            if (col === blank) {
-               this.board[trashLengh - 1 - i][col] = 0;
-            }
-            else
-               this.board[trashLengh - 1 - i][col] = id;
-         }
-      }
-      return dead;
-   }
-   //only other... useBuffer = false
-   trash(data) {
-      //console.log("other get trash:", data.trash, data.offY);
-      this.riseRow(data.trash);
-      this.shape.y += data.offY;
-      this.shape.makeShadow();
-   }
+   //    if (!ok)
+   //       dead = true;
+   //    if (dead) {
+   //       this.gameOver();
+   //    }
+   // }
+   // //both use...
+   // riseRow(trash) {
+   //    var dead = false;
+   //    var trashLengh = trash.length;
+   //    for (var y = this.row; y >= trashLengh; y--) {
+   //       for (var x = 0; x < this.col; x++) {
+   //          if (y >= this.row - trashLengh && this.board[y][x] > 0)
+   //             dead = true;
+   //          this.board[y][x] = this.board[y - trashLengh][x];
+   //       }
+   //    }
+   //    for (var i = 0; i < trashLengh; i++) {
+   //       var blank = trash[i];
+   //       var id = 1 + Math.floor(Math.random() * 7);
+   //       for (var col = 0; col < COL; col++) {
+   //          if (col === blank) {
+   //             this.board[trashLengh - 1 - i][col] = 0;
+   //          }
+   //          else
+   //             this.board[trashLengh - 1 - i][col] = id;
+   //       }
+   //    }
+   //    return dead;
+   // }
+   // //only other... useBuffer = false
+   // trash(data) {
+   //    //console.log("other get trash:", data.trash, data.offY);
+   //    this.riseRow(data.trash);
+   //    this.shape.y += data.offY;
+   //    this.shape.makeShadow();
+   // }
    print() {
       console.log(this.board);
    }
@@ -607,5 +615,7 @@ export default class Tetris {
       this.renderer.setTetris(null);
       this.renderer.clear();
       this.renderer = null;
+      this.trashManager = null;
+      this.rand = null;
    }
 };

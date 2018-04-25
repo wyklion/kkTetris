@@ -39,8 +39,6 @@ var layout = {
 var bgColor = 0x111111;
 var bgBorderColor = 0x555555;
 var bgLineColor = 0x333333;
-var shadowColor = 0x444444;
-var deadColor = 0x444444;
 // var colors = [
 //    0x00FFFF, // 'cyan'
 //    0xFFFF00, // 'yellow'

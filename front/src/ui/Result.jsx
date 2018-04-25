@@ -4,6 +4,7 @@ import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Fade from 'material-ui/transitions/Fade';
 import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
 import gameManager from '../game/GameManager';
 import lang from '../util/lang';
 
@@ -47,6 +48,9 @@ const styles = theme => ({
       color: '#111111',
       fontFamily: 'Arial Bold',
       fontWeight: 'bolder',
+   },
+   button: {
+
    }
 });
 
@@ -58,6 +62,10 @@ class Result extends React.Component {
    handleChange = () => {
       this.setState({ checked: !this.state.checked });
    };
+
+   onReplay = () => {
+      gameManager.main.onReplayGame();
+   }
 
    makeLoseResult(data) {
       var classes = this.props.classes;
@@ -112,6 +120,9 @@ class Result extends React.Component {
                <Typography component="p" gutterBottom className={classes.item}>
                   {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
                </Typography>
+               <Button variant="raised" color="primary" title={lang.get('Replay')} className={classes.button} onClick={this.onReplay}>
+                  {lang.get('Replay')}
+               </Button>
             </div>
          </Paper>
       )

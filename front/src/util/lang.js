@@ -93,6 +93,7 @@ var table = {
    'Personal Best': ['个人最佳'],
    'Game Over': ['游戏结束'],
    'Waiting': ['等待中'],
+   'Replay': ['回放'],
 }
 
 /**
