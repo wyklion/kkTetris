@@ -121,8 +121,10 @@ class SocketManager {
    }
    removeSocket(userId) {
       var gs = this.gameSockets[userId];
-      gs.disconnect();
-      delete this.gameSockets[userId];
+      if (gs) {
+         gs.disconnect();
+         delete this.gameSockets[userId];
+      }
    }
 }
 
