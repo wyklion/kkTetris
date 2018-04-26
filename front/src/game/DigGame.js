@@ -8,17 +8,16 @@ export default class DigGame extends Game {
       super();
       this.gameType = 'dig';
       this.lineCount = lineCount;
-      this.hasReplay = false;
+      this.hasReplay = true;
    }
-   start() {
-      super.start();
+   onStart() {
       // 延时上涨行
       this.delayAddTrash = 0;
       // 已清垃圾行
       this.clearTrashCount = 0;
       // 已涨垃圾行，起始为9
       this.addedCount = 9;
-      this.tetris.raiseTrash(9);
+      this.tetris.raiseTrash(9, true);
    }
    onLock(clearLine, clearTrash) {
       if (clearTrash > 0) {

@@ -445,6 +445,8 @@ export default class TetrisRender {
          // this.holdText.visible = false;
          this.dataArea.visible = false;
          this.specialDataArea.visible = false;
+         this.readyText.visible = false;
+         this.goText.visible = false;
       }
       gameManager.removeUpdate(this);
    }
@@ -477,10 +479,10 @@ export default class TetrisRender {
       var tetris = this.tetris;
       var hostData = tetris.playData;
       var time = hostData.time;
-      if (time > 100) {
-         this.smallTimeText();
-      }
-      this.setText('time', time.toFixed(1));
+      // if (time > 100) {
+      //    this.smallTimeText();
+      // }
+      this.setText('time', time.toFixed(2));
       this.setText('piece', hostData.count);
       this.setText('speed', time == 0 ? "0.00" : (hostData.count / time).toFixed(2));
       this.setText('lines', hostData.lines);
@@ -495,9 +497,9 @@ export default class TetrisRender {
       }
       text.text = value;
    }
-   smallTimeText() {
-      this.dataTexts['time'].scale.set(0.5, 0.5);
-   }
+   // smallTimeText() {
+   //    this.dataTexts['time'].scale.set(0.5, 0.5);
+   // }
    /**
     * 特殊数据
     */

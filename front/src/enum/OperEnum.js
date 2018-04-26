@@ -11,6 +11,7 @@ var OperEnum = {
    downEnd: 9,
    leftEnd: 10,
    rightEnd: 11,
+   trash: 12,
 }
 
 export default OperEnum;

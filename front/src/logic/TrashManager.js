@@ -9,11 +9,15 @@ var ROW = 20;
 export default class TrashManager {
    constructor(tetris) {
       this.tetris = tetris;
+      this.reset();
+   }
+   reset() {
       this.lastHole = -1;
       this.holePool = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
    }
    getRandomHole() {
-      var holeIdx = Math.floor(Math.random() * this.holePool.length);
+      var holeIdx = this.tetris.rand.get(0, this.holePool.length - 1);
+      // console.log(this.tetris.rand, holeIdx);
       var hole = this.holePool[holeIdx];
       this.holePool.splice(holeIdx, 1);
       if (this.lastHole > -1) {

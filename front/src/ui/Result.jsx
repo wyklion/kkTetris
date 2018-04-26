@@ -50,7 +50,7 @@ const styles = theme => ({
       fontWeight: 'bolder',
    },
    button: {
-
+      marginTop: '20px',
    }
 });
 
@@ -76,7 +76,7 @@ class Result extends React.Component {
                   {lang.get('Game Over')}
                </Typography>
                <Typography component="p" gutterBottom className={classes.loseItem}>
-                  {lang.get('Time') + ':' + data.time.toFixed(1)}
+                  {lang.get('Time') + ':' + data.time.toFixed(2)}
                </Typography>
                <Typography component="p" gutterBottom className={classes.loseItem}>
                   {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
@@ -87,6 +87,11 @@ class Result extends React.Component {
                <Typography component="p" gutterBottom className={classes.loseItem}>
                   {lang.get('Lines') + ':' + data.lines}
                </Typography>
+               {data.hasReplay
+                  ? <Button variant="raised" color="primary" title={lang.get('Replay')} className={classes.button} onClick={this.onReplay}>
+                     {lang.get('Replay')}
+                  </Button>
+                  : null}
             </div>
          </Paper>
       )
@@ -112,7 +117,7 @@ class Result extends React.Component {
                   {title}
                </Typography>
                <Typography component="p" gutterBottom className={classes.best}>
-                  {lang.get('Personal Best') + ':' + best.toFixed(1)}
+                  {lang.get('Personal Best') + ':' + best.toFixed(2)}
                </Typography>
                <Typography component="p" gutterBottom className={classes.item}>
                   {lang.get('Time') + ':' + data.time.toFixed(2)}
@@ -120,9 +125,11 @@ class Result extends React.Component {
                <Typography component="p" gutterBottom className={classes.item}>
                   {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
                </Typography>
-               <Button variant="raised" color="primary" title={lang.get('Replay')} className={classes.button} onClick={this.onReplay}>
-                  {lang.get('Replay')}
-               </Button>
+               {data.hasReplay
+                  ? <Button variant="raised" color="primary" title={lang.get('Replay')} className={classes.button} onClick={this.onReplay}>
+                     {lang.get('Replay')}
+                  </Button>
+                  : null}
             </div>
          </Paper>
       )
@@ -163,6 +170,11 @@ class Result extends React.Component {
                <Typography component="p" gutterBottom className={classes.item}>
                   {lang.get('Pieces') + ':' + data.count}
                </Typography>
+               {data.hasReplay
+                  ? <Button variant="raised" color="primary" title={lang.get('Replay')} className={classes.button} onClick={this.onReplay}>
+                     {lang.get('Replay')}
+                  </Button>
+                  : null}
             </div>
          </Paper>
       )

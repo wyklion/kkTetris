@@ -77,6 +77,8 @@ export default class Tetris {
    }
    ready(seed) {
       this.init();
+      // 垃圾包重置
+      this.trashManager.reset();
       // 随机种子和生成器
       this.seed = seed || Math.floor(Math.random() * 50000);
       this.rand.seed = this.seed;
@@ -617,5 +619,6 @@ export default class Tetris {
       this.renderer = null;
       this.trashManager = null;
       this.rand = null;
+      this.playData = null;
    }
 };

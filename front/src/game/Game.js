@@ -20,7 +20,8 @@ export default class Game {
       this.hasReplay = false;
       this.isReplay = false;
 
-      this.interval = 1;
+      // 1秒难编码
+      this.interval = 0.95;
       this.time = 0;
       this.watch = false;
       this.focus = true;
@@ -92,6 +93,7 @@ export default class Game {
       this.keyManager.enable = false;
       this.recorder.playIdx = 0;
       this.tetris.ready(this.recorder.seed);
+      this.onStart();
       this.go();
    }
    /**
@@ -102,11 +104,7 @@ export default class Game {
       if (!this.watch) {
          this.keyManager.enable = true;
       }
-      // 取消准备状态
-      if (this.readyHandle) {
-         clearTimeout(this.readyHandle);
-         this.readyHandle = null;
-      }
+      this.reset();
       this.state = 1;
       this.tetris.ready();
       // 开始记录
@@ -114,7 +112,16 @@ export default class Game {
          this.recorder.seed = this.tetris.seed;
          this.recorder.init(this);
       }
+      // 开始时子类处理
+      this.onStart();
+      // 准备动画
       this.ready();
+   }
+   /**
+    * 子类重写
+    */
+   onStart() {
+
    }
    /**
     * 准备
@@ -126,37 +133,47 @@ export default class Game {
          this.go();
       }, 1000);
    }
+   /**
+    * 正式开始
+    */
    go = () => {
       this.state = 2;
       this.tetris.start();
    }
-   //for watch
-   userReady(userId) {
-      console.log(userId, "ready");
-      if (this.hostUser === userId)
-         this.tetris.init();
-      else if (this.otherUser === userId)
-         this.otherTetris.init();
-      // this.ui.userReady(userId);
-   }
    /**
-    * 游戏结束，由tetris通知
+    * 游戏结束，由tetris通知，子类继承
     */
    gameOver(win = false) {
       console.log(win ? 'win' : 'lose');
       this.state = 0;
-      // this.recorder.print();
-      // var str = this.recorder.encode();
-      // console.log('encode:', str);
-      // var r = new Recorder();
-      // r.decode(str);
-      // r.print();
+      if (this.hasReplay) {
+         // 记录总时间，或者回放时使用总时间。
+         if (!this.isReplay) {
+            this.recorder.end(this.tetris.playData.time);
+         } else {
+            this.tetris.playData.time = this.recorder.time;
+         }
+      }
+      if (this.hasReplay && !this.isReplay) {
+         // 回放编码测试
+         this.recorder.print();
+         var str = this.recorder.encode();
+         console.log('encode:', str);
+         var r = new Recorder();
+         r.decode(str);
+         r.print();
+      }
       this.reset();
    }
    /**
     * 重置
     */
    reset() {
+      // 取消准备状态
+      if (this.readyHandle) {
+         clearTimeout(this.readyHandle);
+         this.readyHandle = null;
+      }
       if (!this.watch)
          this.keyManager.reset();
    }
@@ -207,6 +224,8 @@ export default class Game {
          case OperEnum.rightEnd:
             this.tetris.moveRightToEnd();
             break;
+         default:
+            break;
       }
    }
    trashPool(trash) {
@@ -217,8 +236,8 @@ export default class Game {
    }
    update = (dt) => {
       if (this.single) {
-         if (dt > 1) {
-            dt = 1;
+         if (dt > 0.1) {
+            dt = 0.1;
          }
       }
       if (this.state === 2 && this.tetris.playing) {
@@ -245,7 +264,9 @@ export default class Game {
       document.body.removeEventListener("keydown", this.onKeyDown, false);
       document.body.removeEventListener("keyup", this.onKeyUp, false);
       gameManager.removeUpdate(this);
+      this.reset();
       this.tetris.dispose();
       this.tetris = null;
+      this.recorder = null;
    }
 }

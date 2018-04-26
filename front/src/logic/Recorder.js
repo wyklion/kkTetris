@@ -23,6 +23,7 @@ export default class Recorder {
       this.gameType = 0;
       this.seed = 0;
       this.operations.length = 0;
+      this.time = 0;
       this.times.length = 0;
       this.timeAll = 0;
       this.playIdx = 0;
@@ -37,9 +38,13 @@ export default class Recorder {
             break;
          }
       }
+      // 这是一个保险措施通常不存在
+      if (t > this.time + 1) {
+         this.game.tetris.gameOver(false);
+      }
    }
    getTime(t) {
-      t = ((t * 100) >> 0) / 100;
+      t = Math.round(t * 100) / 100;
       if (t >= 1) {
          t = 0.99;
       }
@@ -60,6 +65,13 @@ export default class Recorder {
          this.timeAll += this.getTime(t);
          this.times.push(this.timeAll);
       }
+      // console.log(time.toFixed(4), this.timeAll.toFixed(2));
+   }
+   /**
+    * 总时间，否则不精准
+    */
+   end(time) {
+      this.time = (Math.round(time * 100)) / 100;
    }
    /**
     * 一个数压到两字节
@@ -89,8 +101,11 @@ export default class Recorder {
       // 第4、5位操作长度
       var len = this.operations.length;
       str += this.encode1to2(len);
-      // 第6-8位留空
-      str += '678';
+      // 第6、7位总时间
+      var time = Math.floor(this.time * 100);
+      str += this.encode1to2(time);
+      // 第8-12位留空
+      str += '89abc';
       // 操作数2压1
       var i;
       for (i = 0; i < len; i += 2) {
@@ -103,7 +118,7 @@ export default class Recorder {
       for (i = 0; i < len; i++) {
          var t = i === 0 ? this.times[i] : this.times[i] - this.times[i - 1];
          var op1 = t * 10 >> 0;
-         var op2 = (t * 100 - op1 * 10) >> 0;
+         var op2 = Math.round(t * 100 - op1 * 10);
          str += this.encode2to1(op1, op2);
       }
       return str;
@@ -119,8 +134,8 @@ export default class Recorder {
     */
    decode(str) {
       this.reset();
-      // 头信息8位
-      var hl = 8;
+      // 头信息12位
+      var hl = 12;
       if (!str || str.length < hl) {
          return;
       }
@@ -130,7 +145,10 @@ export default class Recorder {
       this.seed = this.decode2to1(str.charCodeAt(1), str.charCodeAt(2));
       // 第4、5位操作长度
       var len = this.decode2to1(str.charCodeAt(3), str.charCodeAt(4));
-      // console.log('len:', len);
+      // 第6、7位总时间
+      var time = this.decode2to1(str.charCodeAt(5), str.charCodeAt(6));
+      this.time = time / 100;
+
       // 操作数除以2补整，是操作位数
       var opLen = len % 2 === 1 ? (len + 1) / 2 : len / 2;
       // 总长度可计算出
@@ -157,12 +175,12 @@ export default class Recorder {
          var n1 = code >> 4;
          var n2 = code & 0xf;
          var t = n1 / 10 + n2 / 100;
-         times.push(t);
          this.timeAll += t;
+         times.push(this.timeAll);
       }
    }
    print() {
-      console.log('print recorder:', this.gameType, this.seed, this.operations.length, this.timeAll);
+      console.log('print recorder:', this.gameType, this.seed, this.operations.length, this.timeAll, this.time);
       console.log("ops:", this.operations.join(','));
       console.log("times:", this.times.join(','));
    }
