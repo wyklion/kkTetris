@@ -131,7 +131,7 @@ class HeadBar extends React.Component {
                close={this.handleCloseKeyboardSetting}
             />
             <AppBar position="static">
-               <Toolbar style={{ width: width, margin: '0 auto', padding: 'unset' }}>
+               <Toolbar style={{ width: width, minHeight: 50, margin: '0 auto', padding: 'unset' }}>
                   <IconButton
                      // className={classes.menuButton}
                      aria-owns={Boolean(anchorElSetting) ? 'settingmenu' : null}

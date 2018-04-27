@@ -26,9 +26,9 @@ const styles = theme => ({
    },
    main: {
       position: 'absolute',
-      top: '64px',
+      top: '50px',
       width: '100%',
-      height: 'calc(100% - 64px)',
+      height: 'calc(100% - 50px)',
    },
    canvas: {
       left: '50%',
@@ -125,6 +125,13 @@ class Main extends React.Component {
       gameManager.render.onResize();
       this.setState({ vertical: h >= w });
       this.props.onResize(width);
+   }
+
+   /**
+    * gameManager通知
+    */
+   onLoadReplay() {
+      this.setState({ showResult: false });
    }
 
    onSpeedGame = () => {

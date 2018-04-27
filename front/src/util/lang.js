@@ -74,6 +74,7 @@ var table = {
    'Dig Race 18L': ['挖掘18行'],
    ID: ['帐号'],
    Sign: ['签名'],
+   'Last login': ['最后登录'],
    ': ': ['： '],
    'None': ['无'],
    'Secs': ['秒'],

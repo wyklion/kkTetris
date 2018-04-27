@@ -6,6 +6,7 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 import Input from 'material-ui/Input';
+import Button from 'material-ui/Button';
 
 import gameManager from '../game/GameManager';
 import config from '../config';
@@ -61,6 +62,9 @@ const styles = theme => ({
    },
    scoreMsg: {
       color: '#ff6543',
+   },
+   replay: {
+      // color: 'yellow',
    },
    chatInput: {
       height: '30px',
@@ -141,6 +145,12 @@ class Chat extends React.Component {
       gameManager.setFocus(true);
    }
 
+   replay = (replayId) => {
+      return () => {
+         gameManager.loadReplay(replayId);
+      }
+   }
+
    getDiffDays(dateNow, msgDate) {
       msgDate.setHours(1);
       msgDate.setMinutes(0);
@@ -179,8 +189,12 @@ class Chat extends React.Component {
       } else if (data.type === 'dig18') {
          msg = lang.get('dig18Score', data.user, data.msg);
       }
+      var replay = data.replay ?
+         <Button color="primary" size="small" className={classes.replay} onClick={this.replay(data.replay)}>
+            {lang.get('Replay')}
+         </Button> : null;
       return (
-         <div key={data.idx} className={classes.message}><span>{time}</span><span className={classes.scoreMsg}>{msg}</span></div >
+         <div key={data.idx} className={classes.message}><span>{time}</span><span className={classes.scoreMsg}>{msg}</span>{replay}</div >
       )
    }
 

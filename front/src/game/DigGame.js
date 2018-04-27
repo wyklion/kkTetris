@@ -25,9 +25,6 @@ export default class DigGame extends Game {
          this.tetris.renderer.renderSpecialData(this.lineCount - this.clearTrashCount);
          if (this.clearTrashCount >= this.lineCount) {
             this.tetris.gameOver(true);
-            if (!this.isReplay) {
-               socket.sendDigScore(this.lineCount, this.tetris.playData.time);
-            }
             return;
          }
          this.delayAddTrash += clearTrash;
@@ -51,5 +48,12 @@ export default class DigGame extends Game {
       data.lineCount = this.lineCount;
       data.hasReplay = this.hasReplay;
       gameManager.onGameOver(win, data);
+      if (win && !this.isReplay) {
+         var record = null;
+         if (this.hasReplay) {
+            record = this.recorder.encode();
+         }
+         socket.sendDigScore(this.lineCount, this.tetris.playData.time, record);
+      }
    }
 }

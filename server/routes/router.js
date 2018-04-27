@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var ObjectId = require('mongodb').ObjectId;
 
 /**
  * 检查登录
@@ -74,8 +75,8 @@ router.get("/logout", function (req, res) {
 router.get("/userInfo", function (req, res) {
    var id = req.query.id;
    mongo.findOption('users', { id: id }, {
-      fields: ['id', 'nick', 'sign', 'keyboard',
-         'speed40Times', 'speed40Best', 'speed40Date',
+      fields: ['id', 'nick', 'sign', 'keyboard', 'lastLogin',
+         'speed40Times', 's40r', 'speed40Best', 'speed40Date',
          'dig18Times', 'dig18Best', 'dig18Date',
       ]
    }, function (err, result) {
@@ -95,6 +96,22 @@ router.get("/userInfo", function (req, res) {
    //       res.send({ result: { id: id, nick: user.nick, sign: user.sign, speed40Times: user.speed40Times, speed40Best: user.speed40Best } });
    //    }
    // })
+});
+
+/**
+ * 回放
+ */
+router.get("/replay", function (req, res) {
+   var id = req.query.id;
+   mongo.findOption('replay', { _id: ObjectId(id) }, {}, function (err, result) {
+      if (err) {
+         res.send({ err: err });
+      } else if (result.length === 0) {
+         res.send({ err: '找不到录像' });
+      } else {
+         res.send({ result: result[0] });
+      }
+   });
 });
 
 /**

@@ -2,6 +2,7 @@
  * Created by kk on 2016/4/28.
  */
 var SocketIO = require('socket.io');
+var ObjectId = require('mongodb').ObjectId;
 var Tools = require('./Tools');
 var RoomManager = require('./RoomManager');
 var OPERTABLE = require('./OperTable');
@@ -37,6 +38,8 @@ class GameSocket {
       socket.on('chat', this.onChat.bind(this));
       socket.on('friend', this.onFriend.bind(this));
 
+      // 记录最新登录时间
+      mongo.updateOne("users", { id: this.userId }, { lastLogin: Date.now() });
       // 通知
       socket.emit('onConnection', { err: null, user: user, users: this.userManager.getUsers(), rooms: this.roomManager.getRooms(), chat: this.chatManager.getMessages() });
       socket.broadcast.emit('lobbyInfo', { err: null, type: 'setUser', user: this.userManager.get(userId) });
@@ -155,25 +158,63 @@ class GameSocket {
       }
    }
    /**
+    * 保存录像写入数据库，返回id。
+    */
+   saveReplay(type, time, record, callback) {
+      // 回放写入数据库记录
+      mongo.insertOne("replay", { id: this.userId, type: type, time: time, replay: record, date: Date.now() }, (err, result) => {
+         if (err) {
+            callback(err);
+         } else {
+            callback(null, result.insertedIds[0].toString());
+         }
+      });
+
+   }
+   /**
     * 竞速记录
     */
    onSpeed(data) {
       var socket = this.socket;
       mongo.updateAddValue("users", { id: this.userId }, { speed40Times: 1 });
-      mongo.updateOne("users", { id: this.userId, speed40Best: { "$gt": data.time } }, { speed40Best: data.time, speed40Date: Date.now() });
-      var msg = { time: Date.now(), type: 'speed40', user: this.userId, msg: data.time.toFixed(2) };
-      this.io.emit("chat", msg);
-      this.chatManager.add(msg);
+      if (data.record) {
+         this.saveReplay('speed40', data.time, data.record, (err, id) => {
+            var msg;
+            if (err) {
+               msg = { time: Date.now(), type: 'speed40', user: this.userId, msg: data.time };
+            } else {
+               msg = { time: Date.now(), type: 'speed40', user: this.userId, msg: data.time, replay: id };
+               mongo.updateOne("users", { id: this.userId, speed40Best: { "$gt": data.time } }, { speed40Best: data.time, s40r: id, speed40Date: Date.now() });
+            }
+            this.io.emit("chat", msg);
+            this.chatManager.add(msg);
+         })
+      } else {
+         // 没录像，这种情况应该不存在
+         mongo.updateOne("users", { id: this.userId, speed40Best: { "$gt": data.time } }, { speed40Best: data.time, speed40Date: Date.now() });
+      }
    }
    /**
     * 挖掘记录
     */
    onDig18(data) {
       mongo.updateAddValue("users", { id: this.userId }, { dig18Times: 1 });
-      mongo.updateOne("users", { id: this.userId, dig18Best: { "$gt": data.time } }, { dig18Best: data.time, dig18Date: Date.now() });
-      var msg = { time: Date.now(), type: 'dig18', user: this.userId, msg: data.time.toFixed(2) };
-      this.io.emit("chat", msg);
-      this.chatManager.add(msg);
+      if (data.record) {
+         this.saveReplay('dig18', data.time, data.record, (err, id) => {
+            var msg;
+            if (err) {
+               msg = { time: Date.now(), type: 'dig18', user: this.userId, msg: data.time };
+            } else {
+               msg = { time: Date.now(), type: 'dig18', user: this.userId, msg: data.time, replay: id };
+               mongo.updateOne("users", { id: this.userId, dig18Best: { "$gt": data.time } }, { dig18Best: data.time, d18r: id, dig18Date: Date.now() });
+            }
+            this.io.emit("chat", msg);
+            this.chatManager.add(msg);
+         })
+      } else {
+         // 没录像，这种情况应该不存在
+         mongo.updateOne("users", { id: this.userId, dig18Best: { "$gt": data.time } }, { dig18Best: data.time, dig18Date: Date.now() });
+      }
    }
 
    /**

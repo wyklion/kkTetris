@@ -154,15 +154,15 @@ export default class Game {
             this.tetris.playData.time = this.recorder.time;
          }
       }
-      if (this.hasReplay && !this.isReplay) {
-         // 回放编码测试
-         this.recorder.print();
-         var str = this.recorder.encode();
-         console.log('encode:', str);
-         var r = new Recorder();
-         r.decode(str);
-         r.print();
-      }
+      // // 回放编码测试
+      // if (this.hasReplay && !this.isReplay) {
+      //    this.recorder.print();
+      //    var str = this.recorder.encode();
+      //    console.log('encode:', str);
+      //    var r = new Recorder();
+      //    r.decode(str);
+      //    r.print();
+      // }
       this.reset();
    }
    /**
@@ -180,7 +180,7 @@ export default class Game {
    /**
     * 记录操作
     */
-   onOperate(oper) {
+   record(oper) {
       if (!this.single || !this.hasReplay || this.isReplay) {
          return;
       }

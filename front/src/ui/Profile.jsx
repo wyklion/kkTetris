@@ -9,6 +9,7 @@ import http from '../util/http.js';
 import gameManager from '../game/GameManager.js';
 import lang from '../util/lang';
 import keyName from '../util/keyName';
+import Tools from '../util/Tools';
 
 const styles = theme => ({
    root: {
@@ -32,7 +33,7 @@ const styles = theme => ({
    },
    userDiv: {
       textAlign: 'left',
-      height: '200px',
+      height: '230px',
    },
    keyboard: {
       textAlign: 'left',
@@ -121,6 +122,9 @@ class Profile extends React.Component {
                   <Typography variant="subheading" className={classes.item}>
                      {lang.get('Sign') + maohao + (user.sign || '')}
                   </Typography>
+                  <Typography variant="subheading" className={classes.item}>
+                     {lang.get('Last login') + maohao + (user.lastLogin ? Tools.formatTime(user.lastLogin, 'yyyy-MM-dd hh:mm:ss') : '')}
+                  </Typography>
                </div>
                <div className={classes.keyboard} >
                   <Typography variant="headline" className={classes.title}>
@@ -174,13 +178,13 @@ class Profile extends React.Component {
                      {lang.get('Sprint 40L times') + maohao + speed40Times}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('Sprint 40L best') + maohao + speed40Best}
+                     {lang.get('Sprint 40L best') + maohao + speed40Best}{user.s40r ? user.s40r : null}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
                      {lang.get('Dig Race 18L times') + maohao + dig18Times}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('Dig Race 18L best') + maohao + dig18Best}
+                     {lang.get('Dig Race 18L best') + maohao + dig18Best}{user.d18r ? user.d18r : null}
                   </Typography>
                </div>
             </div>

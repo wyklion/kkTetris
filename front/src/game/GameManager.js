@@ -11,6 +11,7 @@ import TetrisSound from '../sound/TetrisSound'
 import TextureManager from '../render/TextureManager';
 import LayoutManager from '../render/LayoutManager';
 import Listeners from '../util/Listeners';
+import http from '../util/http';
 
 /**
  * 游戏管理
@@ -222,10 +223,36 @@ class GameManager {
    /**
     * 回放
     */
-   replay() {
+   replay(replayId) {
       if (this.game) {
-         this.game.replay()
+         this.game.replay();
       }
+   }
+   /**
+    * 加载回数据再回放
+    */
+   loadReplay(replayId) {
+      http.get({ url: 'replay', data: { id: replayId } }, (err, result) => {
+         if (!err) {
+            this.onLoadReplay(result);
+         }
+      })
+   }
+   onLoadReplay(replay) {
+      if (replay.type === 'speed40') {
+         this.reset();
+         var game = this.game = new SpeedGame(40);
+         this.render.main.setTetris(game.tetris);
+         game.recorder.decode(replay.replay);
+         game.replay();
+      } else if (replay.type === 'dig18') {
+         this.reset();
+         var game = this.game = new DigGame(18);
+         this.render.main.setTetris(game.tetris);
+         game.recorder.decode(replay.replay);
+         game.replay();
+      }
+      this.main.onLoadReplay();
    }
    /**
     * 创建房间

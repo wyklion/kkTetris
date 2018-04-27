@@ -279,18 +279,22 @@ class GameSocket {
    /**
     * 竞速40行记录
     */
-   sendSpeed40(time) {
-      this.socket.emit("speed40", {
-         time: time,
-      });
+   sendSpeed40(time, record) {
+      var data = { time: parseFloat(time.toFixed(2)) };
+      if (record) {
+         data.record = record;
+      }
+      this.socket.emit("speed40", data);
    }
    /**
     * 挖掘记录
     */
-   sendDigScore(lines, time) {
-      this.socket.emit('dig' + lines, {
-         time: time,
-      });
+   sendDigScore(lines, time, record) {
+      var data = { time: parseFloat(time.toFixed(2)) };
+      if (record) {
+         data.record = record;
+      }
+      this.socket.emit('dig' + lines, data);
    }
 
    /**

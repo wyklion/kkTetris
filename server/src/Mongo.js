@@ -26,6 +26,7 @@ Mongo.prototype = {
          nick: name, // 昵称
          password: password, // 密码
          sign: '', // 签名
+         lastLogin: Date.now(), //最后登录时间
          // 对战信息
          level: 0, // 等级
          score: 0, // 分数

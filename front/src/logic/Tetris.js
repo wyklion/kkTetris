@@ -307,13 +307,14 @@ export default class Tetris {
       if (this.saveShape) {
          if (!this.saveShape.check(4, 19, 0))
             return;
-         this.operate(OperEnum.hold);
+         this.record(OperEnum.hold);
          var shapeId = this.shape.shapeId;
          this.shape.init(this.saveShape.shapeId);
          this.shape.makeShadow();
          this.saveShape.setId(shapeId);
       }
       else {
+         this.record(OperEnum.hold);
          this.saveShape = this.shape;
          this.newShape();
       }
@@ -327,9 +328,9 @@ export default class Tetris {
       var ok = this.shape.rotate(anti);
       if (ok) {
          if (anti)
-            this.operate(OperEnum.rotateL);
+            this.record(OperEnum.rotateL);
          else
-            this.operate(OperEnum.rotateR);
+            this.record(OperEnum.rotateR);
          this.lastRotate = true;
          this.checkFloor();
          this.render();
@@ -341,7 +342,7 @@ export default class Tetris {
    rotate180() {
       var ok = this.shape.rotate180();
       if (ok) {
-         this.operate(OperEnum.rotate180);
+         this.record(OperEnum.rotate180);
          this.lastRotate = true;
          this.checkFloor();
          this.render();
@@ -352,7 +353,7 @@ export default class Tetris {
     */
    drop() {
       this.attackLines = 0;
-      this.operate(OperEnum.drop);
+      this.record(OperEnum.drop);
       this.shape.drop();
       this.render();
    }
@@ -369,7 +370,7 @@ export default class Tetris {
       if (ok) {
          this.lastRotate = false;
          this.checkFloor();
-         this.operate(OperEnum.left);
+         this.record(OperEnum.left);
          this.render();
       }
       return ok;
@@ -382,7 +383,7 @@ export default class Tetris {
          this.checkFloor();
       }
       if (ok) {
-         this.operate(OperEnum.leftEnd);
+         this.record(OperEnum.leftEnd);
          this.render();
       }
    }
@@ -391,7 +392,7 @@ export default class Tetris {
       if (ok) {
          this.lastRotate = false;
          this.checkFloor();
-         this.operate(OperEnum.right);
+         this.record(OperEnum.right);
          this.render();
       }
       return ok;
@@ -404,14 +405,14 @@ export default class Tetris {
          this.checkFloor();
       }
       if (ok) {
-         this.operate(OperEnum.rightEnd);
+         this.record(OperEnum.rightEnd);
          this.render();
       }
    }
    moveDown() {
       if (!this.shape.checkDown())
          return;
-      this.operate(OperEnum.down);
+      this.record(OperEnum.down);
       this.move(0, -1);
       this.lastRotate = false;
       this.checkFloor();
@@ -426,7 +427,7 @@ export default class Tetris {
          this.checkFloor();
       }
       if (ok) {
-         this.operate(OperEnum.downEnd);
+         this.record(OperEnum.downEnd);
          this.render();
       }
    }
@@ -437,11 +438,11 @@ export default class Tetris {
       var ok = this.move(0, -1);
       if (ok) {
          // 这是落下未锁定
-         this.operate(OperEnum.down);
+         this.record(OperEnum.down);
          this.render();
       } else {
          // 落下锁定相当于drop
-         this.operate(OperEnum.drop);
+         this.record(OperEnum.drop);
       }
    }
    /**
@@ -500,8 +501,8 @@ export default class Tetris {
          }
       }
    }
-   operate(oper) {
-      this.game.onOperate(oper);
+   record(oper) {
+      this.game.record(oper);
    }
    //=============== for vs game =================
    //only me
