@@ -54,6 +54,10 @@ class SingleMenu extends React.Component {
    }
 
    onKeyDown = (event) => {
+      //输入框状态
+      if (!gameManager.focus) {
+         return;
+      }
       var keyCode = event.keyCode;
       var state = this.props.playState;
       if (state === 'none') {
@@ -73,7 +77,8 @@ class SingleMenu extends React.Component {
             this.onEndGameClick();
          }
       }
-      // if (keyCode === 114) {
+      // 全屏蔽
+      // if (keyCode === 114 || keyCode === 17) { // F3 Ctrl
       event.preventDefault();
       // }
    }

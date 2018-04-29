@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
+import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 // import PlayIcon from 'material-ui-icons/PlayArrow';
 // import Checkbox from 'material-ui/Checkbox';
 
@@ -17,6 +18,8 @@ const styles = theme => ({
       // width: '500px',
       // margin: '0 auto',
       display: 'flex',
+      height: '100%',
+      overflow: 'auto',
    },
    main: {
       margin: '0 auto',
@@ -34,11 +37,9 @@ const styles = theme => ({
    },
    userDiv: {
       textAlign: 'left',
-      height: '230px',
    },
    keyboard: {
       textAlign: 'left',
-      height: '160px',
    },
    keys: {
       display: 'flex',
@@ -47,14 +48,17 @@ const styles = theme => ({
       color: 'orange',
    },
    statsDiv: {
-      height: '300px',
       textAlign: 'left',
+   },
+   replayDiv: {
+
    }
 });
 
 class Profile extends React.Component {
    state = {
       user: null,
+      replays: null,
    };
 
    componentDidMount() {
@@ -63,6 +67,13 @@ class Profile extends React.Component {
             alert(err);
          } else {
             this.setState({ user: result });
+         }
+      })
+      http.get({ url: 'userReplay', data: { id: this.props.userId } }, (err, result) => {
+         if (err) {
+            alert(err);
+         } else {
+            this.setState({ replays: result });
          }
       })
    }
@@ -81,11 +92,58 @@ class Profile extends React.Component {
       }
    }
 
+   makeReplayTable(replays) {
+      const { classes } = this.props;
+      var rows = [];
+      for (var i = 0; i < replays.length; i++) {
+         var replay = replays[i];
+         var type = replay.type === 'speed40' ? lang.get('Sprint 40L') : lang.get('Dig Race 18L');
+         var date = Tools.formatTime(replay.date, 'yyyy-MM-dd hh:mm:ss');
+         var replayId = replay._id;
+         rows.push(
+            <TableRow key={replay.date}>
+               <TableCell>{type}</TableCell>
+               <TableCell>{replay.time}</TableCell>
+               <TableCell>{date}</TableCell>
+               <TableCell>{
+                  replayId ? <Button color="primary" size="small" onClick={this.onReplay(replayId)}>
+                     {lang.get('Replay')}
+                  </Button> : null}
+               </TableCell>
+            </TableRow>
+         )
+      }
+      return (
+         <div className={classes.replayDiv} >
+            <Typography variant="headline" className={classes.title}>
+               {lang.get('Last Games')}
+            </Typography>
+            <Table className={classes.table}>
+               <TableHead >
+                  <TableRow className={classes.row}>
+                     <TableCell>{lang.get('Type')}</TableCell>
+                     <TableCell>{lang.get('Time')}</TableCell>
+                     <TableCell>{lang.get('Date')}</TableCell>
+                     <TableCell>{lang.get('Replay')}</TableCell>
+                  </TableRow>
+               </TableHead>
+               <TableBody>
+                  {rows}
+               </TableBody>
+            </Table>
+         </div>
+      )
+   }
+
    render() {
       const { classes } = this.props;
-      var { user } = this.state;
+      var { user, replays } = this.state;
       if (!user) {
          return null;
+      }
+      var replayTable = null;
+      if (replays) {
+         replayTable = this.makeReplayTable(replays);
       }
       // console.log('profile', user);
       var speed40Times = user.speed40Times;
@@ -211,6 +269,7 @@ class Profile extends React.Component {
                         : null}
                   </Typography>
                </div>
+               {replayTable}
             </div>
          </div>
       );

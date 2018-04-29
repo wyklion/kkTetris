@@ -42,6 +42,8 @@ class GameManager {
       this.main = null;
       // 登录状态
       this.logined = false;
+      // 是否全处理按键
+      this.focus = true;
 
       // 监听
       this.keySettingListener = new Listeners();
@@ -173,14 +175,11 @@ class GameManager {
       this.keySettingListener.execute();
    }
    /**
-    * 游戏焦点事件
+    * 游戏焦点事件没在输入框里就是true
     */
    setFocus(focus) {
-      if (this.game) {
-         this.game.setFocus(focus);
-      }
+      this.focus = focus;
    }
-
    /**
     * 开始竞速游戏
     */

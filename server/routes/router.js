@@ -99,6 +99,19 @@ router.get("/userInfo", function (req, res) {
 });
 
 /**
+ * 用户状态
+ */
+router.get("/userReplay", function (req, res) {
+   var id = req.query.id;
+   mongo.findOption("replay", { id: id }, {
+      fields: ['id', 'nick', 'type', 'time', 'count', 'lines', 'date'],
+      limit: 10, sort: { '_id': -1 }
+   }, function (err, result) {
+      res.send({ result: result });
+   });
+});
+
+/**
  * 回放
  */
 router.get("/replay", function (req, res) {

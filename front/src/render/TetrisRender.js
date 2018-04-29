@@ -465,6 +465,30 @@ export default class TetrisRender {
          this.render.render();
       }
    }
+   setTime(time) {
+      this.setText('time', time.toFixed(2));
+      if (!config.fps60) {
+         this.render.render();
+      }
+   }
+   setPiece(piece) {
+      this.setText('piece', piece);
+      if (!config.fps60) {
+         this.render.render();
+      }
+   }
+   setSpeed(speed) {
+      this.setText('speed', speed.toFixed(2));
+      if (!config.fps60) {
+         this.render.render();
+      }
+   }
+   setLines(lines) {
+      this.setText('lines', lines);
+      if (!config.fps60) {
+         this.render.render();
+      }
+   }
    setText(dataName, value) {
       var text = this.dataTexts[dataName];
       if (!text) {

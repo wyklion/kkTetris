@@ -107,6 +107,16 @@ class Friends extends React.Component {
       this.setState({ showAdd: false });
    }
 
+   /**
+    * 焦点事件
+    */
+   onFocus = () => {
+      gameManager.setFocus(false);
+   }
+   onBlur = () => {
+      gameManager.setFocus(true);
+   }
+
    onKeyDown = (event) => {
       // 回车
       if (event.keyCode === 13) {
@@ -195,6 +205,8 @@ class Friends extends React.Component {
                      value={addFriendId}
                      onChange={this.handleChange('addFriendId')}
                      type="email"
+                     onFocus={this.onFocus}
+                     onBlur={this.onBlur}
                      fullWidth
                      onKeyDown={this.onKeyDown}
                   />

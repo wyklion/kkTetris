@@ -22,8 +22,10 @@ export default class Game {
       // 1秒难编码
       this.interval = 0.95;
       this.time = 0;
+      // 数据刷新频率
+      this.dataInterval = 0.38;
+      this.dataTime = 0;
       this.watch = false;
-      this.focus = true;
 
       this.single = true;
       this.firstGame = true;
@@ -67,7 +69,7 @@ export default class Game {
          // }
          //else if(e.keyCode === 80) // P
          //    this.pause();
-         if (this.focus && this.state > 0) {
+         if (gameManager.focus && this.state > 0) {
             this.keyManager.onKeyDown(e.keyCode);
             e.preventDefault();
             // if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 32)
@@ -80,9 +82,6 @@ export default class Game {
 
       document.body.addEventListener("keydown", this.onKeyDown, false);
       document.body.addEventListener("keyup", this.onKeyUp, false);
-   }
-   setFocus(focus) {
-      this.focus = focus;
    }
    /**
     * 回放
@@ -250,9 +249,10 @@ export default class Game {
          }
       }
       if (this.state === 2 && this.tetris.playing) {
-         this.tetris.playData.time += dt;
+         var data = this.tetris.playData;
+         data.time += dt;
          if (this.isReplay) {
-            this.recorder.play(this.tetris.playData.time);
+            this.recorder.play(data.time);
          } else {
             this.time += dt;
             if (!this.watch) {
@@ -262,7 +262,16 @@ export default class Game {
                }
             }
          }
-         this.tetris.renderer.renderData();
+         // this.tetris.renderer.renderData();
+         // 时间速度不能一直刷
+         this.dataTime += dt;
+         this.tetris.renderer.setPiece(data.count);
+         this.tetris.renderer.setLines(data.lines);
+         if (this.dataTime > this.dataInterval) {
+            this.dataTime = 0;
+            this.tetris.renderer.setTime(data.time);
+            this.tetris.renderer.setSpeed(data.count === 0 ? 0 : data.count / data.time);
+         }
          this.checkOver();
       }
    }
