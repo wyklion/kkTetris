@@ -47,29 +47,27 @@ class RoomManager {
    exitRoom(roomId, userId, watch) {
       var room = this.rooms[roomId];
       if (room) {
-         if (!watch) {
-            var idx = room.playUsers.indexOf(userId);
-            if (idx > -1) {
-               room.playUsers.splice(idx, 1);
-               room.ready = {};
-               if (room.playUsers.length === 0) {
-                  delete this.rooms[roomId];
-                  return { err: null, delRoom: true, watch: false };
-               }
-               else
-                  return { err: null, delRoom: false, watch: false };
+         // 是不是座上玩家
+         var idx = room.playUsers.indexOf(userId);
+         if (idx > -1) {
+            room.playUsers.splice(idx, 1);
+            room.ready = {};
+            if (room.playUsers.length === 0) {
+               delete this.rooms[roomId];
+               return { err: null, delRoom: true, watch: false };
             }
             else
-               return { err: "who exits room?" };
+               return { err: null, delRoom: false, watch: false };
          }
          else {
+            // 是不是旁观玩家
             var watchIdx = room.watchUsers.indexOf(userId);
             if (watchIdx > -1) {
                room.watchUsers.splice(watchIdx, 1);
                return { err: null, delRoom: false, watch: true };
             }
             else
-               return { err: "who watch exits room?" };
+               return { err: "who exits room?" };
          }
       }
       else

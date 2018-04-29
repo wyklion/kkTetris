@@ -37,6 +37,7 @@ var table = {
    'Create Room': ['创建房间'],
    'RoomId': ['房间ID'],
    'Players': ['玩家'],
+   'Quit': ['退出'],
    // 聊天
    'Lobby Chat': ['大厅聊天'],
    'I say': ['我说'],

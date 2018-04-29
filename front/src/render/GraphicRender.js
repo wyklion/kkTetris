@@ -210,6 +210,9 @@ export default class GraphicRender {
 
    dispose() {
       this.tetrisGraphic.destroy(true);
-      this.nextGraphic.destroy(true);
+      if (this.displayNext) {
+         this.nextGraphic.destroy(true);
+         this.holdGraphic.destroy(true);
+      }
    }
 }

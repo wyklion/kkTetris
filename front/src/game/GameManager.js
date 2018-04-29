@@ -259,9 +259,31 @@ class GameManager {
     */
    createRoom() {
       console.log("create room");
-      socket.createRoom((success) => {
-         console.log('create room result:', success);
+      socket.createRoom((err, result) => {
+         if (!err) {
+            this.main.onCreateRoom();
+            this.render.showOtherTetris(true);
+         }
       });
+   }
+   /**
+    * 退出房间
+    */
+   exitRoom() {
+      console.log("exit room");
+      socket.exitRoom((err, result) => {
+         if (!err) {
+            this.main.onExitRoom();
+            this.render.showOtherTetris(false);
+         }
+      });
+   }
+   /**
+    * 在对战时显示或隐藏大厅
+    */
+   showLobby(show) {
+      this.render.showOtherTetris(!show);
+      this.main.onShowLobby(show);
    }
 }
 

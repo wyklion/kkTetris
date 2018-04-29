@@ -7,6 +7,7 @@ import { withStyles } from 'material-ui/styles';
 // import Tetris from '../logic/Tetris';
 import gameManager from '../game/GameManager';
 import config from '../config';
+import LobbyMenu from './LobbyMenu';
 import SingleMenu from './SingleMenu';
 import Result from './Result';
 import Lobby from './Lobby';
@@ -50,6 +51,13 @@ const styles = theme => ({
       height: '100%',
       position: 'absolute',
    },
+   lobbyMenu: {
+      position: 'absolute',
+      zIndex: 1,
+      top: '75%',
+      left: '50%',
+      width: '7.5%',
+   },
    singleMenu: {
       position: 'absolute',
       top: '75%',
@@ -61,9 +69,11 @@ const styles = theme => ({
 class Main extends React.Component {
    state = {
       vertical: false,
-      anchorElSetting: null,
-      anchorElUser: null,
-      openKeyboard: false,
+      // 对战可隐藏大厅
+      showLobby: true,
+      // 聊天窗口显示
+      showChat: true,
+      // 游戏状态，没玩，单人，录象，对战none,single,replay,battle
       playState: 'none',
       showResult: false,
       resultData: null,
@@ -176,14 +186,41 @@ class Main extends React.Component {
       this.setState({ playState: 'none', showResult: false });
    }
 
+   /**
+    * 创建房间成功后调用
+    */
+   onCreateRoom = () => {
+      this.setState({ playState: 'battle', showLobby: false });
+   }
+
+   /**
+    * 退出房间
+    */
+   onExitRoom = () => {
+      this.setState({ playState: 'none', showLobby: true });
+   }
+
+   /**
+    * 显示隐藏大厅面板
+    */
+   onShowLobby = (show) => {
+      this.setState({ showLobby: show });
+   }
+
    render() {
       const { classes, hidden } = this.props;
-      const { vertical, showResult, resultData } = this.state;
+      const { playState, vertical, showLobby, showChat, showResult, resultData } = this.state;
       return (
          <div ref={instance => this.mainDiv = instance} className={hidden ? classes.hidden : classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
-               <Lobby ref='lobbyRef' show={!vertical} />
-               <Chat ref='chatRef' show={!vertical} />
+               <Lobby ref='lobbyRef' show={!vertical && showLobby} />
+               <Chat ref='chatRef' show={!vertical && showChat} playState={playState} />
+               <div className={classes.lobbyMenu}>
+                  <LobbyMenu
+                     playState={playState}
+                     vertical={vertical}
+                  />
+               </div>
                <div ref='singleDiv' className={classes.singleDiv}>
                   <div className={classes.result}>
                      <Result
@@ -193,7 +230,7 @@ class Main extends React.Component {
                   </div>
                   <div className={classes.singleMenu}>
                      <SingleMenu
-                        playState={this.state.playState}
+                        playState={playState}
                         onSpeedGame={this.onSpeedGame}
                         onDigGame={this.onDigGame}
                         onRestartGame={this.onRestartGame}

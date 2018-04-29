@@ -133,17 +133,20 @@ export default class TetrisRender {
       bgGraphics.beginFill(bgColor);
       bgGraphics.drawRect(0, 0, 300, 600);
       bgGraphics.endFill();
-      bgGraphics.lineStyle(1 / this.scale, bgLineColor, 1);
-      var i;
-      for (i = 1; i <= 9; i++) {
-         var x = i * this.baseSize;
-         bgGraphics.moveTo(x, 0);
-         bgGraphics.lineTo(x, 600);
-      }
-      for (i = 1; i <= 19; i++) {
-         var y = i * this.baseSize;
-         bgGraphics.moveTo(0, y);
-         bgGraphics.lineTo(300, y);
+      // 其他人的不画线
+      if (this.displayNext) {
+         bgGraphics.lineStyle(1 / this.scale, bgLineColor, 1);
+         var i;
+         for (i = 1; i <= 9; i++) {
+            var x = i * this.baseSize;
+            bgGraphics.moveTo(x, 0);
+            bgGraphics.lineTo(x, 600);
+         }
+         for (i = 1; i <= 19; i++) {
+            var y = i * this.baseSize;
+            bgGraphics.moveTo(0, y);
+            bgGraphics.lineTo(300, y);
+         }
       }
       var bgCover = this.bgCoverGraphics;
       bgCover.clear();

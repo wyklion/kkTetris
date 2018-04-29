@@ -6,6 +6,7 @@ export default class Render {
    constructor() {
       this._dirty = false;
       this.vertical = false;
+      this.showOther = false;
 
       var app = this.app = new PIXI.Application({
          width: this.renderConfig.width,         // default: 800
@@ -22,6 +23,7 @@ export default class Render {
       renderer.view.style.zIndex = -1;
       renderer.backgroundColor = 0x1E1E1E;
       this.initMainTetris();
+      this.initOtherTetris();
    }
    get renderConfig() {
       if (this.vertical) {
@@ -32,6 +34,7 @@ export default class Render {
    }
 
    initMainTetris() {
+      // 主方块区
       var container = new PIXI.Container();
       container.x = this.renderConfig.width / 2;
       this.stage.addChild(container);
@@ -40,13 +43,33 @@ export default class Render {
          container: container
       });
    }
+   initOtherTetris() {
+      // 对战对手方块区
+      var container = new PIXI.Container();
+      container.x = 85;
+      container.y = 5;
+      container.scale.set(0.67, 0.67);
+      container.visible = this.showOther;
+      this.stage.addChild(container);
+      this.other = new TetrisRender({
+         render: this,
+         container: container,
+         displayNext: false,
+      });
+   }
+   showOtherTetris(show) {
+      this.showOther = show;
+      this.other.container.visible = this.showOther;
+   }
    setVertical(vertical) {
       if (vertical !== this.vertical) {
          this.vertical = vertical;
          if (vertical) {
             this.main.container.x = 0;
+            this.other.container.visible = false;
          } else {
             this.main.container.x = this.renderConfig.width / 2;
+            this.other.container.visible = this.showOther;
          }
       }
    }
@@ -68,6 +91,7 @@ export default class Render {
       // this.renderer.resize(render.width * scale, render.height * scale);
       this.stage.scale.x = this.stage.scale.y = scale;
       this.main.onResize(scale);
+      this.other.onResize(scale);
    }
    /**
     * 改语言
@@ -80,6 +104,7 @@ export default class Render {
     */
    onChangeTexture = () => {
       this.main.onChangeTexture();
+      this.other.onChangeTexture();
    }
    render() {
       // this.renderer.render(this.stage);

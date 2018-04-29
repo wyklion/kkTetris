@@ -41,4 +41,10 @@ export default class RoomManager {
       }
       return false;
    }
+   /**
+    * 自己的操作
+    */
+   exitRoom() {
+      this.roomId = null;
+   }
 }

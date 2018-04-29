@@ -27,7 +27,6 @@ class SingleMenu extends React.Component {
    state = {
       anchorElSetting: null,
       anchorElUser: null,
-      openKeyboard: false,
       startKeyCode: 113, // 默认F2
    };
 
@@ -146,7 +145,7 @@ class SingleMenu extends React.Component {
    }
 
    render() {
-      var buttons;
+      var buttons = null;
       var state = this.props.playState;
       if (state === 'none') {
          buttons = this.makeNormalButton();

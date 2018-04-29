@@ -81,6 +81,7 @@ class Chat extends React.Component {
       super(props);
       this.chatContentRef = null;
       this.inputRef = null;
+      this.hasRoom = false;
       this.chatManager = gameManager.chatManager;
    }
    state = {
@@ -90,10 +91,28 @@ class Chat extends React.Component {
    };
 
    componentWillMount() {
-      this.setState({ messages: this.chatManager.getMessages() });
+      this.setState({
+         messages: this.chatManager.getMessages()
+      });
    }
    componentDidMount() {
       this.chatManager.updateChatListeners.add(this.onGetMessage);
+      this.scrollToBottom();
+   }
+   componentWillUpdate(props) {
+      // 刚进对战的时候自动切到房间频道
+      if (this.props.playState !== props.playState) {
+         if (props.playState === 'battle') {
+            this.hasRoom = true;
+            this.setState({ value: 1 });
+         } else {
+            this.hasRoom = false;
+            this.setState({ value: 0 });
+         }
+         // this.scrollToBottom();
+      }
+   }
+   componentDidUpdate() {
       this.scrollToBottom();
    }
    componentWillUnmount() {
@@ -201,7 +220,7 @@ class Chat extends React.Component {
    /**
     * 消息内容
     */
-   makeMessages() {
+   makeLobbyMessages() {
       const { classes } = this.props;
       var msgs = [];
       var messages = this.state.messages;
@@ -246,27 +265,29 @@ class Chat extends React.Component {
    }
 
    render() {
-      const { classes, show } = this.props;
+      const { classes, show, playState } = this.props;
+      const { value } = this.state;
       if (!show) {
          return null;
       }
-      var messages = this.makeMessages();
+      var lobbyMessages = this.makeLobbyMessages();
       return (
          <div className={classes.root}>
             <Paper className={classes.paper}>
                <Tabs
                   className={classes.tabs}
-                  value={this.state.value}
+                  value={this.hasRoom ? this.state.value : 0}
                   onChange={this.handleChangeTab}
                   indicatorColor="primary"
                   textColor="primary"
                   fullWidth
                >
-                  <Tab label={lang.get('Lobby Chat')} />
+                  <Tab label={lang.get('Lobby')} />
+                  {playState === 'battle' ? <Tab label={lang.get('Room')} /> : null}
                </Tabs>
                <div className={classes.content} >
                   <div ref={instance => this.chatContentRef = instance} className={classes.chatContent} >
-                     {messages}
+                     {value === 0 ? lobbyMessages : null}
                   </div>
                   <div className={classes.chatInput}>
                      <Input

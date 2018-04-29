@@ -180,7 +180,9 @@ export default class TextureRender {
 
    dispose() {
       this.tetrisContainer.destroy();
-      this.nextContainer.destroy();
-      this.holdContainer.destroy();
+      if (this.displayNext) {
+         this.nextContainer.destroy();
+         this.holdContainer.destroy();
+      }
    }
 }

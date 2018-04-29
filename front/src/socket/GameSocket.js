@@ -26,9 +26,7 @@ class GameSocket {
       this.socket.on('lobbyInfo', this.onLobbyInfo);
       this.socket.on('chat', this.onChat);
       this.socket.on('roomInfo', this.onRoomInfo);
-      this.socket.on('onCreateRoom', this.onCreateRoom);
       this.socket.on('onJoinRoom', this.onJoinRoom);
-      this.socket.on('onExitRoom', this.onExitRoom);
       this.socket.on('onOperation', this.onOperation);
 
       this.connectListeners = new Listeners();
@@ -128,25 +126,16 @@ class GameSocket {
    /**
     * 创建房间
     */
-   createRoom(func) {
-      // main.spin();
-      if (func) {
-         this.createRoomListeners.add(func, true);
-      }
-      this.socket.emit("createRoom");
-   }
-   onCreateRoom = (data) => {
-      if (!data.err) {
-         this.roomManager.roomId = data.roomId;
-         console.log("onCreateRoom ", this.roomManager.room);
-         this.createRoomListeners.execute(true);
-         // main.goRoom();
-      }
-      else {
-         console.log(data.err);
-         this.createRoomListeners.execute(false);
-      }
-      // main.stopSpin();
+   createRoom(callback) {
+      this.socket.emit('createRoom', null, (err, result) => {
+         if (!err) {
+            this.roomManager.roomId = result.roomId;
+            console.log("onCreateRoom ", this.roomManager.room);
+         } else {
+            console.log(err);
+         }
+         callback(err, result);
+      });
    }
 
    /**
@@ -176,20 +165,17 @@ class GameSocket {
    /**
     * 离开房间
     */
-   exitRoom() {
-      // main.spin();
+   exitRoom(callback) {
       // this.socket.emit("exitRoom", { watch: main.game.watch });
-   }
-   onExitRoom = (data) => {
-      if (!data.err) {
-         console.log("onExitRoom", this.roomManager.roomId);
-         this.roomManager.roomId = null;
-         this.roomManager.room = null;
-         // main.exitRoom();
-      }
-      else
-         console.log(data.err);
-      // main.stopSpin();
+      this.socket.emit('exitRoom', null, (err, result) => {
+         if (!err) {
+            console.log('exit room success');
+            this.roomManager.exitRoom();
+         } else {
+            console.log(err);
+         }
+         callback(err, result);
+      });
    }
 
    /**
