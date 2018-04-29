@@ -199,7 +199,7 @@ class GameSocket {
     */
    onDig18(data) {
       mongo.updateAddValue("users", { id: this.userId }, { dig18Times: 1 });
-      if (data.record) {
+      if (data.replay) {
          this.saveReplay('dig18', data, (err, id) => {
             var msg;
             if (err) {
