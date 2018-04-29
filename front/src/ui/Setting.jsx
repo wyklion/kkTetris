@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
-import Input from 'material-ui/Input';
+// import Input from 'material-ui/Input';
 import Dialog, {
    DialogActions,
    DialogContent,
@@ -10,13 +10,11 @@ import Dialog, {
    DialogTitle,
 } from 'material-ui/Dialog';
 // import Divider from 'material-ui/Divider';
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Switch from 'material-ui/Switch';
 import Typography from 'material-ui/Typography';
 import Radio, { RadioGroup } from 'material-ui/Radio';
-import { FormLabel, FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
+// import { FormLabel, FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
 
-import socket from '../socket/GameSocket';
 import gameManager from '../game/GameManager';
 import lang from '../util/lang';
 
@@ -58,9 +56,11 @@ class Setting extends React.Component {
    }
 
    componentWillMount() {
-      // this.state.sound = gameManager.soundManager.idx + '';
-      this.state.sound = gameManager.soundManager.soundOn;
-      this.state.pic = gameManager.textureManager.idx + '';
+      this.setState({
+         // sound: gameManager.soundManager.idx + '',
+         sound: gameManager.soundManager.soundOn,
+         pic: gameManager.textureManager.idx + ''
+      })
    }
 
    handleClose = () => {
@@ -71,7 +71,7 @@ class Setting extends React.Component {
       var setting = {
          // sound: parseInt(this.state.sound),
          sound: this.state.sound ? 1 : 0,
-         pic: parseInt(this.state.pic)
+         pic: parseInt(this.state.pic, 10)
       }
       gameManager.setting(setting);
       this.props.close();
@@ -147,11 +147,11 @@ class Setting extends React.Component {
                   <Typography variant="body1" style={{ lineHeight: '48px' }}>
                      {lang.get('Solid Color')}
                   </Typography>
-                  <img src={pubUrl + '/cell1.png'} width={288} height={32} className={classes.picItem} />
-                  <img src={pubUrl + '/cell2.png'} width={288} height={32} className={classes.picItem} />
-                  <img src={pubUrl + '/cell3.png'} width={288} height={32} className={classes.picItem} />
-                  <img src={pubUrl + '/cell4.png'} width={288} height={32} className={classes.picItem} />
-                  <img src={pubUrl + '/cell5.png'} width={288} height={32} className={classes.picItem} />
+                  <img src={pubUrl + '/cell1.png'} alt='pic1' width={288} height={32} className={classes.picItem} />
+                  <img src={pubUrl + '/cell2.png'} alt='pic2' width={288} height={32} className={classes.picItem} />
+                  <img src={pubUrl + '/cell3.png'} alt='pic3' width={288} height={32} className={classes.picItem} />
+                  <img src={pubUrl + '/cell4.png'} alt='pic4' width={288} height={32} className={classes.picItem} />
+                  <img src={pubUrl + '/cell5.png'} alt='pic5' width={288} height={32} className={classes.picItem} />
                </div>
             </DialogContent>
             <DialogActions>

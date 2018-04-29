@@ -41,7 +41,7 @@ export default class Render {
       });
    }
    setVertical(vertical) {
-      if (vertical != this.vertical) {
+      if (vertical !== this.vertical) {
          this.vertical = vertical;
          if (vertical) {
             this.main.container.x = 0;

@@ -17,7 +17,7 @@ import Rank from './ui/Rank';
 import theme from './ui/Theme';
 import gameManager from './game/GameManager';
 import socket from './socket/GameSocket';
-import lang from './util/lang';
+// import lang from './util/lang';
 
 const styles = {
    bg: {

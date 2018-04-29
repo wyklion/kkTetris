@@ -5,8 +5,16 @@
 import * as PIXI from 'pixi.js'
 
 var shadowColor = 0x444444;
-var trashColor = 0x444444;
 var deadColor = 0x444444;
+// var colors = [
+//    0x00FFFF, // 'cyan'
+//    0xFFFF00, // 'yellow'
+//    0xA020F0, // 'purple'
+//    0xFFA500, // 'orange'
+//    0x0000FF, // 'blue'
+//    0xFF0000, // 'red'
+//    0x00FF00,// 'green'
+// ];
 var colors = [
    0x0F9BD7, // I
    0xE39F02, // O
@@ -17,16 +25,16 @@ var colors = [
    0x59B101, // S
    0x888888, // trash
 ];
-var colors2 = [
-   0x074D6B, // I
-   0x714F01, // O
-   0x4E1445, // T
-   0x712D01, // L
-   0x102063, // J
-   0x6B071B, // Z
-   0x2C5800, // S
-   0x222222, // trash
-];
+// var colors2 = [
+//    0x074D6B, // I
+//    0x714F01, // O
+//    0x4E1445, // T
+//    0x712D01, // L
+//    0x102063, // J
+//    0x6B071B, // Z
+//    0x2C5800, // S
+//    0x222222, // trash
+// ];
 
 export default class GraphicRender {
    constructor(displayNext, baseSize) {

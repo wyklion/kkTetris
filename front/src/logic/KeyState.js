@@ -8,8 +8,8 @@ export default class KeyState {
       this.isDown = isDown;
       this.press = false;
       this.das = false;
-      var dasHandle = null;
-      var moveHandle = null;
+      this.dasHandle = null;
+      this.moveHandle = null;
    }
    keyDown() {
       if (!this.press) {

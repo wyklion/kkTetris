@@ -33,6 +33,10 @@ const styles = theme => ({
    },
    nothing: {
       color: '#ff4242'
+   },
+   userId: {
+      cursor: 'pointer',
+      color: '#44c7bc'
    }
 });
 
@@ -66,49 +70,43 @@ class Rank extends React.Component {
       this.props.onReturn();
    }
 
-   makeSpeedRows() {
-      const { classes, rankType } = this.props;
-      var rank = this.state.rank;
-      var rows = [];
-      for (var i = 0; i < rank.length; i++) {
-         var record = rank[i];
-         var best = parseFloat(record.speed40Best).toFixed(1);
-         var date = record.speed40Date ? Tools.formatTime(record.speed40Date, 'yyyy-MM-dd hh:mm:ss') : '';
-         rows.push(
-            <TableRow key={rankType + record.id} className={classes.row}>
-               <TableCell>{i + 1}</TableCell>
-               <TableCell>{record.id}</TableCell>
-               <TableCell>{record.nick}</TableCell>
-               <TableCell>{best}</TableCell>
-               <TableCell>{date}</TableCell>
-            </TableRow>
-         )
+   /**
+    * 重播
+    */
+   onReplay = (replayId) => {
+      return () => {
+         gameManager.loadReplay(replayId);
+         this.props.onReturn();
       }
-      if (rows.length === 0) {
-         rows.push(
-            <TableRow key='nothing' className={classes.row}>
-               <TableCell className={classes.nothing}>{lang.get('Nobody')}</TableCell>
-            </TableRow>
-         )
-      }
-      return rows;
    }
 
-   makeDigRows() {
+   userInfo(userId) {
+      return () => {
+         gameManager.app.onProfile(userId);
+      }
+   }
+
+   makeSpeedTable() {
       const { classes, rankType } = this.props;
       var rank = this.state.rank;
       var rows = [];
       for (var i = 0; i < rank.length; i++) {
          var record = rank[i];
-         var best = parseFloat(record.dig18Best).toFixed(1);
-         var date = record.dig18Date ? Tools.formatTime(record.dig18Date, 'yyyy-MM-dd hh:mm:ss') : '';
+         var best = parseFloat(record.speed40Best).toFixed(2);
+         var date = record.speed40Date ? Tools.formatTime(record.speed40Date, 'yyyy-MM-dd hh:mm:ss') : '';
+         var replayId = record.s40r;
          rows.push(
             <TableRow key={rankType + record.id} className={classes.row}>
                <TableCell>{i + 1}</TableCell>
-               <TableCell>{record.id}</TableCell>
+               <TableCell className={classes.userId} onClick={this.userInfo(record.id)}>{record.id}</TableCell>
                <TableCell>{record.nick}</TableCell>
                <TableCell>{best}</TableCell>
                <TableCell>{date}</TableCell>
+               <TableCell>{
+                  replayId ? <Button color="primary" size="small" onClick={this.onReplay(replayId)}>
+                     {lang.get('Replay')}
+                  </Button> : null}
+               </TableCell>
             </TableRow>
          )
       }
@@ -119,7 +117,73 @@ class Rank extends React.Component {
             </TableRow>
          )
       }
-      return rows;
+      return (
+         <Table className={classes.table}>
+            <TableHead >
+               <TableRow className={classes.row}>
+                  <TableCell className={classes.headcell}>{lang.get('Place')}</TableCell>
+                  <TableCell className={classes.headcell}>ID</TableCell>
+                  <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
+                  <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>
+                  <TableCell className={classes.headcell}>{lang.get('Date')}</TableCell>
+                  <TableCell className={classes.headcell}>{lang.get('Replay')}</TableCell>
+               </TableRow>
+            </TableHead>
+            <TableBody>
+               {rows}
+            </TableBody>
+         </Table>
+      )
+   }
+
+   makeDigTable() {
+      const { classes, rankType } = this.props;
+      var rank = this.state.rank;
+      var rows = [];
+      for (var i = 0; i < rank.length; i++) {
+         var record = rank[i];
+         var best = parseFloat(record.dig18Best).toFixed(2);
+         var date = record.dig18Date ? Tools.formatTime(record.dig18Date, 'yyyy-MM-dd hh:mm:ss') : '';
+         var replayId = record.d18r;
+         rows.push(
+            <TableRow key={rankType + record.id} className={classes.row}>
+               <TableCell>{i + 1}</TableCell>
+               <TableCell className={classes.userId} onClick={this.userInfo(record.id)}>{record.id}</TableCell>
+               <TableCell>{record.nick}</TableCell>
+               <TableCell>{best}</TableCell>
+               <TableCell>{date}</TableCell>
+               <TableCell>{
+                  replayId ? <Button color="primary" size="small" onClick={this.onReplay(replayId)}>
+                     {lang.get('Replay')}
+                  </Button> : null}
+               </TableCell>
+            </TableRow>
+         )
+      }
+      if (rows.length === 0) {
+         rows.push(
+            <TableRow key='nothing' className={classes.row}>
+               <TableCell className={classes.nothing}>{lang.get('Nobody')}</TableCell>
+            </TableRow>
+         )
+      }
+      return (
+         <Table className={classes.table}>
+            <TableHead >
+               <TableRow className={classes.row}>
+                  <TableCell className={classes.headcell}>{lang.get('Place')}</TableCell>
+                  <TableCell className={classes.headcell}>ID</TableCell>
+                  <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
+                  <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>
+                  <TableCell className={classes.headcell}>{lang.get('Date')}</TableCell>
+                  <TableCell className={classes.headcell}>{lang.get('Replay')}</TableCell>
+               </TableRow>
+            </TableHead>
+            <TableBody>
+               {rows}
+            </TableBody>
+         </Table>
+      )
    }
 
    render() {
@@ -128,13 +192,13 @@ class Rank extends React.Component {
       if (!rank) {
          return null;
       }
-      var rows;
+      var table;
       var title;
       if (rankType === 'speed40') {
-         rows = this.makeSpeedRows();
+         table = this.makeSpeedTable();
          title = lang.get('Sprint 40L');
       } else if (rankType === 'dig18') {
-         rows = this.makeDigRows();
+         table = this.makeDigTable();
          title = lang.get('Dig Race 18L');
       }
 
@@ -153,20 +217,7 @@ class Rank extends React.Component {
                {lang.get('Learderboard') + '(' + title + ')'}
             </Typography>
             <div className={classes.tableDiv}>
-               <Table className={classes.table}>
-                  <TableHead >
-                     <TableRow className={classes.row}>
-                        <TableCell className={classes.headcell}>{lang.get('Place')}</TableCell>
-                        <TableCell className={classes.headcell}>ID</TableCell>
-                        <TableCell className={classes.headcell}>{lang.get('Nickname')}</TableCell>
-                        <TableCell className={classes.headcell}>{lang.get('Time')}</TableCell>
-                        <TableCell className={classes.headcell}>{lang.get('Date')}</TableCell>
-                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                     {rows}
-                  </TableBody>
-               </Table>
+               {table}
             </div>
          </div>
       );

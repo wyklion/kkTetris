@@ -1,7 +1,7 @@
 import {
    FormControl,
    FormControlLabel,
-   FormGroup,
+   // FormGroup,
    // FormHelperText,
    FormLabel,
 } from 'material-ui/Form';
@@ -12,12 +12,12 @@ import Button from 'material-ui/Button';
 import PropTypes from 'prop-types';
 import React from 'react';
 // import teal from 'material-ui/colors/teal';
-import purple from 'material-ui/colors/purple';
+// import purple from 'material-ui/colors/purple';
 import { withStyles } from 'material-ui/styles';
 
 import http from '../util/http.js';
 
-var color = purple;
+// var color = purple;
 
 const styles = theme => ({
    form: {
@@ -101,7 +101,7 @@ class Login extends React.Component {
       var name = this.name.value;
       var pswd = this.password.value;
       var pswd2 = this.password2.value;
-      if (pswd != pswd2) {
+      if (pswd !== pswd2) {
          alert('两次密码不一致！')
          return;
       }

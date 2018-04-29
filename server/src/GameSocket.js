@@ -160,9 +160,9 @@ class GameSocket {
    /**
     * 保存录像写入数据库，返回id。
     */
-   saveReplay(type, time, record, callback) {
+   saveReplay(type, data, callback) {
       // 回放写入数据库记录
-      mongo.insertOne("replay", { id: this.userId, type: type, time: time, replay: record, date: Date.now() }, (err, result) => {
+      mongo.insertOne("replay", { id: this.userId, type: type, ...data, date: Date.now() }, (err, result) => {
          if (err) {
             callback(err);
          } else {
@@ -177,8 +177,8 @@ class GameSocket {
    onSpeed(data) {
       var socket = this.socket;
       mongo.updateAddValue("users", { id: this.userId }, { speed40Times: 1 });
-      if (data.record) {
-         this.saveReplay('speed40', data.time, data.record, (err, id) => {
+      if (data.replay) {
+         this.saveReplay('speed40', data, (err, id) => {
             var msg;
             if (err) {
                msg = { time: Date.now(), type: 'speed40', user: this.userId, msg: data.time };
@@ -200,7 +200,7 @@ class GameSocket {
    onDig18(data) {
       mongo.updateAddValue("users", { id: this.userId }, { dig18Times: 1 });
       if (data.record) {
-         this.saveReplay('dig18', data.time, data.record, (err, id) => {
+         this.saveReplay('dig18', data, (err, id) => {
             var msg;
             if (err) {
                msg = { time: Date.now(), type: 'dig18', user: this.userId, msg: data.time };
@@ -216,7 +216,6 @@ class GameSocket {
          mongo.updateOne("users", { id: this.userId, dig18Best: { "$gt": data.time } }, { dig18Best: data.time, dig18Date: Date.now() });
       }
    }
-
    /**
     * 设置
     */

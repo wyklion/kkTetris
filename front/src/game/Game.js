@@ -1,6 +1,5 @@
 
 import socket from '../socket/GameSocket';
-import { OPERTABLE } from '../socket/OperTable';
 import gameManager from './GameManager';
 import KeyManager from '../logic/KeyManager';
 import Tetris from '../logic/Tetris';
@@ -46,21 +45,20 @@ export default class Game {
       if (!keyboard) {
          keyboard = { left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 120, moveDelay: 20, downDelay: 20 };
       }
-      var _this = this;
       this.keyManager = new KeyManager({
          socket: socket,
          keyboard: keyboard,
-         leftFunc: function () { _this.tetris.moveLeft(); },
-         leftEndFunc: function () { _this.tetris.moveLeftToEnd(); },
-         rightFunc: function () { _this.tetris.moveRight(); },
-         rightEndFunc: function () { _this.tetris.moveRightToEnd(); },
-         downFunc: function () { _this.tetris.moveDown(); },
-         downEndFunc: function () { _this.tetris.moveDownToEnd(); },
-         dropFunc: function () { _this.tetris.drop(); },
-         rotateFunc: function () { _this.tetris.rotate(true); },
-         rotateRightFunc: function () { _this.tetris.rotate(false); },
-         rotate180Func: function () { _this.tetris.rotate180(); },
-         holdFunc: function () { _this.tetris.holdShape(); },
+         leftFunc: () => this.operate(OperEnum.left),
+         leftEndFunc: () => this.operate(OperEnum.leftEnd),
+         rightFunc: () => this.operate(OperEnum.right),
+         rightEndFunc: () => this.operate(OperEnum.rightEnd),
+         downFunc: () => this.operate(OperEnum.down),
+         downEndFunc: () => this.operate(OperEnum.downEnd),
+         dropFunc: () => this.operate(OperEnum.drop),
+         rotateFunc: () => this.operate(OperEnum.rotateL),
+         rotateRightFunc: () => this.operate(OperEnum.rotateR),
+         rotate180Func: () => this.operate(OperEnum.rotate180),
+         holdFunc: () => this.operate(OperEnum.hold),
       });
 
       this.onKeyDown = (e) => {
@@ -69,10 +67,11 @@ export default class Game {
          // }
          //else if(e.keyCode === 80) // P
          //    this.pause();
-         if (this.focus && this.state === 2 && this.tetris.playing) {
+         if (this.focus && this.state > 0) {
             this.keyManager.onKeyDown(e.keyCode);
-            if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 32)
-               e.preventDefault();
+            e.preventDefault();
+            // if (e.keyCode === 38 || e.keyCode === 40 || e.keyCode === 32)
+            //    e.preventDefault();
          }
       }
       this.onKeyUp = (e) => {
@@ -139,6 +138,12 @@ export default class Game {
    go = () => {
       this.state = 2;
       this.tetris.start();
+      // 起始DAS
+      if (this.keyManager.left.press) {
+         this.operate(OperEnum.leftEnd);
+      } else if (this.keyManager.right.press) {
+         this.operate(OperEnum.rightEnd);
+      }
    }
    /**
     * 游戏结束，由tetris通知，子类继承
@@ -190,6 +195,10 @@ export default class Game {
     * 回放操作
     */
    operate(oper) {
+      // 倒计时可以DAS但不能响应。
+      if (!this.tetris.playing) {
+         return;
+      }
       switch (oper) {
          case OperEnum.left:
             this.tetris.moveLeft();

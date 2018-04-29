@@ -238,12 +238,12 @@ export default class Shape {
       if (this.check(this.x + offX, this.y + offY, this.rotation)) {
          this.x += offX;
          this.y += offY;
-         if (offX != 0) {
+         if (offX !== 0) {
             this.makeShadow();
          }
          return true;
       }
-      if (offY == -1) {
+      if (offY === -1) {
          this.tetris.freeze();
       }
       return false;

@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import AppBar from 'material-ui/AppBar';
+// import AppBar from 'material-ui/AppBar';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
 
 import gameManager from '../game/GameManager';
-import config from '../config';
+// import config from '../config';
 import Rooms from './Rooms';
 import Friends from './Friends';
 import Users from './Users';
@@ -54,9 +54,11 @@ class Lobby extends React.Component {
    };
 
    componentWillMount() {
-      this.state.userCount = gameManager.userManager.userCount;
-      this.state.friendOnline = gameManager.userManager.friendOnlineCount;
-      this.state.friendCount = gameManager.userManager.friendCount;
+      this.setState({
+         userCount: gameManager.userManager.userCount,
+         friendOnline: gameManager.userManager.friendOnlineCount,
+         friendCount: gameManager.userManager.friendCount,
+      })
    }
    componentDidMount() {
       gameManager.userManager.updateUsersListeners.add(this.onUpdateUser);
@@ -78,7 +80,7 @@ class Lobby extends React.Component {
    };
 
    render() {
-      const { classes, theme, show } = this.props;
+      const { classes, show } = this.props;
       const { value, userCount, friendCount, friendOnline } = this.state;
       if (!show) {
          return null;

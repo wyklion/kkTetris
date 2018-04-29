@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import AppBar from 'material-ui/AppBar';
+// import AppBar from 'material-ui/AppBar';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
 import Paper from 'material-ui/Paper';
@@ -9,7 +9,7 @@ import Input from 'material-ui/Input';
 import Button from 'material-ui/Button';
 
 import gameManager from '../game/GameManager';
-import config from '../config';
+// import config from '../config';
 import Tools from '../util/Tools';
 import lang from '../util/lang';
 
@@ -90,7 +90,7 @@ class Chat extends React.Component {
    };
 
    componentWillMount() {
-      this.state.messages = this.chatManager.getMessages();
+      this.setState({ messages: this.chatManager.getMessages() });
    }
    componentDidMount() {
       this.chatManager.updateChatListeners.add(this.onGetMessage);
@@ -115,7 +115,7 @@ class Chat extends React.Component {
    };
 
    sendMessage(msg) {
-      if (msg == '') {
+      if (msg === '') {
          return;
       }
       this.chatManager.sendLobby(msg);
@@ -155,7 +155,7 @@ class Chat extends React.Component {
       msgDate.setHours(1);
       msgDate.setMinutes(0);
       msgDate.setSeconds(0);
-      return parseInt(Math.abs(dateNow - msgDate) / 86400000);
+      return parseInt(Math.abs(dateNow - msgDate) / 86400000, 10);
    }
 
    /**
@@ -246,8 +246,7 @@ class Chat extends React.Component {
    }
 
    render() {
-      const { classes, theme, show } = this.props;
-      const { value } = this.state;
+      const { classes, show } = this.props;
       if (!show) {
          return null;
       }

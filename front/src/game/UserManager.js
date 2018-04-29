@@ -41,10 +41,7 @@ export default class UserManager {
     */
    updateUserCount() {
       // 在线用户数量
-      this.userCount = 0;
-      for (var i in this.users) {
-         this.userCount++;
-      }
+      this.userCount = Object.keys(this.users).length;
       // 好友数量
       this.friendCount = 0;
       // 在线好友数量

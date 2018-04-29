@@ -25,7 +25,7 @@ export default class TextureManager {
       return this.idx === 0;
    }
    load() {
-      if (this.idx == 0) {
+      if (this.idx === 0) {
          gameManager.render.onChangeTexture();
          return;
       }

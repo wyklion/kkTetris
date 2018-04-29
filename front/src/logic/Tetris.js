@@ -4,8 +4,7 @@
 
 import Shape from './Shape';
 import PlayData from './PlayData';
-import socket from '../socket/GameSocket';
-import { OPERTABLE } from '../socket/OperTable';
+// import { OPERTABLE } from '../socket/OperTable';
 import gameManager from '../game/GameManager';
 import TrashManager from './TrashManager';
 import SeedRandom from '../util/SeedRandom';
@@ -14,18 +13,18 @@ import OperEnum from '../enum/OperEnum';
 var COL = 10;
 var ROW = 20;
 
-var RandomGenerator = function () {
-   var shapes = [];
-   for (var i = 0; i < 100; i++) {
-      var bag = [1, 2, 3, 4, 5, 6, 7];
-      for (var j = 0; j < 7; j++) {
-         var idx = Math.floor(Math.random() * bag.length);
-         shapes.push(bag[idx])
-         bag.splice(idx, 1);
-      }
-   }
-   return shapes;
-};
+// var RandomGenerator = function () {
+//    var shapes = [];
+//    for (var i = 0; i < 100; i++) {
+//       var bag = [1, 2, 3, 4, 5, 6, 7];
+//       for (var j = 0; j < 7; j++) {
+//          var idx = Math.floor(Math.random() * bag.length);
+//          shapes.push(bag[idx])
+//          bag.splice(idx, 1);
+//       }
+//    }
+//    return shapes;
+// };
 
 var Combo = [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5];
 
@@ -165,15 +164,16 @@ export default class Tetris {
    clearLines() {
       var lines = [];
       this.clearTrashCount = 0;
-      for (var y = 0; y < this.row; y++) {
+      var x, y;
+      for (y = 0; y < this.row; y++) {
          var full = true;
          var hasTrash = false;
-         for (var x = 0; x < this.col; x++) {
+         for (x = 0; x < this.col; x++) {
             var bid = this.board[y][x];
-            if (bid == 0) {
+            if (bid === 0) {
                full = false;
                break;
-            } else if (bid == 8) {
+            } else if (bid === 8) {
                hasTrash = true;
             }
          }
@@ -197,29 +197,30 @@ export default class Tetris {
 
       var line = lines.shift();
       var moveTable = [];
-      for (var i = 0; i < this.row; i++) {
-         if (line == undefined || i < line) {
+      var i;
+      for (i = 0; i < this.row; i++) {
+         if (line === undefined || i < line) {
             moveTable.push(i);
             continue;
          }
-         else if (i == line) {
+         else if (i === line) {
             line = lines.shift();
             continue;
          }
       }
       //console.log(moveTable);
-      for (var i = 0; i < moveTable.length; i++) {
-         for (var x = 0; x < this.col; x++)
+      for (i = 0; i < moveTable.length; i++) {
+         for (x = 0; x < this.col; x++)
             this.board[i][x] = this.board[moveTable[i]][x];
       }
-      for (var i = moveTable.length; i < this.row; i++) {
-         for (var x = 0; x < this.col; x++)
+      for (i = moveTable.length; i < this.row; i++) {
+         for (x = 0; x < this.col; x++)
             this.board[i][x] = 0;
       }
 
       //check all clear
       var allclear = true;
-      for (var i = 0; i < COL; i++) {
+      for (i = 0; i < COL; i++) {
          if (this.board[0][i] > 0) {
             allclear = false;
             break;

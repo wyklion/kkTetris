@@ -39,7 +39,7 @@ export default class Recorder {
          }
       }
       // 这是一个保险措施通常不存在
-      if (t > this.time + 1) {
+      if (t > this.time + 2) {
          this.game.tetris.gameOver(false);
       }
    }
@@ -56,11 +56,10 @@ export default class Recorder {
    add(operation, time) {
       this.operations.push(operation);
       var len = this.times.length;
-      if (len == 0) {
+      if (len === 0) {
          this.timeAll += this.getTime(time);
          this.times.push(this.timeAll);
       } else {
-         var last = this.times[len - 1];
          var t = time - this.timeAll;
          this.timeAll += this.getTime(t);
          this.times.push(this.timeAll);
@@ -107,18 +106,18 @@ export default class Recorder {
       // 第8-12位留空
       str += '89abc';
       // 操作数2压1
-      var i;
+      var i, op1, op2;
       for (i = 0; i < len; i += 2) {
-         var op1 = this.operations[i];
+         op1 = this.operations[i];
          // 0是最后补位的无效操作
-         var op2 = this.operations[i + 1] || 0;
+         op2 = this.operations[i + 1] || 0;
          str += this.encode2to1(op1, op2);
       }
       // 一个时间拆成两个数压到一个字节
       for (i = 0; i < len; i++) {
          var t = i === 0 ? this.times[i] : this.times[i] - this.times[i - 1];
-         var op1 = t * 10 >> 0;
-         var op2 = Math.round(t * 100 - op1 * 10);
+         op1 = t * 10 >> 0;
+         op2 = Math.round(t * 100 - op1 * 10);
          str += this.encode2to1(op1, op2);
       }
       return str;
@@ -137,6 +136,7 @@ export default class Recorder {
       // 头信息12位
       var hl = 12;
       if (!str || str.length < hl) {
+         alert('Replay data is wrong!');
          return;
       }
       // 第1位游戏类型
@@ -158,10 +158,11 @@ export default class Recorder {
       }
       // 解码操作数
       var ops = this.operations;
-      for (var i = 0; i < opLen; i++) {
-         var code = str.charCodeAt(hl + i);
-         var n1 = code >> 4;
-         var n2 = code & 0xf;
+      var i, code, n1, n2;
+      for (i = 0; i < opLen; i++) {
+         code = str.charCodeAt(hl + i);
+         n1 = code >> 4;
+         n2 = code & 0xf;
          ops.push(n1);
          // 0是最后补位的无效操作
          if (n2 !== 0) {
@@ -170,10 +171,10 @@ export default class Recorder {
       }
       // 解码时间
       var times = this.times;
-      for (var i = 0; i < len; i++) {
-         var code = str.charCodeAt(hl + opLen + i);
-         var n1 = code >> 4;
-         var n2 = code & 0xf;
+      for (i = 0; i < len; i++) {
+         code = str.charCodeAt(hl + opLen + i);
+         n1 = code >> 4;
+         n2 = code & 0xf;
          var t = n1 / 10 + n2 / 100;
          this.timeAll += t;
          times.push(this.timeAll);

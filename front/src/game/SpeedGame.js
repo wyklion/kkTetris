@@ -29,13 +29,18 @@ export default class SpeedGame extends Game {
       data.win = win;
       data.lineCount = this.lineCount;
       data.hasReplay = this.hasReplay;
+      data.isReplay = this.isReplay;
       // 发送成绩给服务器
       if (win && !this.isReplay) {
-         var record = null;
+         // 40行发送时间，块数，记录消息。
+         var sendData = {
+            time: parseFloat(data.time.toFixed(2)),
+            count: data.count,
+         };
          if (this.hasReplay) {
-            record = this.recorder.encode();
+            sendData.replay = this.recorder.encode();
          }
-         socket.sendSpeed40(data.time, record);
+         socket.sendSpeed40(sendData);
       }
       gameManager.onGameOver(win, data);
    }

@@ -76,8 +76,8 @@ router.get("/userInfo", function (req, res) {
    var id = req.query.id;
    mongo.findOption('users', { id: id }, {
       fields: ['id', 'nick', 'sign', 'keyboard', 'lastLogin',
-         'speed40Times', 's40r', 'speed40Best', 'speed40Date',
-         'dig18Times', 'dig18Best', 'dig18Date',
+         'speed40Times', 'speed40Best', 'speed40Date', 's40r',
+         'dig18Times', 'dig18Best', 'dig18Date', 'd18r',
       ]
    }, function (err, result) {
       if (err) {
@@ -121,13 +121,13 @@ router.route("/rank").get(function (req, res) {
    var type = req.query.type;
    if (type === 'speed40') {
       mongo.findOption("users", { speed40Best: { $lt: 999 } }, {
-         fields: ['id', 'nick', 'speed40Best', 'speed40Date'], limit: 100, sort: { 'speed40Best': 1 }
+         fields: ['id', 'nick', 'speed40Best', 'speed40Date', 's40r'], limit: 100, sort: { 'speed40Best': 1 }
       }, function (err, result) {
          res.send({ result: result });
       });
    } else if (type === 'dig18') {
       mongo.findOption("users", { dig18Best: { $lt: 999 } }, {
-         fields: ['id', 'nick', 'dig18Best', 'dig18Date'], limit: 100, sort: { 'dig18Best': 1 }
+         fields: ['id', 'nick', 'dig18Best', 'dig18Date', 'dir18r'], limit: 100, sort: { 'dig18Best': 1 }
       }, function (err, result) {
          res.send({ result: result });
       });

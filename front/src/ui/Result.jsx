@@ -116,16 +116,18 @@ class Result extends React.Component {
                <Typography variant="display1" gutterBottom className={classes.title}>
                   {title}
                </Typography>
-               <Typography component="p" gutterBottom className={classes.best}>
-                  {lang.get('Personal Best') + ':' + best.toFixed(2)}
-               </Typography>
+               {!data.isReplay
+                  ? <Typography component="p" gutterBottom className={classes.best}>
+                     {lang.get('Personal Best') + ':' + best.toFixed(2)}
+                  </Typography>
+                  : null}
                <Typography component="p" gutterBottom className={classes.item}>
                   {lang.get('Time') + ':' + data.time.toFixed(2)}
                </Typography>
                <Typography component="p" gutterBottom className={classes.item}>
                   {lang.get('Speed') + ':' + (data.count / data.time).toFixed(2)}
                </Typography>
-               {data.hasReplay
+               {this.props.show && data.hasReplay
                   ? <Button variant="raised" color="primary" title={lang.get('Replay')} className={classes.button} onClick={this.onReplay}>
                      {lang.get('Replay')}
                   </Button>
@@ -158,9 +160,11 @@ class Result extends React.Component {
                <Typography variant="display1" gutterBottom className={classes.title}>
                   {title}
                </Typography>
-               <Typography component="p" gutterBottom className={classes.best}>
-                  {lang.get('Personal Best') + ':' + best.toFixed(2)}
-               </Typography>
+               {!data.isReplay
+                  ? <Typography component="p" gutterBottom className={classes.best}>
+                     {lang.get('Personal Best') + ':' + best.toFixed(2)}
+                  </Typography>
+                  : null}
                <Typography component="p" gutterBottom className={classes.item}>
                   {lang.get('Time') + ':' + data.time.toFixed(2)}
                </Typography>
@@ -170,7 +174,7 @@ class Result extends React.Component {
                <Typography component="p" gutterBottom className={classes.item}>
                   {lang.get('Pieces') + ':' + data.count}
                </Typography>
-               {data.hasReplay
+               {this.props.show && data.hasReplay
                   ? <Button variant="raised" color="primary" title={lang.get('Replay')} className={classes.button} onClick={this.onReplay}>
                      {lang.get('Replay')}
                   </Button>

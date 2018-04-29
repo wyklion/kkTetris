@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
+// import PlayIcon from 'material-ui-icons/PlayArrow';
 // import Checkbox from 'material-ui/Checkbox';
 
 import http from '../util/http.js';
@@ -68,6 +69,16 @@ class Profile extends React.Component {
 
    onReturnClick = () => {
       this.props.onReturn();
+   }
+
+   /**
+    * 重播
+    */
+   onReplay = (replayId) => {
+      return () => {
+         gameManager.loadReplay(replayId);
+         this.props.onReturn();
+      }
    }
 
    render() {
@@ -178,13 +189,26 @@ class Profile extends React.Component {
                      {lang.get('Sprint 40L times') + maohao + speed40Times}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('Sprint 40L best') + maohao + speed40Best}{user.s40r ? user.s40r : null}
+                     {lang.get('Sprint 40L best') + maohao + speed40Best}
+                     {user.s40r
+                        ? <Button color="primary" size="small" onClick={this.onReplay(user.s40r)}>
+                           {lang.get('Replay')}
+                        </Button>
+                        : null}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
                      {lang.get('Dig Race 18L times') + maohao + dig18Times}
                   </Typography>
                   <Typography variant="subheading" className={classes.item}>
-                     {lang.get('Dig Race 18L best') + maohao + dig18Best}{user.d18r ? user.d18r : null}
+                     {lang.get('Dig Race 18L best') + maohao + dig18Best}
+                     {user.d18r
+                        ? <Button color="primary" size="small" onClick={this.onReplay(user.d18r)}>
+                           {lang.get('Replay')}
+                        </Button>
+                        // ? <Button variant="fab" color="primary" mini title={lang.get('Replay')} aria-label="replay" onClick={this.onReplay(user.d18r)}>
+                        //    <PlayIcon />
+                        // </Button>
+                        : null}
                   </Typography>
                </div>
             </div>

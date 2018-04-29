@@ -47,13 +47,19 @@ export default class DigGame extends Game {
       data.win = win;
       data.lineCount = this.lineCount;
       data.hasReplay = this.hasReplay;
+      data.isReplay = this.isReplay;
       gameManager.onGameOver(win, data);
       if (win && !this.isReplay) {
-         var record = null;
+         // dig18发送时间，块数，消息，记录消息。
+         var sendData = {
+            time: parseFloat(data.time.toFixed(2)),
+            count: data.count,
+            lines: data.lines,
+         };
          if (this.hasReplay) {
-            record = this.recorder.encode();
+            sendData.replay = this.recorder.encode();
          }
-         socket.sendDigScore(this.lineCount, this.tetris.playData.time, record);
+         socket.sendDigScore(this.lineCount, sendData);
       }
    }
 }

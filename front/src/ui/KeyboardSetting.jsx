@@ -73,13 +73,13 @@ class KeyboardSetting extends React.Component {
    };
 
    handleSave = () => {
-      var dasDelay = parseInt(this.state.dasDelay);
+      var dasDelay = parseInt(this.state.dasDelay, 10);
       if (dasDelay < 10) dasDelay = 10; else if (dasDelay > 1000) dasDelay = 1000;
       this.keyboard.dasDelay = dasDelay;
-      var moveDelay = parseInt(this.state.moveDelay);
+      var moveDelay = parseInt(this.state.moveDelay, 10);
       if (moveDelay < 0) moveDelay = 0; else if (moveDelay > 500) moveDelay = 500;
       this.keyboard.moveDelay = moveDelay;
-      var downDelay = parseInt(this.state.downDelay);
+      var downDelay = parseInt(this.state.downDelay, 10);
       if (downDelay < 0) downDelay = 0; else if (downDelay > 500) downDelay = 500;
       this.keyboard.downDelay = downDelay;
       socket.setKeyboard(this.keyboard);

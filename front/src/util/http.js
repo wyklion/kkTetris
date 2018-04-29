@@ -23,7 +23,7 @@ http.quest = function (option, callback) {
          }
       }
    };
-   if (method == 'get') {
+   if (method === 'get') {
       if (typeof data === 'object') {
          var first = true;
          for (var k in data) {
@@ -38,7 +38,7 @@ http.quest = function (option, callback) {
    }
    xhr.open(method, url, true);
    xhr.withCredentials = true;
-   if (method == 'post') {
+   if (method === 'post') {
       if (typeof data === 'object') {
          xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
          try {

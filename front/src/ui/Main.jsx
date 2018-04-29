@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
-import Grid from 'material-ui/Grid';
-import Button from 'material-ui/Button';
+// import Paper from 'material-ui/Paper';
+// import Grid from 'material-ui/Grid';
+// import Button from 'material-ui/Button';
 // import Tetris from '../logic/Tetris';
 import gameManager from '../game/GameManager';
 import config from '../config';
@@ -64,14 +64,14 @@ class Main extends React.Component {
       anchorElSetting: null,
       anchorElUser: null,
       openKeyboard: false,
-      singlePlaying: false,
+      playState: 'none',
       showResult: false,
       resultData: null,
    };
 
-   constructor(props) {
-      super(props);
-   }
+   // constructor(props) {
+   //    super(props);
+   // }
 
    componentDidMount() {
       window.addEventListener('resize', this.onResize);
@@ -91,18 +91,19 @@ class Main extends React.Component {
    onResize = () => {
       var mainDiv = this.mainDiv;
       var div = this.refs.canvasDiv;
-      var lobbyDiv = this.refs.lobbyDiv;
+      // var lobbyDiv = this.refs.lobbyDiv;
       var singleDiv = this.refs.singleDiv;
       var w = mainDiv.clientWidth;
       var h = mainDiv.clientHeight;
       var width, height;
+      var renderWidth, renderHeight, scale;
       // 横屏
       if (w > h) {
          gameManager.render.setVertical(false);
          // console.log(w, h);
-         var renderWidth = config.render.width;
-         var renderHeight = config.render.height;
-         var scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
+         renderWidth = config.render.width;
+         renderHeight = config.render.height;
+         scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
          width = Math.round(renderWidth * scale);
          height = Math.round(renderHeight * scale);
          singleDiv.style.width = '50%';
@@ -111,9 +112,9 @@ class Main extends React.Component {
       // 竖屏
       else {
          gameManager.render.setVertical(true);
-         var renderWidth = config.renderSingle.width;
-         var renderHeight = config.renderSingle.height;
-         var scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
+         renderWidth = config.renderSingle.width;
+         renderHeight = config.renderSingle.height;
+         scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
          width = Math.round(renderWidth * scale);
          height = Math.round(renderHeight * scale);
          singleDiv.style.width = '100%';
@@ -131,18 +132,18 @@ class Main extends React.Component {
     * gameManager通知
     */
    onLoadReplay() {
-      this.setState({ showResult: false });
+      this.setState({ playState: 'replay', showResult: false });
    }
 
    onSpeedGame = () => {
       console.log('speed40');
-      this.setState({ singlePlaying: true, showResult: false });
+      this.setState({ playState: 'single', showResult: false });
       gameManager.startSpeedGame();
    }
 
    onDigGame = () => {
       console.log('dig18');
-      this.setState({ singlePlaying: true, showResult: false });
+      this.setState({ playState: 'single', showResult: false });
       gameManager.startDigGame(18);
    }
 
@@ -172,7 +173,7 @@ class Main extends React.Component {
    onEndGame = () => {
       console.log('onEndGame');
       gameManager.endGame();
-      this.setState({ singlePlaying: false, showResult: false });
+      this.setState({ playState: 'none', showResult: false });
    }
 
    render() {
@@ -192,8 +193,7 @@ class Main extends React.Component {
                   </div>
                   <div className={classes.singleMenu}>
                      <SingleMenu
-                        single={true}
-                        playing={this.state.singlePlaying}
+                        playState={this.state.playState}
                         onSpeedGame={this.onSpeedGame}
                         onDigGame={this.onDigGame}
                         onRestartGame={this.onRestartGame}

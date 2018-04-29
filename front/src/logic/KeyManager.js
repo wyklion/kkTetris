@@ -7,7 +7,6 @@ import KeyState from './KeyState';
 
 export default class KeyManager {
    constructor(options) {
-      var _this = this;
       this.enable = true;
       this.socket = options.socket;
 

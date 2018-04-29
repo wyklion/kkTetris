@@ -3,8 +3,8 @@
  */
 
 
-var COL = 10;
-var ROW = 20;
+// var COL = 10;
+// var ROW = 20;
 
 export default class TrashManager {
    constructor(tetris) {
@@ -28,7 +28,6 @@ export default class TrashManager {
       return hole;
    }
    makeTrash(lines) {
-      var len = this.holePool.length;
       var trashDatas = [];
       for (var i = 0; i < lines; i++) {
          var hole = this.getRandomHole();

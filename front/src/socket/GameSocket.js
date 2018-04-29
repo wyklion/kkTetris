@@ -4,7 +4,7 @@
 import io from 'socket.io-client';
 import config from '../config';
 import gameManager from '../game/GameManager';
-import { OPERTABLE, MSG_TYPE } from './OperTable';
+// import { OPERTABLE, MSG_TYPE } from './OperTable';
 import Listeners from '../util/Listeners';
 
 class GameSocket {
@@ -279,21 +279,13 @@ class GameSocket {
    /**
     * 竞速40行记录
     */
-   sendSpeed40(time, record) {
-      var data = { time: parseFloat(time.toFixed(2)) };
-      if (record) {
-         data.record = record;
-      }
+   sendSpeed40(data) {
       this.socket.emit("speed40", data);
    }
    /**
     * 挖掘记录
     */
-   sendDigScore(lines, time, record) {
-      var data = { time: parseFloat(time.toFixed(2)) };
-      if (record) {
-         data.record = record;
-      }
+   sendDigScore(lines, data) {
       this.socket.emit('dig' + lines, data);
    }
 

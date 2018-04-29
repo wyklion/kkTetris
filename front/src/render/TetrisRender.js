@@ -39,34 +39,6 @@ var layout = {
 var bgColor = 0x111111;
 var bgBorderColor = 0x555555;
 var bgLineColor = 0x333333;
-// var colors = [
-//    0x00FFFF, // 'cyan'
-//    0xFFFF00, // 'yellow'
-//    0xA020F0, // 'purple'
-//    0xFFA500, // 'orange'
-//    0x0000FF, // 'blue'
-//    0xFF0000, // 'red'
-//    0x00FF00,// 'green'
-// ];
-var colors = [
-   0x0F9BD7, // I
-   0xE39F02, // O
-   0x9D298A, // T
-   0xE35B02, // L
-   0x2141C6, // J
-   0xD70F37, // Z
-   0x59B101, // S
-];
-var colors2 = [
-   0x074D6B, // I
-   0x714F01, // O
-   0x4E1445, // T
-   0x712D01, // L
-   0x102063, // J
-   0x6B071B, // Z
-   0x2C5800, // S
-];
-
 
 export default class TetrisRender {
    constructor(options) {
@@ -117,6 +89,7 @@ export default class TetrisRender {
     */
    onResize(scale) {
       this.scale = scale;
+      // 改线和框的粗细
       this.drawTetrisBg();
    }
 
@@ -126,13 +99,16 @@ export default class TetrisRender {
    onChangeLang() {
       if (this.dataLabels) {
          for (var k in this.dataLabels) {
+            // 数据label
             this.dataLabels[k].text = lang.get(k);
          }
       }
       if (this.specialDataLabel) {
+         // 剩余label
          this.specialDataLabel.text = lang.get('Remain');
       }
       if (this.readyText) {
+         // 准备开始
          this.readyText.text = lang.get('READY');
          this.goText.text = lang.get('GO');
       }
@@ -181,7 +157,6 @@ export default class TetrisRender {
       this.cellRender = this.textureManager.isGraphic()
          ? new GraphicRender(this.displayNext, this.baseSize)
          : new TextureRender(this.displayNext, this.baseSize);
-      var tetris = this.tetris;
       var ta = this.tetrisArea = new PIXI.Container();
       ta.width = this.baseSize * 10;
       ta.height = this.baseSize * 20;
@@ -484,7 +459,7 @@ export default class TetrisRender {
       // }
       this.setText('time', time.toFixed(2));
       this.setText('piece', hostData.count);
-      this.setText('speed', time == 0 ? "0.00" : (hostData.count / time).toFixed(2));
+      this.setText('speed', time === 0 ? "0.00" : (hostData.count / time).toFixed(2));
       this.setText('lines', hostData.lines);
       if (!config.fps60) {
          this.render.render();

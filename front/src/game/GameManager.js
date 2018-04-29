@@ -239,15 +239,16 @@ class GameManager {
       })
    }
    onLoadReplay(replay) {
+      var game;
       if (replay.type === 'speed40') {
          this.reset();
-         var game = this.game = new SpeedGame(40);
+         game = this.game = new SpeedGame(40);
          this.render.main.setTetris(game.tetris);
          game.recorder.decode(replay.replay);
          game.replay();
       } else if (replay.type === 'dig18') {
          this.reset();
-         var game = this.game = new DigGame(18);
+         game = this.game = new DigGame(18);
          this.render.main.setTetris(game.tetris);
          game.recorder.decode(replay.replay);
          game.replay();
