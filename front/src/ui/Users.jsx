@@ -12,6 +12,12 @@ import lang from '../util/lang';
 
 const styles = theme => ({
    root: {
+      height: '100%',
+   },
+   paper: {
+      height: '100%',
+      margin: '0 1px',
+      overflow: 'auto',
    },
    row: {
       height: '30px',

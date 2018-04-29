@@ -21,10 +21,16 @@ import lang from '../util/lang';
 
 const styles = theme => ({
    root: {
+      height: '100%',
    },
    button: {
       display: 'block',
       margin: '0 10px',
+   },
+   paper: {
+      height: 'calc(100% - 32px)',
+      margin: '0 1px',
+      overflow: 'auto',
    },
    infoButton: {
    },
