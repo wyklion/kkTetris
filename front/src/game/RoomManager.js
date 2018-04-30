@@ -36,7 +36,7 @@ export default class RoomManager {
       if (!room) {
          return false;
       }
-      if (room.playUsers.indexOf(userId) > -1 || room.watchUsers.indexOf(userId) > -1) {
+      if (room.players.indexOf(userId) > -1 || room.watchers.indexOf(userId) > -1) {
          return true;
       }
       return false;

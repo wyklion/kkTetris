@@ -10,10 +10,6 @@ var ChatManager = require('./ChatManager');
 var OPERTABLE = require('./OperTable');
 var GameSocket = require('./GameSocket');
 
-var MSG_TYPE = {
-   lobby: 0,
-   room: 1,
-};
 
 class SocketManager {
    constructor(app, server) {

@@ -8,7 +8,6 @@ import Button from 'material-ui/Button';
 import gameManager from '../game/GameManager';
 // import theme from './Theme';
 import lang from '../util/lang';
-import keyName from '../util/keyName';
 
 const styles = theme => ({
    labelButton: {
@@ -18,14 +17,13 @@ const styles = theme => ({
    },
    button: {
       minWidth: '30px',
+      marginBottom: '5px',
    },
 })
 
 class LobbyMenu extends React.Component {
    state = {
-      anchorElSetting: null,
-      anchorElUser: null,
-      startKeyCode: 113, // 默认F2
+      ready: false,
    };
 
    onClickLobby = () => {
@@ -38,18 +36,34 @@ class LobbyMenu extends React.Component {
       gameManager.exitRoom();
    }
 
+   onReady = () => {
+      gameManager.battleReady();
+      var ready = !this.state.ready;
+      this.setState({ ready });
+   }
+
    render() {
       const { classes } = this.props;
-      var buttons;
       var state = this.props.playState;
       var vertical = this.props.vertical;
       if (vertical || state !== 'battle') {
          return null;
       }
+      const { ready } = this.state;
       return (
-         <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Quit')} onClick={this.onQuitRoom}>
-            {lang.get('Quit')}
-         </Button>
+         <div>
+            {ready
+               ? <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Cancel')} onClick={this.onReady}>
+                  {lang.get('Cancel')}
+               </Button>
+               : <Button variant="raised" color="primary" className={classes.button} title={lang.get('Ready')} onClick={this.onReady}>
+                  {lang.get('Ready')}
+               </Button>
+            }
+            <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Quit')} onClick={this.onQuitRoom}>
+               {lang.get('Quit')}
+            </Button>
+         </div>
       )
       // if (showLobby) {
       //    return (

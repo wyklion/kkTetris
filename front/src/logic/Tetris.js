@@ -98,7 +98,7 @@ export default class Tetris {
       // 画图
       this.render();
    }
-   start(shapes) {
+   start() {
       this.playing = true;
       this.newShape();
    }
@@ -502,8 +502,9 @@ export default class Tetris {
          }
       }
    }
-   record(oper) {
-      this.game.record(oper);
+   record(oper, data) {
+      if (this.me)
+         this.game.record(oper, data);
    }
    //=============== for vs game =================
    //only me
@@ -513,38 +514,38 @@ export default class Tetris {
    //       socket.operate(oper, data);
    // }
    // //both, but only me send operate
-   // checkAttack() {
-   //    if (this.game.setting.useBuffer) {
-   //       if (this.clearRowCount === 0) {
-   //          if (this.trashes.length > 0) {
-   //             this.riseRow(this.trashes);
-   //             //console.log("tell other i got trash...");
-   //             this.trashes = [];
-   //          }
-   //       }
-   //       else if (this.trashes.length >= this.attackLines) {
-   //          this.trashes.splice(0, this.attackLines);
-   //       }
-   //       else {
-   //          this.attack(this.attackLines - this.trashes.length);
-   //          this.trashes = [];
-   //       }
-   //    }
-   //    else {
-   //       this.attack(this.attackLines);
-   //    }
-   //    //if(!this.me)
-   //    //    console.log("other trash:", this.trashes);
-   // }
+   checkAttack() {
+      if (this.game.setting.useBuffer) {
+         // if (this.clearRowCount === 0) {
+         //    if (this.trashes.length > 0) {
+         //       this.riseRow(this.trashes);
+         //       //console.log("tell other i got trash...");
+         //       this.trashes = [];
+         //    }
+         // }
+         // else if (this.trashes.length >= this.attackLines) {
+         //    this.trashes.splice(0, this.attackLines);
+         // }
+         // else {
+         //    this.attack(this.attackLines - this.trashes.length);
+         //    this.trashes = [];
+         // }
+      }
+      else {
+         this.attack(this.attackLines);
+      }
+      //if(!this.me)
+      //    console.log("other trash:", this.trashes);
+   }
    // //only me...
-   // attack(lines) {
-   //    if (!this.me) return;
-   //    var trash = [];
-   //    var hole = Math.floor(Math.random() * COL);
-   //    for (var i = 0; i < lines; i++)
-   //       trash.push(hole);
-   //    this.operate(OPERTABLE.attack, trash);
-   // }
+   attack(lines) {
+      //    if (!this.me) return;
+      //    var trash = [];
+      //    var hole = Math.floor(Math.random() * COL);
+      //    for (var i = 0; i < lines; i++)
+      //       trash.push(hole);
+      this.record(OperEnum.attack, lines);
+   }
    // //both...
    // hurt(trash) {
    //    if (this.game.setting.useBuffer) {

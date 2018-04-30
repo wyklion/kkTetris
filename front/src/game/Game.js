@@ -11,7 +11,7 @@ export default class Game {
       this.setting = {
          attackMode: "0124",
          tspinMode: "3T",
-         useBuffer: true,
+         useBuffer: false,
       }
       // 录像机
       this.recorder = new Recorder(this);
@@ -27,6 +27,9 @@ export default class Game {
       this.dataTime = 0;
       this.watch = false;
 
+      // 对战才会有
+      this.seed = null;
+
       this.single = true;
       this.firstGame = true;
       this.tetris = new Tetris(this, true);
@@ -37,12 +40,12 @@ export default class Game {
       gameManager.addUpdate(this);
    }
    init() {
-      this.setKeybaord();
+      this.setKeyboard();
    }
    updateKeyboard() {
       this.keyManager.updateInput();
    }
-   setKeybaord() {
+   setKeyboard() {
       var keyboard = gameManager.user.keyboard;
       if (!keyboard) {
          keyboard = { left: 37, right: 39, down: 70, drop: 40, rotate: 82, rotateRight: 69, rotate180: 87, hold: 84, dasDelay: 120, moveDelay: 20, downDelay: 20 };
@@ -104,7 +107,7 @@ export default class Game {
       }
       this.reset();
       this.state = 1;
-      this.tetris.ready();
+      this.tetris.ready(this.seed);
       // 开始记录
       if (this.single && this.hasReplay && !this.isReplay) {
          this.recorder.seed = this.tetris.seed;
@@ -137,11 +140,16 @@ export default class Game {
    go = () => {
       this.state = 2;
       this.tetris.start();
-      // 起始DAS
-      if (this.keyManager.left.press) {
-         this.operate(OperEnum.leftEnd);
-      } else if (this.keyManager.right.press) {
-         this.operate(OperEnum.rightEnd);
+      if (!this.watch) {
+         // 起始DAS
+         if (this.keyManager.left.press) {
+            this.operate(OperEnum.leftEnd);
+         } else if (this.keyManager.right.press) {
+            this.operate(OperEnum.rightEnd);
+         }
+      }
+      if (this.onGo) {
+         this.onGo();
       }
    }
    /**
@@ -193,44 +201,45 @@ export default class Game {
    /**
     * 回放操作
     */
-   operate(oper) {
+   operate(oper, tetris) {
+      tetris = tetris || this.tetris;
       // 倒计时可以DAS但不能响应。
-      if (!this.tetris.playing) {
+      if (!tetris.playing) {
          return;
       }
       switch (oper) {
          case OperEnum.left:
-            this.tetris.moveLeft();
+            tetris.moveLeft();
             break;
          case OperEnum.right:
-            this.tetris.moveRight();
+            tetris.moveRight();
             break;
          case OperEnum.drop:
-            this.tetris.drop();
+            tetris.drop();
             break;
          case OperEnum.down:
-            this.tetris.moveDown();
+            tetris.moveDown();
             break;
          case OperEnum.rotateL:
-            this.tetris.rotate(true);
+            tetris.rotate(true);
             break;
          case OperEnum.rotateR:
-            this.tetris.rotate(false);
+            tetris.rotate(false);
             break;
          case OperEnum.rotate180:
-            this.tetris.rotate180();
+            tetris.rotate180();
             break;
          case OperEnum.hold:
-            this.tetris.holdShape();
+            tetris.holdShape();
             break;
          case OperEnum.downEnd:
-            this.tetris.moveDownToEnd();
+            tetris.moveDownToEnd();
             break;
          case OperEnum.leftEnd:
-            this.tetris.moveLeftToEnd();
+            tetris.moveLeftToEnd();
             break;
          case OperEnum.rightEnd:
-            this.tetris.moveRightToEnd();
+            tetris.moveRightToEnd();
             break;
          default:
             break;
@@ -238,6 +247,9 @@ export default class Game {
    }
    trashPool(trash) {
       this.tetris.hurt(trash);
+   }
+   onLock() {
+
    }
    clearFloorTime() {
       this.time = 0;
@@ -279,8 +291,10 @@ export default class Game {
       return false;
    }
    dispose() {
-      document.body.removeEventListener("keydown", this.onKeyDown, false);
-      document.body.removeEventListener("keyup", this.onKeyUp, false);
+      if (!this.watch) {
+         document.body.removeEventListener("keydown", this.onKeyDown, false);
+         document.body.removeEventListener("keyup", this.onKeyUp, false);
+      }
       gameManager.removeUpdate(this);
       this.reset();
       this.tetris.dispose();

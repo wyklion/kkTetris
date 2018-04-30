@@ -1,6 +1,7 @@
 import Render from '../render/Render';
 import SpeedGame from './SpeedGame';
 import DigGame from './DigGame';
+import BattleGame from './BattleGame';
 import socket from '../socket/GameSocket';
 import RoomManager from './RoomManager';
 import UserManager from './UserManager';
@@ -12,6 +13,7 @@ import TextureManager from '../render/TextureManager';
 import LayoutManager from '../render/LayoutManager';
 import Listeners from '../util/Listeners';
 import http from '../util/http';
+import OperEnum from '../enum/OperEnum';
 
 /**
  * 游戏管理
@@ -152,8 +154,8 @@ class GameManager {
    getRoomOtherUser() {
       var room = this.roomManager.room;
       if (!room) return null;
-      if (room.playUsers.length < 2) return null;
-      var otherUser = this.userManager.user.id === room.playUsers[0] ? room.playUsers[1] : room.playUsers[0];
+      if (room.players.length < 2) return null;
+      var otherUser = this.userManager.user.id === room.players[0] ? room.players[1] : room.players[0];
       return otherUser;
    }
 
@@ -198,7 +200,18 @@ class GameManager {
       this.render.main.setTetris(game.tetris);
       game.start();
    }
-
+   /**
+    * 开始对战游戏
+    */
+   startBattle(seed) {
+      if (!this.roomManager.room) {
+         return;
+      }
+      var game = this.game = new BattleGame(seed);
+      this.render.main.setTetris(game.tetris);
+      this.render.other.setTetris(game.otherTetris);
+      game.start();
+   }
    /**
     * 游戏结束，由各Game通知
     */
@@ -259,24 +272,48 @@ class GameManager {
     */
    createRoom() {
       console.log("create room");
+      this.reset();
       socket.createRoom((err, result) => {
          if (!err) {
-            this.main.onCreateRoom();
+            this.main.onEnterRoom();
             this.render.showOtherTetris(true);
          }
       });
+   }
+   /**
+    * 进入房间
+    */
+   joinRoom(roomId, watch) {
+      console.log("join room");
+      this.reset();
+      socket.joinRoom(roomId, watch, (err, result) => {
+         if (!err) {
+            this.main.onEnterRoom();
+            this.render.showOtherTetris(true);
+         }
+      })
    }
    /**
     * 退出房间
     */
    exitRoom() {
       console.log("exit room");
+      this.reset();
       socket.exitRoom((err, result) => {
          if (!err) {
             this.main.onExitRoom();
             this.render.showOtherTetris(false);
          }
       });
+   }
+   /**
+    * 对战准备
+    */
+   battleReady() {
+      socket.battle(OperEnum.ready);
+   }
+   onBattleReady(userId) {
+      console.log('user ready:', userId);
    }
    /**
     * 在对战时显示或隐藏大厅

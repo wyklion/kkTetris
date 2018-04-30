@@ -189,7 +189,7 @@ class Main extends React.Component {
    /**
     * 创建房间成功后调用
     */
-   onCreateRoom = () => {
+   onEnterRoom = () => {
       this.setState({ playState: 'battle', showLobby: false });
    }
 

@@ -5,12 +5,8 @@ var SocketIO = require('socket.io');
 var ObjectId = require('mongodb').ObjectId;
 var Tools = require('./Tools');
 var RoomManager = require('./RoomManager');
-var OPERTABLE = require('./OperTable');
-
-var MSG_TYPE = {
-   lobby: 0,
-   room: 1,
-};
+var MsgTypeEnum = require('./enum/MsgTypeEnum');
+var OperEnum = require('./enum/OperEnum');
 
 class GameSocket {
    constructor(socketManager, socket, user) {
@@ -30,7 +26,7 @@ class GameSocket {
       socket.on('createRoom', this.onCreateRoom.bind(this));
       socket.on('joinRoom', this.onJoinRoom.bind(this));
       socket.on('exitRoom', this.onExitRoom.bind(this));
-      socket.on('operation', this.onPlaying.bind(this));
+      socket.on('battle', this.onBattle.bind(this));
 
       socket.on('speed40', this.onSpeed.bind(this));
       socket.on('dig18', this.onDig18.bind(this));
@@ -45,7 +41,7 @@ class GameSocket {
       socket.broadcast.emit('lobbyInfo', { err: null, type: 'setUser', user: this.userManager.get(userId) });
 
       // 聊天区发系统消息
-      socket.broadcast.emit("chat", { time: Date.now(), type: 'sys', user: this.userId, msg: 'enter' });
+      socket.broadcast.emit("chat", { time: Date.now(), type: MsgTypeEnum.sys, user: this.userId, msg: 'enter' });
    }
    dispose() {
       var userId = this.userId;
@@ -63,7 +59,7 @@ class GameSocket {
       }
       this.io.emit('lobbyInfo', { err: null, type: 'removeUser', userId: userId });
       // 聊天区发系统消息
-      this.io.emit("chat", { time: Date.now(), type: 'sys', user: this.userId, msg: 'left' });
+      this.io.emit("chat", { time: Date.now(), type: MsgTypeEnum.sys, user: this.userId, msg: 'left' });
       // socket管理移除
       this.socketManager.removeSocket(userId);
       // 主动断开
@@ -95,10 +91,10 @@ class GameSocket {
       // 通知建房成功
       callback(null, { roomId: roomId });
       // 写入数据库记录
-      mongo.insertOne("gameinfo", { id: userId, type: "createRoom", roomId: roomId, time: Tools.getTime() })
+      // mongo.insertOne("gameinfo", { id: userId, type: "createRoom", roomId: roomId, time: Tools.getTime() })
       console.log(userId, "createRoom", roomId);
    }
-   onJoinRoom(data) {
+   onJoinRoom(data, callback) {
       var socket = this.socket;
       var userId = this.userId;
       var roomId = data.roomId;
@@ -106,17 +102,19 @@ class GameSocket {
       var result = this.roomManager.joinRoom(roomId, userId, data.watch);
       if (!result.err) {
          this.roomId = roomId;
-         socket.emit("onJoinRoom", { err: null, room: this.roomManager.getRoom(roomId), watch: data.watch });
-         console.log(userId, data.watch ? "watchRoom" : "joinRoom", roomId);
+         // socket进房间
          socket.join("room" + roomId);
-         socket.broadcast.emit('lobbyInfo', { err: null, type: 'setRoom', room: this.roomManager.getRoom(roomId) });
-         socket.broadcast.to("room" + roomId).emit('roomInfo', { room: this.roomManager.getRoom(roomId), userId: userId, join: true, watch: data.watch });
-         // 通知房间内人员
-         this.io.to("room" + roomId).emit('msg', userId + '加入了房间', this.roomManager.getRoom(roomId));
-         mongo.insertOne("gameinfo", { id: userId, type: data.watch ? "watchRoom" : "joinRoom", roomId: roomId, time: Tools.getTime() })
+         // 通知所有人
+         this.io.emit('lobbyInfo', { err: null, type: 'setRoom', room: this.roomManager.getRoom(roomId) });
+         // 通知进房成功
+         callback(null, { roomId: roomId });
+         // 发送房间消息
+         this.io.to("room" + roomId).emit('chat', { type: MsgTypeEnum.room, t2: MsgTypeEnum.sys, user: userId, msg: 'enter', time: Date.now() });
+         // mongo.insertOne("gameinfo", { id: userId, type: data.watch ? "watchRoom" : "joinRoom", roomId: roomId, time: Tools.getTime() })
+         console.log(userId, data.watch ? "watchRoom" : "joinRoom", roomId);
       }
       else {
-         socket.emit("onJoinRoom", { err: result.err })
+         callback(result.err);
       }
    }
    onExitRoom(data, callback) {
@@ -126,36 +124,40 @@ class GameSocket {
       this.userManager.leaveRoom(userId);
       var result = this.roomManager.exitRoom(roomId, userId);
       if (!result.err) {
-         socket.leave("room" + roomId);    // 退出房间
-         console.log(userId, "exit room", roomId);
-         this.io.to("room" + roomId).emit('msg', userId + '退出了房间', this.roomManager.getRoom(roomId));
+         // socket退出房间
+         socket.leave("room" + roomId);
+         // 通知所有人
          if (result.delRoom) {
+            // 删除房间
             this.io.emit('lobbyInfo', { err: null, type: 'removeRoom', roomId: roomId });
          }
          else {
+            // 更新房间
             this.io.emit('lobbyInfo', { err: null, type: 'setRoom', room: this.roomManager.getRoom(roomId) });
-            // socket.broadcast.to("room" + roomId).emit('roomInfo', { room: this.roomManager.getRoom(roomId), userId: userId, join: false, watch: data.watch });
+            // 发送房间消息
+            this.io.to("room" + roomId).emit('chat', { type: MsgTypeEnum.room, t2: MsgTypeEnum.sys, user: userId, msg: 'left', time: Date.now() });
          }
          this.roomId = null;
+         // 通知退房成功
          callback(null, 'ok');
-         // socket.emit("lobbyInfo", { users: this.users, rooms: this.roomManager.getRooms() });
          //mongo.insertOne("gameinfo", {id:userId, type:"exitRoom", roomId:roomId, time:Tools.getTime()})
+         console.log(userId, "exit room", roomId);
       }
       else {
          callback(result.err);
       }
    }
-   onPlaying(data) {
+   onBattle(data) {
       var socket = this.socket;
       var oper = data.oper;
-      if (oper === OPERTABLE.dead) {
+      if (oper === OperEnum.dead) {
          this.roomManager.userDead(socket);
          return;
       }
       data.userId = this.userId;
-      socket.broadcast.to("room" + this.roomId).emit('onOperation', data);
-      if (oper === OPERTABLE.ready) {
-         this.roomManager.userReady(socket);
+      socket.broadcast.to("room" + this.roomId).emit('battle', data);
+      if (oper === OperEnum.ready) {
+         this.roomManager.userReady(this);
       }
    }
    /**
@@ -182,9 +184,9 @@ class GameSocket {
          this.saveReplay('speed40', data, (err, id) => {
             var msg;
             if (err) {
-               msg = { time: Date.now(), type: 'speed40', user: this.userId, msg: data.time };
+               msg = { time: Date.now(), type: MsgTypeEnum.speed40, user: this.userId, msg: data.time };
             } else {
-               msg = { time: Date.now(), type: 'speed40', user: this.userId, msg: data.time, replay: id };
+               msg = { time: Date.now(), type: MsgTypeEnum.speed40, user: this.userId, msg: data.time, replay: id };
                mongo.updateOne("users", { id: this.userId, speed40Best: { "$gt": data.time } }, { speed40Best: data.time, s40r: id, speed40Date: Date.now() });
             }
             this.io.emit("chat", msg);
@@ -204,9 +206,9 @@ class GameSocket {
          this.saveReplay('dig18', data, (err, id) => {
             var msg;
             if (err) {
-               msg = { time: Date.now(), type: 'dig18', user: this.userId, msg: data.time };
+               msg = { time: Date.now(), type: MsgTypeEnum.dig18, user: this.userId, msg: data.time };
             } else {
-               msg = { time: Date.now(), type: 'dig18', user: this.userId, msg: data.time, replay: id };
+               msg = { time: Date.now(), type: MsgTypeEnum.dig18, user: this.userId, msg: data.time, replay: id };
                mongo.updateOne("users", { id: this.userId, dig18Best: { "$gt": data.time } }, { dig18Best: data.time, d18r: id, dig18Date: Date.now() });
             }
             this.io.emit("chat", msg);
@@ -234,10 +236,18 @@ class GameSocket {
     * 聊天
     */
    onChat(data) {
-      var socket = this.socket;
-      if (data.to === MSG_TYPE.lobby) {
-         data.user = this.userId;
-         this.chatManager.add(data);
+      console.log(data);
+      // 加上谁发的
+      data.user = this.userId;
+      this.chatManager.add(data);
+      if (data.type === MsgTypeEnum.room) {
+         var roomId = data.roomId;
+         // 少传内容
+         delete data.roomId;
+         // 房间消息
+         this.io.to("room" + roomId).emit("chat", data);
+      } else {
+         // 大厅消息
          this.io.emit("chat", data);
       }
    }

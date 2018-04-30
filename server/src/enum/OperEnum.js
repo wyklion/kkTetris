@@ -18,6 +18,6 @@ var OperEnum = {
    start: 101,
    dead: 102,
    gameover: 103,
-};
+}
 
-export default OperEnum;
+exports = module.exports = OperEnum;

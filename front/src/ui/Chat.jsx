@@ -12,6 +12,7 @@ import gameManager from '../game/GameManager';
 // import config from '../config';
 import Tools from '../util/Tools';
 import lang from '../util/lang';
+import MsgTypeEnum from '../enum/MsgTypeEnum';
 
 function TabContainer(props) {
    return (
@@ -92,7 +93,8 @@ class Chat extends React.Component {
 
    componentWillMount() {
       this.setState({
-         messages: this.chatManager.getMessages()
+         messages: this.chatManager.getMessages(),
+         roomMsgs: this.chatManager.getRoomMsgs()
       });
    }
    componentDidMount() {
@@ -137,12 +139,18 @@ class Chat extends React.Component {
       if (msg === '') {
          return;
       }
-      this.chatManager.sendLobby(msg);
+      if (this.state.value === 0) {
+         this.chatManager.sendLobby(msg);
+      } else {
+         this.chatManager.sendRoom(gameManager.roomManager.roomId, msg);
+      }
    }
 
    onGetMessage = (data) => {
       var messages = this.state.messages;
-      this.setState({ messages: messages });
+      var roomMsgs = this.state.roomMsgs;
+
+      this.setState({ messages, roomMsgs });
       this.scrollToBottom();
    }
 
@@ -185,9 +193,9 @@ class Chat extends React.Component {
       // 系统消息
       var msg;
       if (data.msg === 'enter') {
-         msg = data.user + ' ' + lang.get('enter...');
+         msg = data.user + ' ' + (data.type === MsgTypeEnum.room ? lang.get('enterRoom') : lang.get('enter...'));
       } else if (data.msg === 'left') {
-         msg = data.user + ' ' + lang.get('left...');
+         msg = data.user + ' ' + (data.type === MsgTypeEnum.room ? lang.get('leftRoom') : lang.get('left...'));
       } else {
          msg = lang.get('System message') + ': ' + decodeURI(data.msg);
       }
@@ -203,9 +211,9 @@ class Chat extends React.Component {
       const { classes } = this.props;
       // 系统消息
       var msg;
-      if (data.type === 'speed40') {
+      if (data.type === MsgTypeEnum.speed40) {
          msg = lang.get('speed40Score', data.user, data.msg);
-      } else if (data.type === 'dig18') {
+      } else if (data.type === MsgTypeEnum.dig18) {
          msg = lang.get('dig18Score', data.user, data.msg);
       }
       var replay = data.replay ?
@@ -215,6 +223,27 @@ class Chat extends React.Component {
       return (
          <div key={data.idx} className={classes.message}><span>{time}</span><span className={classes.scoreMsg}>{msg}</span>{replay}</div >
       )
+   }
+
+   /**
+    * 一条消息
+    */
+   makeOneMessage(data) {
+      const { classes } = this.props;
+      var time = Tools.formatTime(data.time, '[hh:mm:ss]');
+      var isSys = data.type === MsgTypeEnum.sys || (data.type === MsgTypeEnum.room && data.t2 === MsgTypeEnum.sys);
+      // 系统消息，大厅房间一样
+      if (isSys) {
+         return this.makeSystemMessage(time, data);
+      }
+      // 成绩消息，只有大厅有
+      else if (data.type === MsgTypeEnum.speed40 || data.type === MsgTypeEnum.dig18) {
+         return this.makeScoreMessage(time, data);
+      }
+      // 用户聊天，大厅房间一样
+      else {
+         return <div key={data.idx} className={classes.message}><span>{time}</span><span>{data.user}:</span><span>{decodeURI(data.msg)}</span></div>
+      }
    }
 
    /**
@@ -231,12 +260,10 @@ class Chat extends React.Component {
       var longest = 999;
       for (var i = 0; i < messages.length; i++) {
          var data = messages[i];
-         var time = Tools.formatTime(data.time, '[hh:mm:ss]');
          var msgDate = new Date(data.time);
          var diffDays = this.getDiffDays(dateNow, msgDate);
          if (diffDays < longest) {
             longest = diffDays;
-            // if (i !== 0) {//&& diffDays === 0
             var dateStr;
             if (diffDays === 0) {
                dateStr = lang.get('Today');
@@ -248,18 +275,21 @@ class Chat extends React.Component {
             msgs.push(
                <div key={'date' + data.idx} className={classes.date}><span>{dateStr}</span></div >
             )
-            // }
          }
-         if (data.type === 'sys') {
-            msgs.push(this.makeSystemMessage(time, data))
-         } else if (data.type === 'speed40' || data.type === 'dig18') {
-            msgs.push(this.makeScoreMessage(time, data))
-         } else {
-            // 用户聊天
-            msgs.push(
-               <div key={data.idx} className={classes.message}><span>{time}</span><span>{data.user}:</span> <span>{decodeURI(data.msg)}</span></div >
-            )
-         }
+         msgs.push(this.makeOneMessage(data));
+      }
+      return msgs;
+   }
+
+   /**
+    * 房间消息
+    */
+   makeRoomMessages() {
+      var msgs = [];
+      var messages = this.state.roomMsgs;
+      for (var i = 0; i < messages.length; i++) {
+         var data = messages[i];
+         msgs.push(this.makeOneMessage(data));
       }
       return msgs;
    }
@@ -271,6 +301,7 @@ class Chat extends React.Component {
          return null;
       }
       var lobbyMessages = this.makeLobbyMessages();
+      var roomMsgs = this.makeRoomMessages();
       return (
          <div className={classes.root}>
             <Paper className={classes.paper}>
@@ -288,6 +319,7 @@ class Chat extends React.Component {
                <div className={classes.content} >
                   <div ref={instance => this.chatContentRef = instance} className={classes.chatContent} >
                      {value === 0 ? lobbyMessages : null}
+                     {value === 1 ? roomMsgs : null}
                   </div>
                   <div className={classes.chatInput}>
                      <Input

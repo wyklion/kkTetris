@@ -45,18 +45,19 @@ class Rooms extends React.Component {
       this.forceUpdate();
    }
    onCreateClick = () => {
-      gameManager.createRoom();
+      // 线上不放开
+      // gameManager.createRoom();
    }
 
    onEnterClick = (roomId) => {
       return () => {
-         console.log("enter room", roomId);
+         gameManager.joinRoom(roomId, false);
       }
    }
 
    onWatchClick = (roomId) => {
       return () => {
-         console.log("watch room", roomId);
+         gameManager.joinRoom(roomId, true);
       }
    }
 
@@ -68,22 +69,22 @@ class Rooms extends React.Component {
          var room = rooms[i];
          var playerStr = '';
          var button;
-         if (room.playUsers.length === 1) {
-            playerStr = room.playUsers[0] + " " + lang.get('Waiting') + "……";
+         if (room.players.length === 1) {
+            playerStr = room.players[0] + " " + lang.get('Waiting') + "……";
             // 不在房间才能进入
             if (!gameManager.roomManager.isUserInRoom(gameManager.userId, room.id)) {
                button = (
-                  <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onEnterClick}>
+                  <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onEnterClick(room.id)}>
                      {lang.get('Join')}
                   </Button>
                )
             }
          } else {
-            playerStr = room.playUsers[0] + " 对战 " + room.playUsers[1];
+            playerStr = room.players[0] + " 对战 " + room.players[1];
             // 不在房间才能进入
             if (!gameManager.roomManager.isUserInRoom(gameManager.userId, room.id)) {
                button = (
-                  <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onWatchClick}>
+                  <Button variant="raised" color="primary" size="small" className={classes.button} onClick={this.onWatchClick(room.id)}>
                      {lang.get('Watch')}
                   </Button>
                )

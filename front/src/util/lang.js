@@ -43,6 +43,8 @@ var table = {
    'I say': ['我说'],
    'enter...': ['进来了。。。'],
    'left...': ['走了。。。'],
+   'enterRoom': ['进入了房间', 'enter room'],
+   'leftRoom': ['离开了房间', 'left room'],
    'System message': ['系统消息'],
    'Today': ['今天'],
    'Yestoday': ['昨天'],
@@ -99,6 +101,8 @@ var table = {
    'Game Over': ['游戏结束'],
    'Waiting': ['等待中'],
    'Replay': ['回放'],
+   // 对战
+   'Ready': ['准备'],
 }
 
 /**

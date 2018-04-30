@@ -453,6 +453,8 @@ export default class TetrisRender {
     * 数据
     */
    renderData() {
+      if (!this.displayNext)
+         return;
       this.dataArea.visible = true;
       var tetris = this.tetris;
       var hostData = tetris.playData;
