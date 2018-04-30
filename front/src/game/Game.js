@@ -132,7 +132,7 @@ export default class Game {
       this.readyHandle = setTimeout(() => {
          this.tetris.renderer.go();
          this.go();
-      }, 1000);
+      }, 1500);
    }
    /**
     * 正式开始

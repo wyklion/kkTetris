@@ -370,7 +370,7 @@ export default class TetrisRender {
     */
    update = (dt) => {
       this.readyTime += dt;
-      if (this.readyTime > 0.6 && this.readyText.visible) {
+      if (this.readyTime > 0.9 && this.readyText.visible) {
          gameManager.soundManager.play('go');
          this.readyText.visible = false;
          this.goText.visible = true;
