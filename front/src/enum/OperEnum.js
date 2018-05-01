@@ -13,6 +13,7 @@ var OperEnum = {
    leftEnd: 10,
    rightEnd: 11,
    trash: 12,
+   attack: 13,
    // 其他操作
    ready: 100,
    start: 101,

@@ -49,7 +49,15 @@ export default class BattleGame extends Game {
       var tetris = this.tetrs[data.userId];
       if (!tetris)
          return;
-      this.operate(data.oper, tetris);
+      if (data.oper === OperEnum.attack) {
+         // 玩的别家的攻击，自己收到，只可能是主方块区
+         this.tetris.hurt(data.data);
+      } else if (data.oper === OperEnum.trash) {
+         // 别的玩家垃圾状态，只可能是别人，或者旁观的话都可能。
+         tetris.trash(data.data);
+      } else {
+         this.operate(data.oper, tetris);
+      }
    }
    /**
     * 游戏结束，只有tetris发来的输，先通知服务器

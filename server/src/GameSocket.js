@@ -92,7 +92,7 @@ class GameSocket {
       callback(null, { roomId: roomId });
       // 写入数据库记录
       // mongo.insertOne("gameinfo", { id: userId, type: "createRoom", roomId: roomId, time: Tools.getTime() })
-      console.log(userId, "createRoom", roomId);
+      // console.log(userId, "createRoom", roomId);
    }
    onJoinRoom(data, callback) {
       var socket = this.socket;
@@ -111,7 +111,7 @@ class GameSocket {
          // 发送房间消息
          this.io.to("room" + roomId).emit('chat', { type: MsgTypeEnum.room, t2: MsgTypeEnum.sys, user: userId, msg: 'enter', time: Date.now() });
          // mongo.insertOne("gameinfo", { id: userId, type: data.watch ? "watchRoom" : "joinRoom", roomId: roomId, time: Tools.getTime() })
-         console.log(userId, data.watch ? "watchRoom" : "joinRoom", roomId);
+         // console.log(userId, data.watch ? "watchRoom" : "joinRoom", roomId);
       }
       else {
          callback(result.err);
@@ -141,7 +141,7 @@ class GameSocket {
          // 通知退房成功
          callback(null, 'ok');
          //mongo.insertOne("gameinfo", {id:userId, type:"exitRoom", roomId:roomId, time:Tools.getTime()})
-         console.log(userId, "exit room", roomId);
+         // console.log(userId, "exit room", roomId);
       }
       else {
          callback(result.err);
@@ -154,6 +154,7 @@ class GameSocket {
       var socket = this.socket;
       var oper = data.oper;
       if (oper === OperEnum.dead) {
+         // 结束通知单独发。
          this.roomManager.userDead(this);
          return;
       }

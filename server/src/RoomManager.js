@@ -116,7 +116,7 @@ class RoomManager {
       // 准备状态
       room.ready[gameSocket.userId] = ready;
       var otherUser = this.getOtherUserId(room, gameSocket.userId);
-      console.log("room", gameSocket.roomId, "user", gameSocket.userId, 'ready', ready);
+      // console.log("room", gameSocket.roomId, "user", gameSocket.userId, 'ready', ready);
       if (ready && otherUser) {
          if (room.ready[otherUser]) {
             // 如果对方也准备了就开始游戏
@@ -150,7 +150,7 @@ class RoomManager {
       var otherUser = this.getOtherUserId(room, gameSocket.userId);
       room.win = otherUser;
       gameSocket.io.to("room" + room.id).emit('battle', { oper: OperEnum.gameover, winner: otherUser });
-      console.log("room", gameSocket.roomId, "user", gameSocket.userId, "lose", otherUser, "win");
+      // console.log("room", gameSocket.roomId, "user", gameSocket.userId, "lose", otherUser, "win");
       // 数据暂不统计
       // mongo.updateAddValue("users", { id: gameSocket.userId }, { lose: 1 });
       // mongo.updateAddValue("users", { id: otherUser }, { win: 1 });

@@ -471,6 +471,7 @@ export default class Tetris {
       var trashDatas = this.trashManager.makeTrash(lines);
       this.moveBoardUp(lines);
       this.fillTrash(trashDatas);
+      this.shape.makeShadow();
       this.render();
    }
    /**
@@ -532,20 +533,38 @@ export default class Tetris {
          // }
       }
       else {
-         this.attack(this.attackLines);
+         if (this.attackLines) {
+            this.record(OperEnum.attack, this.attackLines);
+         }
       }
       //if(!this.me)
       //    console.log("other trash:", this.trashes);
    }
-   // //only me...
-   attack(lines) {
-      //    if (!this.me) return;
-      //    var trash = [];
-      //    var hole = Math.floor(Math.random() * COL);
-      //    for (var i = 0; i < lines; i++)
-      //       trash.push(hole);
-      this.record(OperEnum.attack, lines);
+   // 只有自己处理attck,发出trassh，其他方块区只处理trash
+   hurt(lineCount) {
+      if (!this.me) {
+         return;
+      }
+      this.raiseTrash(lineCount);
+      this.record(OperEnum.trash, lineCount);
    }
+   /**
+    * 服务器通知其他玩家垃圾行状态
+    */
+   trash(lineCount) {
+      if (this.me) {
+         return;
+      }
+      this.raiseTrash(lineCount);
+   }
+   // //only me...
+   // attack(lines) {
+   //       if (!this.me) return;
+   //       var trash = [];
+   //       var hole = Math.floor(Math.random() * COL);
+   //       for (var i = 0; i < lines; i++)
+   //          trash.push(hole);
+   // }
    // //both...
    // hurt(trash) {
    //    if (this.game.setting.useBuffer) {

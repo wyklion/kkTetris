@@ -196,8 +196,6 @@ class GameSocket {
                break;
             case OperEnum.dead:
                break;
-            case OperEnum.attack:
-               break;
             default:
                game.onOperate(data)
                break;
