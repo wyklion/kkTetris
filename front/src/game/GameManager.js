@@ -201,18 +201,6 @@ class GameManager {
       game.start();
    }
    /**
-    * 开始对战游戏
-    */
-   startBattle(seed) {
-      if (!this.roomManager.room) {
-         return;
-      }
-      var game = this.game = new BattleGame(seed);
-      this.render.main.setTetris(game.tetris);
-      this.render.other.setTetris(game.otherTetris);
-      game.start();
-   }
-   /**
     * 游戏结束，由各Game通知
     */
    onGameOver(win, data) {
@@ -307,13 +295,43 @@ class GameManager {
       });
    }
    /**
-    * 对战准备
+    * 对战准备，lobbyMenu按钮触发
     */
-   battleReady() {
-      socket.battle(OperEnum.ready);
+   battleReady(ready) {
+      socket.battle(OperEnum.ready, ready);
+      // 自己准备的时候游戏结束，界面清空
+      if (ready) {
+         this.reset();
+      }
+      this.main.battleReady(ready);
    }
-   onBattleReady(userId) {
-      console.log('user ready:', userId);
+   /**
+    * 玩家准备，服务器通知
+    */
+   onBattleReady(data) {
+      console.log('user ready:', data.userId, data.data);
+      // 对方准备状态
+      this.main.onBattleReady(data);
+   }
+   /**
+    * 开始对战游戏
+    */
+   startBattle(seed) {
+      if (!this.roomManager.room) {
+         return;
+      }
+      var game = this.game = new BattleGame(seed);
+      this.render.main.setTetris(game.tetris);
+      this.render.other.setTetris(game.otherTetris);
+      game.start();
+      // 界面变化
+      this.main.onBattleStart();
+   }
+   /**
+    * 对战一局结束，由battlGame通知
+    */
+   battleEnd(data) {
+      this.main.battleEnd(data);
    }
    /**
     * 在对战时显示或隐藏大厅

@@ -51,7 +51,17 @@ const styles = theme => ({
    },
    button: {
       marginTop: '20px',
-   }
+   },
+   label: {
+      fontSize: '20px',
+      color: '#c5c5c5'
+   },
+   bItem: {
+      fontSize: '28px',
+      color: '#fff',
+      fontFamily: 'Arial Bold',
+      fontWeight: 'bolder',
+   },
 });
 
 class Result extends React.Component {
@@ -184,11 +194,65 @@ class Result extends React.Component {
       )
    }
 
+   /**
+    * 对战结果
+    */
+   makeBattleResult(data) {
+      var classes = this.props.classes;
+
+      var winner = data.winner;
+      var host = data.host;
+      var other = data.other;
+      var spanStyle = { marginRight: 30 };
+
+      var title;
+      if (!data.watch) {
+         if (gameManager.userManager.userId === winner) {
+            title = lang.get('Win');
+         } else {
+            title = lang.get('Lose');
+         }
+      } else {
+         title = lang.get('Winner:') + winner;
+      }
+
+      return (
+         <Paper className={classes.paper} elevation={4}>
+            <div className={classes.content}>
+               <Typography variant="display1" gutterBottom className={classes.title}>
+                  {title}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.bItem}>
+                  <span style={spanStyle}>{data.otherUser}</span>{data.hostUser}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.label}>
+                  {lang.get('Attack')}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.bItem}>
+                  <span style={spanStyle}>{other.attack}</span>{host.attack}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.label}>
+                  {lang.get('Lines')}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.bItem}>
+                  <span style={spanStyle}>{other.lines}</span>{host.lines}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.label}>
+                  {lang.get('Pieces')}
+               </Typography>
+               <Typography component="p" gutterBottom className={classes.bItem}>
+                  <span style={spanStyle}>{other.count}</span>{host.count}
+               </Typography>
+            </div>
+         </Paper>
+      )
+   }
+
    makeResult(data) {
       if (!data) {
          return <div />;
       }
-      var result;
+      var result = null;
       switch (data.gameType) {
          case 'speed':
             result = this.makeSpeedResult(data);
@@ -196,6 +260,8 @@ class Result extends React.Component {
          case 'dig':
             result = this.makeDigResult(data);
             break;
+         case 'battle':
+            result = this.makeBattleResult(data);
          default:
             break;
       }

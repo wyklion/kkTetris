@@ -75,6 +75,8 @@ class Main extends React.Component {
       showChat: true,
       // 游戏状态，没玩，单人，录象，对战none,single,replay,battle
       playState: 'none',
+      // 对战状态
+      battleState: 'none',
       showResult: false,
       resultData: null,
    };
@@ -197,7 +199,44 @@ class Main extends React.Component {
     * 退出房间
     */
    onExitRoom = () => {
-      this.setState({ playState: 'none', showLobby: true });
+      this.setState({ playState: 'none', showLobby: true, showResult: false });
+   }
+
+   /**
+    * 自己的准备状态
+    */
+   battleReady(ready) {
+      var state = ready ? 'ready' : 'none';
+      this.setState({ battleState: state, showResult: false });
+   }
+
+   /**
+    * 准备状态
+    */
+   onBattleReady(data) {
+      // var userReady = this.state.userReady;
+      // userReady[data.userId] = data.data;
+      // this.setState({ userReady });
+      // // 自己准备的时候
+      // var hostId;
+      // if(gameManager.game && gameManager.game.gameType==='battle', )
+      // if(gameManager.userManager.userId === data.userId && data.data){
+      //    this.setState({showResult:false});
+      // }
+   }
+
+   /**
+    * 对战开始
+    */
+   onBattleStart() {
+      this.setState({ battleState: 'playing', showResult: false });
+   }
+
+   /**
+    * 对战结束，回到可以准备的状态,由manager通知
+    */
+   battleEnd(data) {
+      this.setState({ battleState: 'none', showResult: true, resultData: data });
    }
 
    /**
@@ -209,7 +248,7 @@ class Main extends React.Component {
 
    render() {
       const { classes, hidden } = this.props;
-      const { playState, vertical, showLobby, showChat, showResult, resultData } = this.state;
+      const { playState, battleState, vertical, showLobby, showChat, showResult, resultData } = this.state;
       return (
          <div ref={instance => this.mainDiv = instance} className={hidden ? classes.hidden : classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
@@ -218,6 +257,7 @@ class Main extends React.Component {
                <div className={classes.lobbyMenu}>
                   <LobbyMenu
                      playState={playState}
+                     battleState={battleState}
                      vertical={vertical}
                   />
                </div>

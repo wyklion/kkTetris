@@ -2,11 +2,13 @@ import Game from './Game';
 import gameManager from './GameManager';
 import socket from '../socket/GameSocket';
 import Tetris from '../logic/Tetris';
+import OperEnum from '../enum/OperEnum';
 
 export default class BattleGame extends Game {
    constructor(seed) {
       super();
       this.seed = seed;
+      this.gameType = 'battle';
       this.single = false;
    }
    init() {
@@ -49,6 +51,30 @@ export default class BattleGame extends Game {
          return;
       this.operate(data.oper, tetris);
    }
+   /**
+    * 游戏结束，只有tetris发来的输，先通知服务器
+    */
+   gameOver(win = false) {
+      super.gameOver(win);
+      this.record(OperEnum.dead);
+   }
+   /**
+    * 服务器通知结束
+    */
+   onGameOver(result) {
+      super.gameOver(true);
+      var data = {
+         gameType: this.gameType,
+         host: this.tetris.playData,
+         other: this.otherTetris.playData,
+         winner: result.winner,
+         hostUser: this.hostUser,
+         otherUser: this.otherUser,
+         watch: this.watch,
+      }
+      gameManager.battleEnd(data);
+   }
+
    // readyOrPlay() {
    //    if (this.single) {
    //       this.ui.readyOrPlay();

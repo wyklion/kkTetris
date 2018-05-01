@@ -186,13 +186,13 @@ class GameSocket {
       if (data.oper === OperEnum.start) {
          gameManager.startBattle(data.seed);
       } else if (data.oper === OperEnum.ready) {
-         gameManager.onBattleReady(data.userId);
+         gameManager.onBattleReady(data);
       } else {
          var game = gameManager.game;
          if (!game) return;
          switch (data.oper) {
             case OperEnum.gameover:
-               game.gameOver(data.result);
+               game.onGameOver(data);
                break;
             case OperEnum.dead:
                break;

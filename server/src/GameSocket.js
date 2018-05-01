@@ -147,17 +147,20 @@ class GameSocket {
          callback(result.err);
       }
    }
+   /**
+    * 对战消息，准备，输了，游戏操作。
+    */
    onBattle(data) {
       var socket = this.socket;
       var oper = data.oper;
       if (oper === OperEnum.dead) {
-         this.roomManager.userDead(socket);
+         this.roomManager.userDead(this);
          return;
       }
       data.userId = this.userId;
       socket.broadcast.to("room" + this.roomId).emit('battle', data);
       if (oper === OperEnum.ready) {
-         this.roomManager.userReady(this);
+         this.roomManager.userReady(this, data.data);
       }
    }
    /**

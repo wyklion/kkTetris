@@ -143,7 +143,7 @@ export default class Tetris {
    checkOver() {
       for (var i = 0; i < this.col; i++) {
          if (this.board[this.row][i] > 0) {
-            this.gameOver();
+            this.gameOver(false);
             return true;
          }
       }

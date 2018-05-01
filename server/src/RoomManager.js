@@ -87,6 +87,7 @@ class RoomManager {
          // socket.broadcast.to("room" + roomId).emit('roomInfo', { room: room, userId: userId, join: false, watch: false });
          if (room.playing) {
             room.playing = false;
+            // 数据暂不统计
             // 数据库记录，用户游戏中断线
             // mongo.updateAddValue("users", { id: userId }, { disconnect: 1 });
          }
@@ -108,18 +109,19 @@ class RoomManager {
    /**
     * 玩家准备
     */
-   userReady(gameSocket) {
+   userReady(gameSocket, ready) {
       if (gameSocket.roomId === null) return;
       var room = this.rooms[gameSocket.roomId];
       if (!room) return;
       // 准备状态
-      room.ready[gameSocket.userId] = true;
+      room.ready[gameSocket.userId] = ready;
       var otherUser = this.getOtherUserId(room, gameSocket.userId);
-      console.log("room", gameSocket.roomId, "user", gameSocket.userId, "is ready...");
-      if (otherUser) {
+      console.log("room", gameSocket.roomId, "user", gameSocket.userId, 'ready', ready);
+      if (ready && otherUser) {
          if (room.ready[otherUser]) {
             // 如果对方也准备了就开始游戏
             this.startBattle(room, gameSocket);
+            // 数据暂不统计
             // mongo.insertOne("gameinfo", { id: socket.userId, id2: otherUser, type: "vsGame", roomId: gameSocket.roomId, time: Tools.getTime() })
          }
       }
@@ -133,20 +135,25 @@ class RoomManager {
       room.seed = Math.floor(Math.random() * 50000);
       gameSocket.io.to("room" + room.id).emit("battle", { oper: OperEnum.start, seed: room.seed });
    }
-   userDead(socket) {
-      if (socket.roomId == null || socket.roomId == undefined) return;
-      var room = this.rooms[socket.roomId];
+   /**
+    * 一方gameOver
+    */
+   userDead(gameSocket) {
+      if (gameSocket.roomId === null) return;
+      var room = this.rooms[gameSocket.roomId];
       if (!room) return;
+      // 重置房间状态
       room.ready = {};
       room.playing = false;
-      if (room.win) return; //already gameover...
-      var otherUser = this.getOtherUserId(room, socket.userId);
+      // 先死的才算输
+      if (room.win) return;
+      var otherUser = this.getOtherUserId(room, gameSocket.userId);
       room.win = otherUser;
-      socket.emit("onOperation", { oper: OperEnum.gameover, result: { win: otherUser, lose: socket.userId } });
-      socket.broadcast.to("room" + socket.roomId).emit('onOperation', { oper: OperEnum.gameover, result: { win: otherUser, lose: socket.userId } });
-      console.log("room", socket.roomId, "user", socket.userId, "lose", otherUser, "win");
-      mongo.updateAddValue("users", { id: socket.userId }, { lose: 1 });
-      mongo.updateAddValue("users", { id: otherUser }, { win: 1 });
+      gameSocket.io.to("room" + room.id).emit('battle', { oper: OperEnum.gameover, winner: otherUser });
+      console.log("room", gameSocket.roomId, "user", gameSocket.userId, "lose", otherUser, "win");
+      // 数据暂不统计
+      // mongo.updateAddValue("users", { id: gameSocket.userId }, { lose: 1 });
+      // mongo.updateAddValue("users", { id: otherUser }, { win: 1 });
    }
 };
 

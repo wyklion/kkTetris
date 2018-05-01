@@ -46,7 +46,7 @@ class Rooms extends React.Component {
    }
    onCreateClick = () => {
       // 线上不放开
-      // gameManager.createRoom();
+      gameManager.createRoom();
    }
 
    onEnterClick = (roomId) => {

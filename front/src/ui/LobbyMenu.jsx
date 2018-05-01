@@ -22,10 +22,6 @@ const styles = theme => ({
 })
 
 class LobbyMenu extends React.Component {
-   state = {
-      ready: false,
-   };
-
    onClickLobby = () => {
       gameManager.showLobby(true);
    }
@@ -37,32 +33,36 @@ class LobbyMenu extends React.Component {
    }
 
    onReady = () => {
-      gameManager.battleReady();
-      var ready = !this.state.ready;
-      this.setState({ ready });
+      gameManager.battleReady(true);
+   }
+
+   onCancel = () => {
+      gameManager.battleReady(false);
    }
 
    render() {
-      const { classes } = this.props;
-      var state = this.props.playState;
-      var vertical = this.props.vertical;
-      if (vertical || state !== 'battle') {
+      const { classes, playState, battleState, vertical } = this.props;
+      if (vertical || playState !== 'battle') {
          return null;
       }
-      const { ready } = this.state;
+      var button = null;
+      var quit = null;
+      if (battleState === 'none') {
+         button = <Button variant="raised" color="primary" className={classes.button} title={lang.get('Ready')} onClick={this.onReady}>
+            {lang.get('Ready')}
+         </Button>
+         quit = <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Quit')} onClick={this.onQuitRoom}>
+            {lang.get('Quit')}
+         </Button>
+      } else if (battleState === 'ready') {
+         button = <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Cancel')} onClick={this.onCancel}>
+            {lang.get('Cancel')}
+         </Button>
+      }
       return (
          <div>
-            {ready
-               ? <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Cancel')} onClick={this.onReady}>
-                  {lang.get('Cancel')}
-               </Button>
-               : <Button variant="raised" color="primary" className={classes.button} title={lang.get('Ready')} onClick={this.onReady}>
-                  {lang.get('Ready')}
-               </Button>
-            }
-            <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Quit')} onClick={this.onQuitRoom}>
-               {lang.get('Quit')}
-            </Button>
+            {button}
+            {quit}
          </div>
       )
       // if (showLobby) {
