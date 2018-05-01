@@ -471,7 +471,9 @@ export default class Tetris {
       var trashDatas = this.trashManager.makeTrash(lines);
       this.moveBoardUp(lines);
       this.fillTrash(trashDatas);
-      this.shape.makeShadow();
+      if (this.shape) {
+         this.shape.makeShadow();
+      }
       this.render();
    }
    /**
