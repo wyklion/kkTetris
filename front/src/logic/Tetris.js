@@ -133,11 +133,13 @@ export default class Tetris {
          this.checkAttack();
       // 首尾相接的地方，出新块
       this.newShape();
-      // 音效
-      if (this.clearRowCount === 0) {
-         gameManager.soundManager.lock();
-      } else {
-         gameManager.soundManager.linefall();
+      if (this.me) {
+         // 音效
+         if (this.clearRowCount === 0) {
+            gameManager.soundManager.lock();
+         } else {
+            gameManager.soundManager.linefall();
+         }
       }
    }
    checkOver() {

@@ -6,6 +6,7 @@ import socket from '../socket/GameSocket';
 import RoomManager from './RoomManager';
 import UserManager from './UserManager';
 import ChatManager from './ChatManager';
+import BattleManager from './BattleManager';
 import config from '../config';
 import lang from '../util/lang';
 import TetrisSound from '../sound/TetrisSound'
@@ -49,6 +50,7 @@ class GameManager {
 
       // 监听
       this.keySettingListener = new Listeners();
+      // this.battleListener = new Listeners();
    }
    static _instance = null;
    static getInstance() {
@@ -152,10 +154,7 @@ class GameManager {
     * 获取房间另一个玩家
     */
    getRoomOtherUser() {
-      var room = this.roomManager.room;
-      if (!room) return null;
-      if (room.players.length < 2) return null;
-      var otherUser = this.userManager.user.id === room.players[0] ? room.players[1] : room.players[0];
+      var otherUser = this.roomManager.getRoomOtherUser(this.userManager.userId);
       return otherUser;
    }
 
@@ -256,62 +255,80 @@ class GameManager {
       this.main.onLoadReplay();
    }
    /**
-    * 创建房间
+    * 自己创建房间
     */
    createRoom() {
       console.log("create room");
       this.reset();
       socket.createRoom((err, result) => {
          if (!err) {
+            // this.battle = new BattleManager();
             this.main.onEnterRoom();
             this.render.showOtherTetris(true);
          }
       });
    }
    /**
-    * 进入房间
+    * 自己进入房间
     */
    joinRoom(roomId, watch) {
       console.log("join room");
       this.reset();
       socket.joinRoom(roomId, watch, (err, result) => {
          if (!err) {
+            // this.battle = new BattleManager();
+            // this.battle.update();
             this.main.onEnterRoom();
             this.render.showOtherTetris(true);
          }
       })
    }
    /**
-    * 退出房间
+    * 自己退出房间
     */
    exitRoom() {
       console.log("exit room");
       this.reset();
       socket.exitRoom((err, result) => {
          if (!err) {
+            // this.battle.dispose();
             this.main.onExitRoom();
             this.render.showOtherTetris(false);
          }
       });
    }
    /**
-    * 对战准备，lobbyMenu按钮触发
+    * 自己准备，lobbyMenu按钮触发
     */
    battleReady(ready) {
       socket.battle(OperEnum.ready, ready);
       // 自己准备的时候游戏结束，界面清空
       if (ready) {
-         this.reset();
+         this.clearMyTetris();
       }
       this.main.battleReady(ready);
    }
    /**
-    * 玩家准备，服务器通知
+    * 别人准备，服务器通知
     */
    onBattleReady(data) {
       console.log('user ready:', data.userId, data.data);
-      // 对方准备状态
-      this.main.onBattleReady(data);
+      // 房间状态变化
+      this.roomManager.userReady(data);
+      this.clearOtherTetris();
+      // // 对方准备状态
+      // this.main.onBattleReady(data);
+      // this.battleListener.execute('ready');
+   }
+   clearMyTetris() {
+      if (this.game) {
+         this.game.tetris.renderer.clear();
+      }
+   }
+   clearOtherTetris() {
+      if (this.game) {
+         this.game.otherTetris.renderer.clear();
+      }
    }
    /**
     * 开始对战游戏
@@ -331,6 +348,9 @@ class GameManager {
     * 对战一局结束，由battlGame通知
     */
    battleEnd(data) {
+      // 房间状态变化
+      this.roomManager.battleEnd(data);
+      // 界面变化
       this.main.battleEnd(data);
    }
    /**

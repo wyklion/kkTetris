@@ -12,6 +12,7 @@ import SingleMenu from './SingleMenu';
 import Result from './Result';
 import Lobby from './Lobby';
 import Chat from './Chat';
+import Other from './Other';
 
 const styles = theme => ({
    root: {
@@ -63,7 +64,7 @@ const styles = theme => ({
       top: '75%',
       left: '80%',
       width: '19.1%',
-   }
+   },
 });
 
 class Main extends React.Component {
@@ -214,15 +215,6 @@ class Main extends React.Component {
     * 准备状态
     */
    onBattleReady(data) {
-      // var userReady = this.state.userReady;
-      // userReady[data.userId] = data.data;
-      // this.setState({ userReady });
-      // // 自己准备的时候
-      // var hostId;
-      // if(gameManager.game && gameManager.game.gameType==='battle', )
-      // if(gameManager.userManager.userId === data.userId && data.data){
-      //    this.setState({showResult:false});
-      // }
    }
 
    /**
@@ -249,9 +241,11 @@ class Main extends React.Component {
    render() {
       const { classes, hidden } = this.props;
       const { playState, battleState, vertical, showLobby, showChat, showResult, resultData } = this.state;
+      var showOther = !vertical && !showLobby && playState === 'battle' && battleState !== 'playing';
       return (
          <div ref={instance => this.mainDiv = instance} className={hidden ? classes.hidden : classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
+               <Other ref='otherRef' show={showOther} />
                <Lobby ref='lobbyRef' show={!vertical && showLobby} />
                <Chat ref='chatRef' show={!vertical && showChat} playState={playState} />
                <div className={classes.lobbyMenu}>

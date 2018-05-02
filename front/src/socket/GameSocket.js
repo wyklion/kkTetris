@@ -129,7 +129,7 @@ class GameSocket {
    createRoom(callback) {
       this.socket.emit('createRoom', null, (err, result) => {
          if (!err) {
-            this.roomManager.roomId = result.roomId;
+            this.roomManager.setRoomId(result.roomId);
             console.log("onCreateRoom ", this.roomManager.roomId);
          } else {
             console.log(err);
@@ -145,7 +145,7 @@ class GameSocket {
       // main.spin();
       this.socket.emit("joinRoom", { roomId: roomId, watch: watch || false }, (err, result) => {
          if (!err) {
-            this.roomManager.roomId = result.roomId;
+            this.roomManager.setRoomId(result.roomId);
             console.log("onJoinRoom", this.roomManager.roomId);
          } else {
             console.log(err);

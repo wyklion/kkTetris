@@ -107,6 +107,7 @@ var table = {
    'Lose': ['输了'],
    'Attack': ['攻击'],
    'Winner': ['赢家'],
+   'battleNobody': ['没人', 'Nobody'],
 }
 
 /**

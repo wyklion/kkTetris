@@ -140,7 +140,7 @@ router.route("/rank").get(function (req, res) {
       });
    } else if (type === 'dig18') {
       mongo.findOption("users", { dig18Best: { $lt: 999 } }, {
-         fields: ['id', 'nick', 'dig18Best', 'dig18Date', 'dir18r'], limit: 100, sort: { 'dig18Best': 1 }
+         fields: ['id', 'nick', 'dig18Best', 'dig18Date', 'd18r'], limit: 100, sort: { 'dig18Best': 1 }
       }, function (err, result) {
          res.send({ result: result });
       });
