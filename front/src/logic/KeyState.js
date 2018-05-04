@@ -41,8 +41,13 @@ export default class KeyState {
          this.moveHandle = setInterval(this.func, delay);
       }
    }
-   keepDown() {
+   keepMove() {
       if (this.das && this.manager.moveDelay === 0) {
+         this.endFunc();
+      }
+   }
+   keepDown() {
+      if (this.press && this.manager.downDelay === 0) {
          this.endFunc();
       }
    }

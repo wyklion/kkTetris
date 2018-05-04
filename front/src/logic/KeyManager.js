@@ -45,6 +45,7 @@ export default class KeyManager {
    onKeyDown(key) {
       if (!this.enable) return;
       var leftright = false;
+      var isDown = false;
       if (key === this.leftKey) {
          if (this.left.keyDown()) {
             gameManager.soundManager.move();
@@ -60,6 +61,7 @@ export default class KeyManager {
          leftright = true;
       }
       else if (key === this.downKey) {
+         isDown = true;
          this.down.keyDown();
       }
       else if (key === this.dropKey) {
@@ -78,8 +80,11 @@ export default class KeyManager {
          this.holdFunc();
       }
       if (!leftright) {
-         this.left.keepDown();
-         this.right.keepDown();
+         this.left.keepMove();
+         this.right.keepMove();
+      }
+      if (!isDown) {
+         this.down.keepDown();
       }
    }
    onKeyUp(key) {
