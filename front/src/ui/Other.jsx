@@ -2,15 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 // import AppBar from 'material-ui/AppBar';
-import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
 
 import gameManager from '../game/GameManager';
 // import config from '../config';
-import Rooms from './Rooms';
-import Friends from './Friends';
-import Users from './Users';
 import lang from '../util/lang';
 
 function TabContainer(props) {

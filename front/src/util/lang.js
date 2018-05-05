@@ -1,7 +1,15 @@
+import localStore from "./localStore";
 
 var lang = {}
 
 var table = {
+   // 登录
+   'ID': ['帐号'],
+   'Nickname': ['昵称'],
+   'Password': ['密码'],
+   'Repeat Password': ['再次重入密码'],
+   'Login': ['登录'],
+   'Register': ['注册'],
    // 主界面
    'KK TETRIS': ['KK俄罗斯方块'],
    'Setting': ['设置'],
@@ -22,7 +30,6 @@ var table = {
    Friends: ['好友'],
    Online: ['在线'],
    Return: ['返回'],
-   'Nickname': ['昵称'],
    'Operation': ['操作'],
    'Nobody': ['空无一人'],
    'No Rooms': ['空无一房'],
@@ -75,7 +82,6 @@ var table = {
    'Dig Race 18L times': ['挖掘18行次数'],
    'Dig Race 18L best': ['挖掘18行最佳'],
    'Dig Race 18L': ['挖掘18行'],
-   ID: ['帐号'],
    Sign: ['签名'],
    'Last login': ['最后登录'],
    ': ': ['： '],
@@ -114,9 +120,13 @@ var table = {
  * zh: 0
  * en: 1
  */
-lang.idx = 0;
+lang.idx = localStore.get('lang', 1);
 lang.init = (idx) => {
-   lang.idx = idx || 0;
+   if (idx === undefined) {
+      return;
+   }
+   lang.idx = idx;
+   localStore.set('lang', idx);
 }
 
 lang.isEn = () => {

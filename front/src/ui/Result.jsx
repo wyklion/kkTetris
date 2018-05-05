@@ -262,6 +262,7 @@ class Result extends React.Component {
             break;
          case 'battle':
             result = this.makeBattleResult(data);
+            break;
          default:
             break;
       }

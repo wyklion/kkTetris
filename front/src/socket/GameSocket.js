@@ -49,6 +49,7 @@ class GameSocket {
       this.socket.disconnect();
    }
    onConnect = () => {
+      console.log('connect...');
    }
    onDisconnect = () => {
       console.log('disconnect...');

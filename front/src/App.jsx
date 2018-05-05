@@ -44,6 +44,8 @@ class App extends React.Component {
       gameManager.app = this;
       gameManager.init();
       socket.disconnectListeners.add(this.onDisconnect);
+      socket.connectListeners.add(this.onSocketConnect);
+      socket.connectFailListeners.add(this.onConnectFail);
    }
 
    componentWillUnmount() {
@@ -67,8 +69,6 @@ class App extends React.Component {
     * 点击登录且成功
     */
    onLogin = (result) => {
-      socket.connectListeners.addOnce(this.onSocketConnect, true);
-      socket.connectFailListeners.addOnce(this.onConnectFail, true);
       socket.connect();
    }
 
@@ -78,7 +78,6 @@ class App extends React.Component {
    onSocketConnect = () => {
       gameManager.login();
       this.setState({ checked: true, logined: true });
-      socket.onConnect = null;
    }
 
    /**
@@ -86,7 +85,6 @@ class App extends React.Component {
     */
    onConnectFail = (err) => {
       this.setState({ checked: true, logined: false });
-      socket.onConnectFail = null;
       alert(err);
    }
 

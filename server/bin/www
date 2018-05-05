@@ -100,8 +100,8 @@ function onListening() {
 //start mongo and socket...
 var Mongo = require('../src/Mongo');
 var SocketManager = require('../src/SocketManager');
-var socketManager = new SocketManager(app, server);
 var init = function () {
+   var socketManager = new SocketManager(app, server);
    socketManager.start();
 }
 mongo = new Mongo(init);

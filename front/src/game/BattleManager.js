@@ -1,4 +1,4 @@
-import gameManager from './GameManager';
+// import gameManager from './GameManager';
 
 export default class BattleManager {
    // constructor() {

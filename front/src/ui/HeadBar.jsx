@@ -14,9 +14,12 @@ import Button from 'material-ui/Button';
 
 import KeyboardSetting from './KeyboardSetting';
 import Setting from './Setting';
+import LangChoose from './LangChoose';
 import http from '../util/http';
 import gameManager from '../game/GameManager';
 import lang from '../util/lang';
+import localStore from '../util/localStore';
+
 
 const styles = {
    root: {
@@ -43,8 +46,15 @@ class HeadBar extends React.Component {
       anchorElSetting: null,
       anchorElUser: null,
       openSetting: false,
-      openKeyboard: false
+      openKeyboard: false,
+      langChoose: false,
    };
+
+   componentDidMount() {
+      if (localStore.get('lang') === null) {
+         this.setState({ langChoose: true })
+      }
+   }
 
    handleMenuOpen(name) {
       return (event) => {
@@ -78,6 +88,15 @@ class HeadBar extends React.Component {
    }
 
    /**
+    * 选择语言
+    */
+   closeLangChoose = () => {
+      this.setState({ langChoose: false });
+      // 首次选完语言，再选键盘设置
+      this.setState({ openKeyboard: true })
+   }
+
+   /**
     * 排行榜
     */
    handleRank = (rankType) => {
@@ -98,6 +117,7 @@ class HeadBar extends React.Component {
       }
       this.setState({ anchorElLang: null });
    }
+
    /**
     * 打开个人信息
     */
@@ -122,6 +142,10 @@ class HeadBar extends React.Component {
       var width = this.props.width || '100%';
       return (
          <div className={classes.root}>
+            <LangChoose
+               open={this.state.langChoose}
+               close={this.closeLangChoose}
+            />
             <Setting
                open={this.state.openSetting}
                close={this.handleCloseSetting}

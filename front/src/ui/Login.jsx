@@ -15,7 +15,9 @@ import React from 'react';
 // import purple from 'material-ui/colors/purple';
 import { withStyles } from 'material-ui/styles';
 
-import http from '../util/http.js';
+import http from '../util/http';
+import lang from '../util/lang';
+import localStore from '../util/localStore';
 
 // var color = purple;
 
@@ -66,6 +68,13 @@ class Login extends React.Component {
       register: false,
    };
 
+   constructor(props) {
+      super(props);
+      if (localStore.get('lastLogin') === null) {
+         this.state.register = true;
+      }
+   }
+
    onKeyDown = (event) => {
       // 回车
       if (event.keyCode === 13) {
@@ -77,16 +86,22 @@ class Login extends React.Component {
       }
    }
 
-   onLoginClick = () => {
-      var id = this.name.value;
-      var pswd = this.password.value;
+   login(id, pswd) {
       http.post({ url: 'login', data: { id: id, pswd: pswd } }, (err, result) => {
          if (err) {
             alert(err);
+            // 可能从注册界面过来
+            this.setState({ register: false });
          } else {
             this.props.onLogin(result);
          }
       })
+   }
+
+   onLoginClick = () => {
+      var id = this.name.value;
+      var pswd = this.password.value;
+      this.login(id, pswd);
    }
 
    onLoginUIClick = () => {
@@ -102,14 +117,16 @@ class Login extends React.Component {
       var pswd = this.password.value;
       var pswd2 = this.password2.value;
       if (pswd !== pswd2) {
-         alert('两次密码不一致！')
+         alert('password not same！')
          return;
       }
       http.post({ url: 'register', data: { id: id, name: name, pswd: pswd } }, (err, result) => {
          if (err) {
             alert(err);
          } else {
-            this.setState({ register: false });
+            // 注册完直接登录
+            this.login(id, pswd);
+            // this.setState({ register: false });
          }
       })
    }
@@ -126,7 +143,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.name = instance}
-                     placeholder="ID"
+                     placeholder={lang.get('ID')}
                      className={classes.input}
                      inputProps={{
                         'aria-label': 'Description',
@@ -141,7 +158,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.password = instance}
-                     placeholder="Password"
+                     placeholder={lang.get('Password')}
                      type="password"
                      className={classes.input}
                      inputProps={{
@@ -156,7 +173,7 @@ class Login extends React.Component {
                onClick={this.onLoginClick}
                variant="raised"
                color="primary">
-               登录Login
+               {lang.get('Login')}
             </Button>
             <Button
                key="registerUIButton"
@@ -164,7 +181,7 @@ class Login extends React.Component {
                className={classes.button}
                onClick={this.onRegisterUIClick}
             >
-               注册Register
+               {lang.get('Register')}
             </Button>
          </FormControl>
       )
@@ -182,7 +199,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.id = instance}
-                     placeholder="ID"
+                     placeholder={lang.get('ID')}
                      className={classes.input}
                      inputProps={{
                         'aria-label': 'Description',
@@ -197,7 +214,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.name = instance}
-                     placeholder="Nickname"
+                     placeholder={lang.get('Nickname')}
                      className={classes.input}
                      inputProps={{
                         'aria-label': 'Description',
@@ -212,7 +229,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.password = instance}
-                     placeholder="Password"
+                     placeholder={lang.get('Password')}
                      type="password"
                      className={classes.input}
                      inputProps={{
@@ -228,7 +245,7 @@ class Login extends React.Component {
                   <Input
                      onKeyDown={this.onKeyDown}
                      inputRef={(instance) => this.password2 = instance}
-                     placeholder="Repeat Password"
+                     placeholder={lang.get('Repeat Password')}
                      type="password"
                      className={classes.input}
                      inputProps={{
@@ -243,7 +260,7 @@ class Login extends React.Component {
                onClick={this.onRegisterClick}
                variant="raised"
                color="primary">
-               注册Register
+               {lang.get('Register')}
             </Button>
             <Button
                key="registerUIButton"
@@ -251,7 +268,7 @@ class Login extends React.Component {
                className={classes.button}
                onClick={this.onLoginUIClick}
             >
-               登录Login
+               {lang.get('Login')}
             </Button>
          </FormControl>
       )

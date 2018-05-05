@@ -14,7 +14,7 @@ export default class TextureManager {
       this.baseSize = 0;
    }
    init(idx) {
-      idx = idx || 0;
+      idx = idx || 1;
       if (this.idx === idx) {
          return;
       }

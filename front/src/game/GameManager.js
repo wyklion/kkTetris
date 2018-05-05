@@ -6,7 +6,7 @@ import socket from '../socket/GameSocket';
 import RoomManager from './RoomManager';
 import UserManager from './UserManager';
 import ChatManager from './ChatManager';
-import BattleManager from './BattleManager';
+// import BattleManager from './BattleManager';
 import config from '../config';
 import lang from '../util/lang';
 import TetrisSound from '../sound/TetrisSound'
@@ -14,6 +14,7 @@ import TextureManager from '../render/TextureManager';
 import LayoutManager from '../render/LayoutManager';
 import Listeners from '../util/Listeners';
 import http from '../util/http';
+import localStore from '../util/localStore';
 import OperEnum from '../enum/OperEnum';
 
 /**
@@ -102,6 +103,8 @@ class GameManager {
    login() {
       gameManager.logined = true;
       var user = this.userManager.user;
+      // 本地记录
+      localStore.set('lastLogin', user.id);
       // 加载用户设置
       lang.init(user.langId);
       this.render.onChangeLang();
