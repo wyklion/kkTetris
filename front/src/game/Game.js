@@ -274,15 +274,19 @@ export default class Game {
                }
             }
          }
-         // this.tetris.renderer.renderData();
-         // 时间速度不能一直刷
-         this.dataTime += dt;
-         this.tetris.renderer.setPiece(data.count);
-         this.tetris.renderer.setLines(data.lines);
-         if (this.dataTime > this.dataInterval) {
-            this.dataTime = 0;
-            this.tetris.renderer.setTime(data.time);
-            this.tetris.renderer.setSpeed(data.count === 0 ? 0 : data.count / data.time);
+         if (this.single) {
+            // this.tetris.renderer.renderData();
+            // 时间速度不能一直刷
+            this.dataTime += dt;
+            this.tetris.renderer.setPiece(data.count);
+            this.tetris.renderer.setLines(data.lines);
+            if (this.dataTime > this.dataInterval) {
+               this.dataTime = 0;
+               this.tetris.renderer.setTime(data.time);
+               this.tetris.renderer.setSpeed(data.count === 0 ? 0 : data.count / data.time);
+            }
+         } else {
+            gameManager.render.battle.renderBattle();
          }
          this.checkOver();
       }

@@ -234,6 +234,10 @@ class GameManager {
     * 加载回数据再回放
     */
    loadReplay(replayId) {
+      alert('Can\'t replay in room');
+      if (this.game && this.game.gameType === 'battle') {
+         return;
+      }
       http.get({ url: 'replay', data: { id: replayId } }, (err, result) => {
          if (!err) {
             this.onLoadReplay(result);
@@ -279,10 +283,7 @@ class GameManager {
       this.reset();
       socket.joinRoom(roomId, watch, (err, result) => {
          if (!err) {
-            // this.battle = new BattleManager();
-            // this.battle.update();
-            this.main.onEnterRoom();
-            this.render.showOtherTetris(true);
+            this._refreshRoom(true, watch);
          }
       })
    }
@@ -294,31 +295,42 @@ class GameManager {
       this.reset();
       socket.exitRoom((err, result) => {
          if (!err) {
-            // this.battle.dispose();
-            this.main.onExitRoom();
-            this.render.showOtherTetris(false);
+            this._refreshRoom(false);
+         } else {
+            if (!this.roomManager.roomId) {
+               this._refreshRoom(false);
+            }
          }
       });
    }
+   _refreshRoom(enter, watch) {
+      if (enter) {
+         // this.battle = new BattleManager();
+         // this.battle.update();
+         this.main.onEnterRoom(watch);
+         this.render.showOtherTetris(true);
+      } else {
+         // this.battle.dispose();
+         this.main.onExitRoom();
+         this.render.battle.reset();
+         this.render.showOtherTetris(false);
+      }
+   }
    /**
-    * 自己准备，lobbyMenu按钮触发
+    * 自己准备，lobbyMenu按钮触发。
     */
    battleReady(ready) {
       socket.battle(OperEnum.ready, ready);
-      // 自己准备的时候游戏结束，界面清空
-      if (ready) {
-         this.clearMyTetris();
-      }
-      this.main.battleReady(ready);
+      // 主机准备的时候游戏结束，界面清空
+      this.roomManager.userReady({ userId: this.userId, data: ready });
    }
    /**
-    * 别人准备，服务器通知
+    * 别人准备，服务器通知，可能是主机。
     */
    onBattleReady(data) {
       console.log('user ready:', data.userId, data.data);
       // 房间状态变化
       this.roomManager.userReady(data);
-      this.clearOtherTetris();
       // // 对方准备状态
       // this.main.onBattleReady(data);
       // this.battleListener.execute('ready');

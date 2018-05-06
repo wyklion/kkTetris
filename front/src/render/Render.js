@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import TetrisRender from './TetrisRender';
+import BattleRender from './BattleRender';
 import config from '../config';
 
 export default class Render {
@@ -24,6 +25,7 @@ export default class Render {
       renderer.backgroundColor = 0x1E1E1E;
       this.initMainTetris();
       this.initOtherTetris();
+      this.initBattle();
    }
    get renderConfig() {
       if (this.vertical) {
@@ -33,8 +35,10 @@ export default class Render {
       }
    }
 
+   /**
+    * 主方块区
+    */
    initMainTetris() {
-      // 主方块区
       var container = new PIXI.Container();
       container.x = this.renderConfig.width / 2;
       this.stage.addChild(container);
@@ -43,8 +47,11 @@ export default class Render {
          container: container
       });
    }
+
+   /**
+    * 对战对手方块区
+    */
    initOtherTetris() {
-      // 对战对手方块区
       var container = new PIXI.Container();
       container.x = 85;
       container.y = 5;
@@ -57,10 +64,31 @@ export default class Render {
          displayNext: false,
       });
    }
+
+   /**
+    * 对战比分显示区
+    */
+   initBattle() {
+      var container = new PIXI.Container();
+      container.x = this.renderConfig.width / 2 + 32;
+      container.y = 280;
+      container.visible = this.showOther;
+      this.stage.addChild(container);
+      this.battle = new BattleRender({
+         render: this,
+         container: container,
+      });
+   }
+
+   /**
+    * 是否显示房间对手对战信息
+    */
    showOtherTetris(show) {
       this.showOther = show;
       this.other.container.visible = this.showOther;
+      this.battle.container.visible = this.showOther;
    }
+
    setVertical(vertical) {
       if (vertical !== this.vertical) {
          this.vertical = vertical;

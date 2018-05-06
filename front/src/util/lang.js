@@ -102,11 +102,12 @@ var table = {
    'Speed': ['速度'],
    'Pieces': ['块数'],
    'Lines': ['消行'],
-   'Remain': ['剩余'],
+   'Lines remain': ['剩余行数'],
    'Personal Best': ['个人最佳'],
    'Game Over': ['游戏结束'],
    'Waiting': ['等待中'],
    'Replay': ['回放'],
+   'Playing': ['游戏中'],
    // 对战
    'Ready': ['准备'],
    'Win': ['赢了'],

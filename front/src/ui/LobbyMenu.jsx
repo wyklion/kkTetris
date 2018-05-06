@@ -17,6 +17,7 @@ const styles = theme => ({
    },
    button: {
       minWidth: '30px',
+      width: '60px',
       marginBottom: '5px',
    },
 })
@@ -45,24 +46,24 @@ class LobbyMenu extends React.Component {
       if (vertical || playState !== 'battle') {
          return null;
       }
+      var watch = gameManager.roomManager.watch;
       var button = null;
-      var quit = null;
       if (battleState === 'none') {
          button = <Button variant="raised" color="primary" className={classes.button} title={lang.get('Ready')} onClick={this.onReady}>
             {lang.get('Ready')}
-         </Button>
-         quit = <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Quit')} onClick={this.onQuitRoom}>
-            {lang.get('Quit')}
          </Button>
       } else if (battleState === 'ready') {
          button = <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Cancel')} onClick={this.onCancel}>
             {lang.get('Cancel')}
          </Button>
       }
+      var quit = <Button variant="raised" color="secondary" className={classes.button} title={lang.get('Quit')} onClick={this.onQuitRoom}>
+         {lang.get('Quit')}
+      </Button>
       return (
          <div>
-            {button}
-            {quit}
+            {!watch ? button : null}
+            {battleState === 'none' || watch ? quit : null}
          </div>
       )
       // if (showLobby) {

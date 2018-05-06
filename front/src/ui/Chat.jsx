@@ -75,6 +75,9 @@ const styles = theme => ({
       width: 'calc(100% - 16px)',
       fontSize: '14px'
    },
+   userName: {
+      fontWeight: 'bold',
+   }
 });
 
 class Chat extends React.Component {
@@ -242,7 +245,7 @@ class Chat extends React.Component {
       }
       // 用户聊天，大厅房间一样
       else {
-         return <div key={data.idx} className={classes.message}><span>{time}</span><span>{data.user}:</span><span>{decodeURI(data.msg)}</span></div>
+         return <div key={data.idx} className={classes.message}><span>{time}</span><span className={classes.userName}>{data.user}</span><span>{':' + decodeURI(data.msg)}</span></div>
       }
    }
 

@@ -188,18 +188,17 @@ class GameSocket {
          gameManager.startBattle(data.seed);
       } else if (data.oper === OperEnum.ready) {
          gameManager.onBattleReady(data);
+      } else if (data.oper === OperEnum.gameover) {
+         var game = gameManager.game;
+         if (game) {
+            game.onGameOver(data);
+         } else {
+            gameManager.roomManager.battleEnd(data);
+         }
       } else {
          var game = gameManager.game;
-         if (!game) return;
-         switch (data.oper) {
-            case OperEnum.gameover:
-               game.onGameOver(data);
-               break;
-            case OperEnum.dead:
-               break;
-            default:
-               game.onOperate(data)
-               break;
+         if (game) {
+            game.onOperate(data)
          }
       }
       // if (main.game) {

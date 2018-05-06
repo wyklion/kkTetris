@@ -22,12 +22,13 @@ TabContainer.propTypes = {
 
 const styles = theme => ({
    root: {
-      width: '50%',
-      height: '60%',
       position: 'absolute',
+      top: '1.4%',
+      left: '16.6%',
+      width: '62.2%',
+      height: '85.7%',
       userSelect: 'none',
       display: 'flex',
-      // background: '#888888',
    },
    info: {
       margin: 'auto',
@@ -40,7 +41,7 @@ const styles = theme => ({
    }
 });
 
-class Other extends React.Component {
+class Host extends React.Component {
    state = {
       userId: null,
       ready: false,
@@ -62,8 +63,8 @@ class Other extends React.Component {
    onUpdateBattle = () => {
       var room = gameManager.roomManager.room;
       if (!room) return;
-      this.setState({ userId: gameManager.roomManager.otherId, ready: gameManager.roomManager.otherReady });
-      console.log(gameManager.roomManager.otherId, gameManager.roomManager.otherReady);
+      this.setState({ userId: gameManager.roomManager.hostId, ready: gameManager.roomManager.hostReady });
+      // console.log(gameManager.roomManager.hostId, gameManager.roomManager.hostReady);
    }
 
    render() {
@@ -98,9 +99,9 @@ class Other extends React.Component {
    }
 }
 
-Other.propTypes = {
+Host.propTypes = {
    classes: PropTypes.object.isRequired,
    theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(Other);
+export default withStyles(styles, { withTheme: true })(Host);

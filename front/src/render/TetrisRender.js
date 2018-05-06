@@ -43,6 +43,10 @@ var bgLineColor = 0x333333;
 export default class TetrisRender {
    constructor(options) {
       this.textureManager = gameManager.textureManager;
+
+      // 数据区显示有区别，默认单机
+      this.battle = false;
+
       this.scale = 1;
       this.render = options.render;
       this.container = options.container;
@@ -60,12 +64,23 @@ export default class TetrisRender {
       //    this.drawData.colorBlock[i] = [];
       //}
    }
+   /**
+    * 绑定逻辑方块
+    */
    setTetris(tetris) {
       this.tetris = tetris;
       if (tetris) {
          this.tetris.renderer = this;
          if (this.cellRender) {
             this.cellRender.setTetris(tetris);
+         }
+         // 数据芡切换显示内容
+         if (tetris.game.gameType === 'battle' && !this.battle) {
+            this.battle = true;
+            this.initData();
+         } else if (tetris.game.gameType !== 'battle' && this.battle) {
+            this.battle = false;
+            this.initData();
          }
       }
    }
@@ -105,7 +120,7 @@ export default class TetrisRender {
       }
       if (this.specialDataLabel) {
          // 剩余label
-         this.specialDataLabel.text = lang.get('Remain');
+         this.specialDataLabel.text = lang.get('Lines remain');
       }
       if (this.readyText) {
          // 准备开始
@@ -264,7 +279,7 @@ export default class TetrisRender {
             label: lang.get('Lines'),
             value: '0',
          }
-      ]
+      ];
       var labelStyle = {
          fontWeight: 'bold',
          fontSize: 12 * 2,
@@ -310,7 +325,7 @@ export default class TetrisRender {
 
       var labelStyle = {
          fontWeight: 'bold',
-         fontSize: 12 * 2,
+         fontSize: 10 * 2,
          fontFamily: 'Arial',
          align: 'center',
          fill: '#777777',
@@ -322,7 +337,7 @@ export default class TetrisRender {
          align: 'center',
          fill: '#DDDDDD',
       };
-      var label = this.specialDataLabel = new PIXI.Text(lang.get('Remain'), labelStyle);
+      var label = this.specialDataLabel = new PIXI.Text(lang.get('Lines remain'), labelStyle);
       label.anchor.set(0.5, 0.5);
       label.scale.set(0.6, 0.6);
       sa.addChild(label);
@@ -453,8 +468,12 @@ export default class TetrisRender {
     * 数据
     */
    renderData() {
-      if (!this.displayNext)
+      if (!this.displayNext) {
          return;
+      }
+      if (this.battle) {
+         return;
+      }
       this.dataArea.visible = true;
       var tetris = this.tetris;
       var hostData = tetris.playData;
@@ -470,6 +489,7 @@ export default class TetrisRender {
          this.render.render();
       }
    }
+
    setTime(time) {
       this.setText('time', time.toFixed(2));
       if (!config.fps60) {

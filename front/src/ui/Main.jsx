@@ -12,6 +12,7 @@ import SingleMenu from './SingleMenu';
 import Result from './Result';
 import Lobby from './Lobby';
 import Chat from './Chat';
+import Host from './Host';
 import Other from './Other';
 
 const styles = theme => ({
@@ -192,15 +193,15 @@ class Main extends React.Component {
    /**
     * 创建房间成功后调用
     */
-   onEnterRoom = () => {
-      this.setState({ playState: 'battle', showLobby: false });
+   onEnterRoom = (watch) => {
+      this.setState({ playState: 'battle', showLobby: false, showResult: false });
    }
 
    /**
     * 退出房间
     */
    onExitRoom = () => {
-      this.setState({ playState: 'none', showLobby: true, showResult: false });
+      this.setState({ playState: 'none', battleState: 'none', showLobby: true, showResult: false });
    }
 
    /**
@@ -245,7 +246,7 @@ class Main extends React.Component {
       return (
          <div ref={instance => this.mainDiv = instance} className={hidden ? classes.hidden : classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
-               <Other ref='otherRef' show={showOther} />
+               <Other show={showOther} />
                <Lobby ref='lobbyRef' show={!vertical && showLobby} />
                <Chat ref='chatRef' show={!vertical && showChat} playState={playState} />
                <div className={classes.lobbyMenu}>
@@ -256,6 +257,7 @@ class Main extends React.Component {
                   />
                </div>
                <div ref='singleDiv' className={classes.singleDiv}>
+                  <Host show={showOther} />
                   <div className={classes.result}>
                      <Result
                         show={showResult}

@@ -3,6 +3,37 @@ var Tools = require('./Tools');
 var OPERTABLE = require('./OperTable');
 var OperEnum = require('./enum/OperEnum');
 
+// class Score {
+//    constructor() {
+//       this.score = [0, 0];
+//    }
+//    init(p1, p2) {
+//       this.idx = { p1: 0, p2: 1 };
+//       this.score = [0, 0];
+//    }
+//    addScore(player) {
+//       var idx = this.idx[player];
+//       if (idx === undefined) {
+//          return;
+//       }
+//       var oldScore = this.score[idx];
+//       this.score[idx] = oldScore + 1;
+//    }
+// }
+
+// class Room {
+//    constructor(idx, user){
+//      this.id = idx,
+//       this.players=[user];
+//       this.watchers=[];
+//       this.score= new Score();
+//       this.ready= {};
+//    }
+//    addPlayer(player){
+//       this.players.push(player);
+//    }
+// }
+
 class RoomManager {
    constructor() {
       this.rooms = {};
@@ -20,6 +51,7 @@ class RoomManager {
          id: idx,
          players: [userId],
          watchers: [],
+         score: {},
          ready: {},
       };
       return idx;
@@ -52,6 +84,7 @@ class RoomManager {
          var idx = room.players.indexOf(userId);
          if (idx > -1) {
             room.players.splice(idx, 1);
+            room.score = {};
             room.ready = {};
             if (room.players.length === 0) {
                delete this.rooms[roomId];
@@ -83,6 +116,7 @@ class RoomManager {
       var watchIdx = room.watchers.indexOf(userId);
       if (idx > -1) {
          room.players.splice(idx, 1);
+         room.score = {};
          room.ready = {};
          // socket.broadcast.to("room" + roomId).emit('roomInfo', { room: room, userId: userId, join: false, watch: false });
          if (room.playing) {
@@ -113,6 +147,10 @@ class RoomManager {
       if (gameSocket.roomId === null) return;
       var room = this.rooms[gameSocket.roomId];
       if (!room) return;
+      // 非正常操作。
+      if (room.players.indexOf(gameSocket.userId) === -1) {
+         return;
+      }
       // 准备状态
       room.ready[gameSocket.userId] = ready;
       var otherUser = this.getOtherUserId(room, gameSocket.userId);
@@ -149,6 +187,12 @@ class RoomManager {
       if (room.win) return;
       var otherUser = this.getOtherUserId(room, gameSocket.userId);
       room.win = otherUser;
+      // 记比分      
+      if (!room.score[otherUser]) {
+         room.score[otherUser] = 1;
+      } else {
+         room.score[otherUser] = room.score[otherUser] + 1;
+      }
       gameSocket.io.to("room" + room.id).emit('battle', { oper: OperEnum.gameover, winner: otherUser });
       // console.log("room", gameSocket.roomId, "user", gameSocket.userId, "lose", otherUser, "win");
       // 数据暂不统计
