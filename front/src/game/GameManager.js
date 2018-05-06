@@ -234,8 +234,8 @@ class GameManager {
     * 加载回数据再回放
     */
    loadReplay(replayId) {
-      alert('Can\'t replay in room');
       if (this.game && this.game.gameType === 'battle') {
+         alert('Can\'t replay in room');
          return;
       }
       http.get({ url: 'replay', data: { id: replayId } }, (err, result) => {
