@@ -163,6 +163,7 @@ class Result extends React.Component {
          best = gameManager.user.dig18Best;
          if (data.time < best) {
             best = data.time;
+            gameManager.user.dig18Best = best;
          }
       }
       return (
