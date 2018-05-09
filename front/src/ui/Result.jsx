@@ -119,6 +119,7 @@ class Result extends React.Component {
       var best = gameManager.user.speed40Best;
       if (data.time < best) {
          best = data.time;
+         gameManager.user.speed40Best = best;
       }
       return (
          <Paper className={classes.paper} elevation={4}>
