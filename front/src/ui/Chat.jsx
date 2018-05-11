@@ -245,7 +245,13 @@ class Chat extends React.Component {
       }
       // 用户聊天，大厅房间一样
       else {
-         return <div key={data.idx} className={classes.message}><span>{time}</span><span className={classes.userName}>{data.user}</span><span>{':' + decodeURI(data.msg)}</span></div>
+         var msg;
+         try {
+            msg = decodeURI(data.msg);
+         } catch (e) {
+            msg = data.msg;
+         }
+         return <div key={data.idx} className={classes.message}><span>{time}</span><span className={classes.userName}>{data.user}</span><span>{':' + msg}</span></div>
       }
    }
 

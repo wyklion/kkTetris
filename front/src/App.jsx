@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { MuiThemeProvider } from 'material-ui/styles';
+import Typography from 'material-ui/Typography';
 import 'typeface-roboto'
 // import Button from 'material-ui/Button';
 // import teal from 'material-ui/colors/teal';
@@ -24,6 +25,9 @@ const styles = {
       // backgroundColor: color[900],
       width: '100%',
       height: '100%',
+   },
+   note: {
+      textAlign: 'center',
    }
 }
 class App extends React.Component {
@@ -130,6 +134,7 @@ class App extends React.Component {
    }
 
    render() {
+      const { classes } = this.props;
       var state = this.state;
       var checked = state.checked;
       var logined = state.logined;
@@ -142,6 +147,15 @@ class App extends React.Component {
       if (!logined) {
          ui = (
             <div className={styles.bg}>
+               <Typography variant="subheading" className={classes.note}>
+                  Sorry guys, the server has been hacked on May 10, 2018.
+                  The database is cleared.
+                  So maybe you need to register a new account.
+                  The work of this game is almost done now. Battle is ok. I dont know what to improve. Bye~
+                  <div>
+                     --2018.5.11 wyklion
+                  </div>
+               </Typography>
                <Login onLogin={this.onLogin} />
             </div>
          )
