@@ -17,6 +17,7 @@ var table = {
    'Sound': ['音效'],
    'Leaderboard': ['排行榜'],
    'Profile': ['个人信息'],
+   'About': ['关于'],
    'Logout': ['退出登录'],
    // 设置
    'Type1': ['类型1'],

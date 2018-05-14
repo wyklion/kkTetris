@@ -15,6 +15,7 @@ import http from './util/http';
 import Main from './ui/Main';
 import Profile from './ui/Profile';
 import Rank from './ui/Rank';
+import About from './ui/About';
 import theme from './ui/Theme';
 import gameManager from './game/GameManager';
 import socket from './socket/GameSocket';
@@ -36,6 +37,7 @@ class App extends React.Component {
       logined: false, // 是否登录
       profile: null, // 个人信息页面
       rank: null, // 排行榜
+      about: null, // 关于
       width: null, // 内容宽
    }
 
@@ -113,20 +115,30 @@ class App extends React.Component {
     * 玩家信息页面
     */
    onProfile = (userId) => {
-      this.setState({ profile: userId, rank: null });
+      this.setState({ profile: userId, rank: null, about: null });
    }
    onCloseProfile = () => {
-      this.setState({ profile: null, rank: null });
+      this.setState({ profile: null, rank: null, about: null });
    }
 
    /**
     * 排行榜
     */
    onRank = (rankType) => {
-      this.setState({ rank: rankType, profile: null });
+      this.setState({ rank: rankType, profile: null, about: null });
    }
    onCloseRank = () => {
-      this.setState({ rank: null, profile: null });
+      this.setState({ rank: null, profile: null, about: null });
+   }
+
+   /**
+    * 关于
+    */
+   onAbout = () => {
+      this.setState({ about: true, profile: null, rank: null });
+   }
+   onCloseAbout = () => {
+      this.setState({ about: null, rank: null, profile: null });
    }
 
    onResize = (width) => {
@@ -163,9 +175,10 @@ class App extends React.Component {
          ui = (
             <div className='App'>
                <HeadBar onLogout={this.onLogout} width={state.width} />
-               <Main hidden={state.profile || state.rank} onResize={this.onResize} />
+               <Main hidden={state.profile || state.rank || state.about} onResize={this.onResize} />
                {state.profile && <Profile userId={state.profile} onReturn={this.onCloseProfile} />}
                {state.rank && <Rank rankType={state.rank} onReturn={this.onCloseRank} />}
+               {state.about && <About onReturn={this.onCloseAbout} />}
             </div>
          )
       }

@@ -125,7 +125,8 @@ class Chat extends React.Component {
    }
 
    scrollToBottom() {
-      this.chatContentRef.scrollTop = this.chatContentRef.scrollHeight;
+      if (this.chatContentRef)
+         this.chatContentRef.scrollTop = this.chatContentRef.scrollHeight;
    }
 
    handleChangeTab = (event, value) => {

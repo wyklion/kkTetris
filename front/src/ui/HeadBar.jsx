@@ -88,6 +88,14 @@ class HeadBar extends React.Component {
    }
 
    /**
+    * 关于
+    */
+   handleAbout = () => {
+      this.setState({ anchorElSetting: null });
+      gameManager.app.onAbout();
+   }
+
+   /**
     * 选择语言
     */
    closeLangChoose = () => {
@@ -183,6 +191,7 @@ class HeadBar extends React.Component {
                   >
                      <MenuItem onClick={this.handleSetting}>{lang.get('Setting')}</MenuItem>
                      <MenuItem onClick={this.handleKeyboardSetting}>{lang.get('Keyboard Setting')}</MenuItem>
+                     <MenuItem onClick={this.handleAbout}>{lang.get('About')}</MenuItem>
                   </Menu>
 
                   <Button
