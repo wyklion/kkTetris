@@ -58,6 +58,7 @@ class About extends React.Component {
             <Typography variant="display1" className={classes.title}>
                <p>Discord group: https://discord.gg/QTPUCGc</p>
                <p>QQ群: 761836300</p>
+               <p>Ctrl+V is disabled... Use contextmenu to copy...</p>
             </Typography>
          </div>
       );
