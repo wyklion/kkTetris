@@ -1,4 +1,4 @@
-# http://kktetris.com
+# http://kktetris.top
 
 # centos
 ### nodejs
