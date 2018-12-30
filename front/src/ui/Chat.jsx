@@ -178,7 +178,7 @@ class Chat extends React.Component {
 
    replay = (replayId) => {
       return () => {
-         gameManager.loadReplay(replayId);
+         gameManager.app.onReplay(replayId);
       }
    }
 

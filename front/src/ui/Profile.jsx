@@ -62,14 +62,15 @@ class Profile extends React.Component {
    };
 
    componentDidMount() {
-      http.get({ url: 'userInfo', data: { id: this.props.userId } }, (err, result) => {
+      var userId = this.props.match.params.userId;
+      http.get({ url: 'userInfo', data: { id: userId } }, (err, result) => {
          if (err) {
             alert(err);
          } else {
             this.setState({ user: result });
          }
       })
-      http.get({ url: 'userReplay', data: { id: this.props.userId } }, (err, result) => {
+      http.get({ url: 'userReplay', data: { id: userId } }, (err, result) => {
          if (err) {
             alert(err);
          } else {
@@ -78,17 +79,12 @@ class Profile extends React.Component {
       })
    }
 
-   onReturnClick = () => {
-      this.props.onReturn();
-   }
-
    /**
     * 重播
     */
    onReplay = (replayId) => {
       return () => {
-         gameManager.loadReplay(replayId);
-         this.props.onReturn();
+         gameManager.app.onReplay(replayId);
       }
    }
 
@@ -175,7 +171,7 @@ class Profile extends React.Component {
                      size="large"
                      variant="raised"
                      className={classes.button}
-                     onClick={this.onReturnClick}
+                     onClick={gameManager.app.home}
                   >
                      {lang.get('Return')}
                   </Button>

@@ -20,7 +20,6 @@ import gameManager from '../game/GameManager';
 import lang from '../util/lang';
 import localStore from '../util/localStore';
 
-
 const styles = {
    root: {
       flexGrow: 1,
@@ -110,7 +109,11 @@ class HeadBar extends React.Component {
    handleRank = (rankType) => {
       return () => {
          this.setState({ anchorElRank: null });
-         gameManager.app.onRank(rankType);
+         if (rankType === 'speed40') {
+            gameManager.app.onRank('sprint40');
+         } else if (rankType === 'dig18') {
+            gameManager.app.onRank('dig18');
+         }
       }
    }
 

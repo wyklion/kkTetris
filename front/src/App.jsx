@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import { MuiThemeProvider } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import 'typeface-roboto'
 // import Button from 'material-ui/Button';
@@ -16,10 +15,11 @@ import Main from './ui/Main';
 import Profile from './ui/Profile';
 import Rank from './ui/Rank';
 import About from './ui/About';
-import theme from './ui/Theme';
 import gameManager from './game/GameManager';
 import socket from './socket/GameSocket';
 // import lang from './util/lang';
+
+import { withRouter, Route } from "react-router-dom";
 
 
 const styles = {
@@ -113,33 +113,45 @@ class App extends React.Component {
    }
 
    /**
+    * 页面跳转
+    */
+   linkTo = (path) => {
+      this.props.history.push(path);
+   }
+
+   /**
+    * 跳到主页
+    */
+   home = () => {
+      this.linkTo('/');
+   }
+
+   /**
+    * 排行页面
+    */
+   onRank = (rankType) => {
+      this.linkTo('/rank/' + rankType);
+   }
+
+   /**
     * 玩家信息页面
     */
    onProfile = (userId) => {
-      this.setState({ profile: userId, rank: null, about: null });
-   }
-   onCloseProfile = () => {
-      this.setState({ profile: null, rank: null, about: null });
+      this.linkTo('/profile/' + userId);
    }
 
    /**
-    * 排行榜
+    * 回放页面
     */
-   onRank = (rankType) => {
-      this.setState({ rank: rankType, profile: null, about: null });
-   }
-   onCloseRank = () => {
-      this.setState({ rank: null, profile: null, about: null });
+   onReplay = (replayId) => {
+      this.linkTo('/replay/' + replayId);
    }
 
    /**
-    * 关于
+    * 关于页面
     */
    onAbout = () => {
-      this.setState({ about: true, profile: null, rank: null });
-   }
-   onCloseAbout = () => {
-      this.setState({ about: null, rank: null, profile: null });
+      this.linkTo('/about');
    }
 
    onResize = (width) => {
@@ -171,25 +183,23 @@ class App extends React.Component {
          )
       } else {
          ui = (
-            <div className='App'>
-               <HeadBar onLogout={this.onLogout} width={state.width} />
-               <Main hidden={state.profile || state.rank || state.about} onResize={this.onResize} />
-               {state.profile && <Profile userId={state.profile} onReturn={this.onCloseProfile} />}
-               {state.rank && <Rank rankType={state.rank} onReturn={this.onCloseRank} />}
-               {state.about && <About onReturn={this.onCloseAbout} />}
-            </div>
+            < div className='App' >
+               <HeadBar onLogout={this.onLogout} width={this.state.width} />
+               <Route exact path="/" component={Main} />
+               <Route path="/rank/:rankType" component={Rank} />
+               <Route path="/profile/:userId" component={Profile} />
+               <Route path="/replay/:replayId" component={Main} />
+               <Route path="/about" component={About} />
+            </div >
          )
       }
-      return (
-         <MuiThemeProvider theme={theme}>
-            {ui}
-         </MuiThemeProvider>
-      );
+      return ui;
    }
 }
+
 
 App.propTypes = {
    classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(App);
+export default withRouter(withStyles(styles)(App));

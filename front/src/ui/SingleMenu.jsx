@@ -95,7 +95,16 @@ class SingleMenu extends React.Component {
    }
 
    onEndGameClick = () => {
-      this.props.onEndGame();
+      if (this.props.playState === 'replay') {
+         gameManager.reset();
+         gameManager.app.home();
+      } else {
+         this.props.onEndGame();
+      }
+   }
+
+   onReplay = () => {
+      gameManager.main.onReplayGame();
    }
 
    makeNormalButton() {
@@ -137,6 +146,9 @@ class SingleMenu extends React.Component {
       var classes = this.props.classes;
       return (
          <div>
+            <Button variant="raised" color="primary" title={lang.get('Playback')} className={classes.labelButton} onClick={this.onReplay}>
+               {lang.get('Playback')}
+            </Button>
             <Button variant="raised" color="secondary" title={lang.get('End') + ' (ESC)'} className={classes.labelButton} onClick={this.onEndGameClick}>
                {lang.get('End') + '(ESC)'}
             </Button>

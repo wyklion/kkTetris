@@ -11,7 +11,7 @@ import Button from 'material-ui/Button';
 import gameManager from '../game/GameManager.js';
 import lang from '../util/lang';
 // import keyName from '../util/keyName';
-import Tools from '../util/Tools';
+// import Tools from '../util/Tools';
 
 const styles = theme => ({
    root: {
@@ -34,13 +34,8 @@ class About extends React.Component {
    componentDidMount() {
    }
 
-   onReturnClick = () => {
-      this.props.onReturn();
-   }
-
    render() {
       const { classes } = this.props;
-      var { user, replays } = this.state;
       return (
          <div className={classes.root}>
             <Button
@@ -48,7 +43,7 @@ class About extends React.Component {
                size="large"
                variant="raised"
                className={classes.button}
-               onClick={this.onReturnClick}
+               onClick={gameManager.app.home}
             >
                {lang.get('Return')}
             </Button>

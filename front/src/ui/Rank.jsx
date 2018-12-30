@@ -46,17 +46,11 @@ class Rank extends React.Component {
    };
 
    componentDidMount() {
-      this.getRankData(this.props.rankType);
-   }
-
-   componentWillUpdate(nextProps) {
-      if (nextProps.rankType === this.props.rankType) {
-         return;
+      var rankType = this.props.match.params.rankType;
+      // 转回我内部代号
+      if (rankType === 'sprint40') {
+         rankType = 'speed40';
       }
-      this.getRankData(nextProps.rankType);
-   }
-
-   getRankData(rankType) {
       http.get({ url: 'rank', data: { type: rankType } }, (err, result) => {
          if (err) {
             alert(err);
@@ -66,17 +60,12 @@ class Rank extends React.Component {
       })
    }
 
-   onReturnClick = () => {
-      this.props.onReturn();
-   }
-
    /**
     * 重播
     */
    onReplay = (replayId) => {
       return () => {
-         gameManager.loadReplay(replayId);
-         this.props.onReturn();
+         gameManager.app.onReplay(replayId);
       }
    }
 
@@ -87,7 +76,8 @@ class Rank extends React.Component {
    }
 
    makeSpeedTable() {
-      const { classes, rankType } = this.props;
+      const { classes } = this.props;
+      var rankType = this.props.match.params.rankType;
       var rank = this.state.rank;
       var rows = [];
       for (var i = 0; i < rank.length; i++) {
@@ -137,7 +127,8 @@ class Rank extends React.Component {
    }
 
    makeDigTable() {
-      const { classes, rankType } = this.props;
+      const { classes } = this.props;
+      var rankType = this.props.match.params.rankType;
       var rank = this.state.rank;
       var rows = [];
       for (var i = 0; i < rank.length; i++) {
@@ -187,14 +178,15 @@ class Rank extends React.Component {
    }
 
    render() {
-      const { classes, rankType } = this.props;
+      const { classes } = this.props;
+      var rankType = this.props.match.params.rankType;
       const { rank } = this.state;
       if (!rank) {
          return null;
       }
       var table;
       var title;
-      if (rankType === 'speed40') {
+      if (rankType === 'sprint40') {
          table = this.makeSpeedTable();
          title = lang.get('Sprint 40L');
       } else if (rankType === 'dig18') {
@@ -209,7 +201,7 @@ class Rank extends React.Component {
                size="large"
                variant="raised"
                className={classes.button}
-               onClick={this.onReturnClick}
+               onClick={gameManager.app.home}
             >
                {lang.get('Return')}
             </Button>

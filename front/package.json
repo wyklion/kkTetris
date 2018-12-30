@@ -1,31 +1,38 @@
 {
-   "name": "kktetris_front",
-   "version": "1.0.0",
-   "description": "kk tetris front",
-   "dependencies": {
-      "material-ui": "^1.0.0-beta.41",
-      "material-ui-icons": "^1.0.0-beta.36",
-      "pixi.js": "^4.7.3",
-      "react": "^16.3.1",
-      "react-dom": "^16.3.1",
-      "react-scripts": "1.1.4",
-      "socket.io": "^2.1.0",
-      "typeface-roboto": "0.0.54"
-   },
-   "devDependencies": {},
-   "scripts": {
-      "start": "set PORT=80 && react-scripts start",
-      "build": "react-scripts build",
-      "test": "react-scripts test --env=jsdom",
-      "eject": "react-scripts eject"
-   },
-   "keywords": [
-      "tetris"
-   ],
-   "repository": {
-      "type": "git",
-      "url": "git://github.com/wyklion/kktetris.git"
-   },
-   "author": "kk",
-   "license": "ISC"
+  "name": "kktetris_front",
+  "version": "1.0.0",
+  "description": "kk tetris front",
+  "dependencies": {
+    "material-ui": "^1.0.0-beta.41",
+    "material-ui-icons": "^1.0.0-beta.36",
+    "pixi.js": "^4.8.4",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "2.1.2",
+    "socket.io": "^2.2.0",
+    "typeface-roboto": "0.0.54"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "set PORT=80 && react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "keywords": [
+    "tetris"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wyklion/kktetris.git"
+  },
+  "author": "kk",
+  "license": "ISC",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

@@ -1,3 +1,4 @@
+import config from '../config';
 
 export default class Tools {
    static cloneObject(object) {
@@ -25,5 +26,27 @@ export default class Tools {
          }
       }
       return fmt;
+   }
+   static getFitSize(w, h) {
+      var width, height;
+      var renderWidth, renderHeight, scale;
+      // 横屏
+      if (w > h) {
+         // console.log(w, h);
+         renderWidth = config.render.width;
+         renderHeight = config.render.height;
+         scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
+         width = Math.round(renderWidth * scale);
+         height = Math.round(renderHeight * scale);
+      }
+      // 竖屏
+      else {
+         renderWidth = config.renderSingle.width;
+         renderHeight = config.renderSingle.height;
+         scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
+         width = Math.round(renderWidth * scale);
+         height = Math.round(renderHeight * scale);
+      }
+      return { width, height };
    }
 }

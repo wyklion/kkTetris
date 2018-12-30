@@ -96,6 +96,7 @@ var table = {
    'Dig': ['挖掘'],
    'Restart': ['重来'],
    'End': ['结束'],
+   'Playback': ['重播'],
    // 游戏
    'READY': ['准备'],
    'GO': ['开始'],

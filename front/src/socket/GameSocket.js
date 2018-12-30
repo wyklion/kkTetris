@@ -189,16 +189,14 @@ class GameSocket {
       } else if (data.oper === OperEnum.ready) {
          gameManager.onBattleReady(data);
       } else if (data.oper === OperEnum.gameover) {
-         var game = gameManager.game;
-         if (game) {
-            game.onGameOver(data);
+         if (gameManager.game) {
+            gameManager.game.onGameOver(data);
          } else {
             gameManager.roomManager.battleEnd(data);
          }
       } else {
-         var game = gameManager.game;
-         if (game) {
-            game.onOperate(data)
+         if (gameManager.game) {
+            gameManager.game.onOperate(data)
          }
       }
       // if (main.game) {

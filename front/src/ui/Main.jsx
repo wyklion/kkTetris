@@ -6,7 +6,7 @@ import { withStyles } from 'material-ui/styles';
 // import Button from 'material-ui/Button';
 // import Tetris from '../logic/Tetris';
 import gameManager from '../game/GameManager';
-import config from '../config';
+// import config from '../config';
 import LobbyMenu from './LobbyMenu';
 import SingleMenu from './SingleMenu';
 import Result from './Result';
@@ -14,6 +14,7 @@ import Lobby from './Lobby';
 import Chat from './Chat';
 import Host from './Host';
 import Other from './Other';
+import Tools from '../util/Tools';
 
 const styles = theme => ({
    root: {
@@ -69,6 +70,7 @@ const styles = theme => ({
 });
 
 class Main extends React.Component {
+   replayId = null;
    state = {
       vertical: false,
       // 对战可隐藏大厅
@@ -94,9 +96,29 @@ class Main extends React.Component {
       this.onResize();
    }
 
+   componentWillReceiveProps(nextProps) {
+      // 回放
+      if (!nextProps.match.params) return;
+      var replayId = nextProps.match.params.replayId;
+      this.initReplay(replayId);
+   }
+
    componentWillUnmount() {
       window.removeEventListener('resize', this.onResize);
+      gameManager.reset();
       gameManager.render.detach();
+   }
+
+   /**
+    * 回放
+    */
+   initReplay(replayId) {
+      // console.log(replayId);
+      if (replayId && this.replayId !== replayId) {
+         this.replayId = replayId;
+         this.onLoadReplay();
+         gameManager.loadReplay(this.replayId);
+      }
    }
 
    /**
@@ -109,37 +131,27 @@ class Main extends React.Component {
       var singleDiv = this.refs.singleDiv;
       var w = mainDiv.clientWidth;
       var h = mainDiv.clientHeight;
-      var width, height;
-      var renderWidth, renderHeight, scale;
-      // 横屏
+      var vertical = h >= w;
       if (w > h) {
-         gameManager.render.setVertical(false);
-         // console.log(w, h);
-         renderWidth = config.render.width;
-         renderHeight = config.render.height;
-         scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
-         width = Math.round(renderWidth * scale);
-         height = Math.round(renderHeight * scale);
+         // 横屏
          singleDiv.style.width = '50%';
          singleDiv.style.left = '50%';
       }
-      // 竖屏
       else {
-         gameManager.render.setVertical(true);
-         renderWidth = config.renderSingle.width;
-         renderHeight = config.renderSingle.height;
-         scale = h / w > renderHeight / renderWidth ? w / renderWidth : h / renderHeight;
-         width = Math.round(renderWidth * scale);
-         height = Math.round(renderHeight * scale);
+         // 竖屏
          singleDiv.style.width = '100%';
          singleDiv.style.left = '0';
       }
+      // 算出合适长宽
+      var { width, height } = Tools.getFitSize(w, h);
+      gameManager.render.setVertical(vertical);
       div.style.width = width + 'px';
       div.style.height = height + 'px';
       div.style.marginLeft = -width / 2 + 'px';
       gameManager.render.onResize();
-      this.setState({ vertical: h >= w });
-      this.props.onResize(width);
+      this.setState({ vertical: vertical });
+      // app重算hearder宽
+      gameManager.app.onResize();
    }
 
    /**
@@ -186,7 +198,7 @@ class Main extends React.Component {
     */
    onEndGame = () => {
       console.log('onEndGame');
-      gameManager.endGame();
+      gameManager.reset();
       this.setState({ playState: 'none', showResult: false });
    }
 
@@ -240,11 +252,11 @@ class Main extends React.Component {
    }
 
    render() {
-      const { classes, hidden } = this.props;
+      const { classes } = this.props;
       const { playState, battleState, vertical, showLobby, showChat, showResult, resultData } = this.state;
       var showOther = !vertical && !showLobby && playState === 'battle' && battleState !== 'playing';
       return (
-         <div ref={instance => this.mainDiv = instance} className={hidden ? classes.hidden : classes.main}>
+         <div ref={instance => this.mainDiv = instance} className={classes.main}>
             <div ref='canvasDiv' className={classes.canvas}>
                <Other show={showOther} />
                <Lobby ref='lobbyRef' show={!vertical && showLobby} />

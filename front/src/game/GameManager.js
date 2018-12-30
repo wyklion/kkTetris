@@ -233,7 +233,7 @@ class GameManager {
    /**
     * 加载回数据再回放
     */
-   loadReplay(replayId) {
+   loadReplay(replayId, callback) {
       if (this.game && this.game.gameType === 'battle') {
          alert('Can\'t replay in room');
          return;
@@ -241,6 +241,9 @@ class GameManager {
       http.get({ url: 'replay', data: { id: replayId } }, (err, result) => {
          if (!err) {
             this.onLoadReplay(result);
+            if (callback) {
+               callback();
+            }
          }
       })
    }
@@ -259,7 +262,6 @@ class GameManager {
          game.recorder.decode(replay.replay);
          game.replay();
       }
-      this.main.onLoadReplay();
    }
    /**
     * 自己创建房间
