@@ -21,6 +21,7 @@ import gameManager from './game/GameManager';
 import socket from './socket/GameSocket';
 // import lang from './util/lang';
 
+
 const styles = {
    bg: {
       // backgroundColor: color[900],
@@ -160,12 +161,9 @@ class App extends React.Component {
          ui = (
             <div className={styles.bg}>
                <Typography variant="subheading" className={classes.note}>
-                  Sorry guys, the server has been hacked on May 10, 2018.
-                  The database is cleared.
-                  So maybe you need to register a new account.
-                  The work of this game is almost done now. Battle is ok. I dont know what to improve. Bye~
+                  Hello, I'm back! Don't know when will gone.
                   <div>
-                     --2018.5.11 wyklion
+                     --2018.12.30 wyklion
                   </div>
                </Typography>
                <Login onLogin={this.onLogin} />
