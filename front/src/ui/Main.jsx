@@ -197,7 +197,7 @@ class Main extends React.Component {
       gameManager.render.onResize();
       this.setState({ vertical: vertical });
       // app重算hearder宽
-      gameManager.app.onResize();
+      gameManager.app.onResize(width);
    }
 
    /**
