@@ -132,10 +132,10 @@ class GameSocket {
          if (!err) {
             this.roomManager.setRoomId(result.roomId);
             console.log("onCreateRoom ", this.roomManager.roomId);
+            callback(err, result);
          } else {
             console.log(err);
          }
-         callback(err, result);
       });
    }
 

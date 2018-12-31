@@ -19,7 +19,7 @@ import gameManager from './game/GameManager';
 import socket from './socket/GameSocket';
 // import lang from './util/lang';
 
-import { withRouter, Route } from "react-router-dom";
+import { withRouter, Route, Switch } from "react-router-dom";
 
 
 const styles = {
@@ -130,6 +130,8 @@ class App extends React.Component {
     * 排行页面
     */
    onRank = (rankType) => {
+      if (gameManager.roomManager.room)
+         return;
       this.linkTo('/rank/' + rankType);
    }
 
@@ -137,6 +139,8 @@ class App extends React.Component {
     * 玩家信息页面
     */
    onProfile = (userId) => {
+      if (gameManager.roomManager.room)
+         return;
       this.linkTo('/profile/' + userId);
    }
 
@@ -144,6 +148,8 @@ class App extends React.Component {
     * 回放页面
     */
    onReplay = (replayId) => {
+      if (gameManager.roomManager.room)
+         return;
       this.linkTo('/replay/' + replayId);
    }
 
@@ -151,7 +157,16 @@ class App extends React.Component {
     * 关于页面
     */
    onAbout = () => {
+      if (gameManager.roomManager.room)
+         return;
       this.linkTo('/about');
+   }
+
+   /**
+    * 进房间
+    */
+   onRoom = (roomId) => {
+      this.linkTo('/room/' + roomId);
    }
 
    onResize = (width) => {
@@ -185,11 +200,14 @@ class App extends React.Component {
          ui = (
             < div className='App' >
                <HeadBar onLogout={this.onLogout} width={this.state.width} />
-               <Route exact path="/" component={Main} />
-               <Route path="/rank/:rankType" component={Rank} />
-               <Route path="/profile/:userId" component={Profile} />
-               <Route path="/replay/:replayId" component={Main} />
-               <Route path="/about" component={About} />
+               <Switch>
+                  <Route path="/rank/:rankType" component={Rank} />
+                  <Route path="/profile/:userId" component={Profile} />
+                  <Route path="/about" component={About} />
+                  <Route component={Main} />
+                  {/* <Route exact path="/" component={Main} />
+               <Route path="/replay/:replayId" component={Main} /> */}
+               </Switch>
             </div >
          )
       }

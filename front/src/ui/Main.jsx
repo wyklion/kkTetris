@@ -15,6 +15,7 @@ import Chat from './Chat';
 import Host from './Host';
 import Other from './Other';
 import Tools from '../util/Tools';
+import { matchPath } from "react-router-dom";
 
 const styles = theme => ({
    root: {
@@ -97,10 +98,15 @@ class Main extends React.Component {
    }
 
    componentWillReceiveProps(nextProps) {
+      var path = nextProps.location.pathname;
       // 回放
-      if (!nextProps.match.params) return;
-      var replayId = nextProps.match.params.replayId;
-      this.initReplay(replayId);
+      if (this.matchReplay(path))
+         return;
+      // 房间
+      if (this.matchRoom(path))
+         return;
+      // 清空状态
+      this.clearState();
    }
 
    componentWillUnmount() {
@@ -110,15 +116,55 @@ class Main extends React.Component {
    }
 
    /**
-    * 回放
+    * 录像回放
     */
-   initReplay(replayId) {
-      // console.log(replayId);
-      if (replayId && this.replayId !== replayId) {
-         this.replayId = replayId;
-         this.onLoadReplay();
-         gameManager.loadReplay(this.replayId);
+   matchReplay(path) {
+      const match = matchPath(path, {
+         path: "/replay/:replayId",
+         exact: true,
+         strict: false
+      });
+      if (match && match.params) {
+         var replayId = match.params.replayId;
+         if (replayId && this.replayId !== replayId) {
+            this.replayId = replayId;
+            this.setState({ playState: 'replay', showResult: false });
+            gameManager.loadReplay(this.replayId);
+         }
+         return true;
       }
+      return false;
+   }
+
+   /**
+    * 进入房间
+    */
+   matchRoom(path) {
+      const match = matchPath(path, {
+         path: "/room/:roomId",
+         exact: true,
+         strict: false
+      });
+      if (match && match.params) {
+         var roomId = match.params.roomId;
+         console.log(roomId, gameManager.roomManager.roomId);
+         if (gameManager.roomManager.roomId == roomId) {
+            this.setState({ playState: 'battle', showLobby: false, showResult: false });
+            gameManager.render.showOtherTetris(true);
+            return true;
+         } else {
+            gameManager.app.home();
+         }
+      }
+      return false;
+   }
+
+   /**
+    * 清空状态
+    */
+   clearState() {
+      gameManager.reset();
+      this.setState({ playState: 'none', battleState: 'none', showLobby: true, showResult: false });
    }
 
    /**
@@ -202,19 +248,19 @@ class Main extends React.Component {
       this.setState({ playState: 'none', showResult: false });
    }
 
-   /**
-    * 创建房间成功后调用
-    */
-   onEnterRoom = (watch) => {
-      this.setState({ playState: 'battle', showLobby: false, showResult: false });
-   }
+   // /**
+   //  * 创建房间成功后调用
+   //  */
+   // onEnterRoom = (watch) => {
+   //    this.setState({ playState: 'battle', showLobby: false, showResult: false });
+   // }
 
-   /**
-    * 退出房间
-    */
-   onExitRoom = () => {
-      this.setState({ playState: 'none', battleState: 'none', showLobby: true, showResult: false });
-   }
+   // /**
+   //  * 退出房间
+   //  */
+   // onExitRoom = () => {
+   //    this.setState({ playState: 'none', battleState: 'none', showLobby: true, showResult: false });
+   // }
 
    /**
     * 自己的准备状态

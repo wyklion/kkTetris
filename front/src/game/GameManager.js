@@ -271,9 +271,10 @@ class GameManager {
       this.reset();
       socket.createRoom((err, result) => {
          if (!err) {
-            // this.battle = new BattleManager();
-            this.main.onEnterRoom();
-            this.render.showOtherTetris(true);
+            gameManager.app.onRoom(result.roomId);
+            // // this.battle = new BattleManager();
+            // this.main.onEnterRoom();
+            // this.render.showOtherTetris(true);
          }
       });
    }
@@ -309,11 +310,13 @@ class GameManager {
       if (enter) {
          // this.battle = new BattleManager();
          // this.battle.update();
-         this.main.onEnterRoom(watch);
+         this.app.onRoom(this.roomManager.roomId);
+         // this.main.onEnterRoom(watch);
          this.render.showOtherTetris(true);
       } else {
          // this.battle.dispose();
-         this.main.onExitRoom();
+         this.app.home();
+         // this.main.onExitRoom();
          this.render.battle.reset();
          this.render.showOtherTetris(false);
       }
