@@ -1,4 +1,9 @@
-# 网址：http://kktetris.top
+# http://kktetris.top
+
+# 需要做的
+数据库备份、清理。
+访客登录。
+AI。
 
 # centos
 ### nodejs
