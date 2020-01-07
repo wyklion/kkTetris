@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import Typography from 'material-ui/Typography';
+// import Typography from 'material-ui/Typography';
 import 'typeface-roboto'
 // import Button from 'material-ui/Button';
 // import teal from 'material-ui/colors/teal';
@@ -15,11 +15,13 @@ import Main from './ui/Main';
 import Profile from './ui/Profile';
 import Rank from './ui/Rank';
 import About from './ui/About';
+import FakePage from './ui/FakePage';
 import gameManager from './game/GameManager';
 import socket from './socket/GameSocket';
 // import lang from './util/lang';
 
 import { withRouter, Route, Switch } from "react-router-dom";
+import config from './config';
 
 
 const styles = {
@@ -36,6 +38,7 @@ class App extends React.Component {
    state = {
       checked: false, // 检查登录
       logined: false, // 是否登录
+      fake: false, // 伪装
       profile: null, // 个人信息页面
       rank: null, // 排行榜
       about: null, // 关于
@@ -44,6 +47,7 @@ class App extends React.Component {
 
    constructor(props) {
       super(props);
+      this.state.fake = config.fake;
       this.checkLogin();
    }
 
@@ -174,10 +178,9 @@ class App extends React.Component {
    }
 
    render() {
-      const { classes } = this.props;
+      // const { classes } = this.props;
       var state = this.state;
-      var checked = state.checked;
-      var logined = state.logined;
+      var { checked, logined, fake } = state;
       if (!checked) {
          return (
             null
@@ -185,17 +188,21 @@ class App extends React.Component {
       }
       var ui;
       if (!logined) {
-         ui = (
-            <div className={styles.bg}>
-               <Typography variant="subheading" className={classes.note}>
+         if (fake) {
+            ui = <FakePage onEnter={() => { this.setState({ fake: false }) }}></FakePage>
+         } else {
+            ui = (
+               <div className={styles.bg}>
+                  {/* <Typography variant="subheading" className={classes.note}>
                   Hello, I'm back! Don't know when will gone.
                   <div>
                      --2018.12.30 wyklion
                   </div>
-               </Typography>
-               <Login onLogin={this.onLogin} />
-            </div>
-         )
+               </Typography> */}
+                  <Login onLogin={this.onLogin} />
+               </div>
+            )
+         }
       } else {
          ui = (
             < div className='App' >

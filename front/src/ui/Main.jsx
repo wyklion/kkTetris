@@ -148,7 +148,7 @@ class Main extends React.Component {
       if (match && match.params) {
          var roomId = match.params.roomId;
          console.log(roomId, gameManager.roomManager.roomId);
-         if (gameManager.roomManager.roomId == roomId) {
+         if (gameManager.roomManager.roomId === roomId) {
             this.setState({ playState: 'battle', showLobby: false, showResult: false });
             gameManager.render.showOtherTetris(true);
             return true;
